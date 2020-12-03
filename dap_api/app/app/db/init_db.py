@@ -162,7 +162,7 @@ def init_db(db: Session) -> None:
         db_entry = crud.disaster_type.get_by_name(db=db, name=name)
         if not db_entry:
             info = d_type[name]
-            d_type_obj = schemas.DisasterType(
+            d_type_obj = schemas.DisasterTypeCreate(
                 name=name,
                 description=info
             )
