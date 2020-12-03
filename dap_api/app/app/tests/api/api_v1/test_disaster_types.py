@@ -1,14 +1,18 @@
 from fastapi.testclient import TestClient
+from sqlalchemy.orm import Session
 
+from app import crud
 from app.config import settings
 
 
 def test_retrieve_disaster_types(
-        client: TestClient
+        client: TestClient, db: Session
 ) -> None:
     r = client.get(f"{settings.API_V1_STR}/collections/disaster_types/")
     assert 200 <= r.status_code < 300
     d_type_collection = r.json()
+    db_entries = crud.disaster_type.get_multi(db)
+    assert len(d_type_collection) == len(db_entries)
     for d_type in d_type_collection:
         assert d_type.get("name")
         assert d_type.get("id")
