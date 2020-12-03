@@ -1,0 +1,32 @@
+# folders
+literature/
+out/
+
+# pycharm
+.idea/
+
+# pytest
+__pycache__/
+
+# OSX
+.DS_Store
+
+# word
+~*.docx
+
+# latex auxiliaries
+*.aux
+*.bbl
+*-blx.bib
+*.blg
+*.lof
+*.log
+*.lot
+*.out
+*.run.xml
+*.synctex.gz
+*.toc
+
+# db files
+/dap_db/pgdata
+/dap_db/pg_test_data/

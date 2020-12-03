@@ -1,0 +1,35 @@
+[tool.poetry]
+name = "disaster-area-portal"
+version = "0.1.0"
+description = "Disaster Area Portal on basic FastAPI infrastructure using Docker, Gunicorn, FastAPI and Python 3.8 on alpine linux"
+authors = ["Amandus Butzer <butzer@stud.uni-heidelberg.de>"]
+
+[tool.poetry.dependencies]
+alembic = "^1.4.3"  # database migration tool
+python = "^3.8"
+docker = "^4.2.0"
+python-dotenv = ""  # reading .env files
+fastapi = "^0.61.1"  # api framework
+email-validator = "^1.1.1"  # pydantic email validation in api docs
+python-multipart = "^0.0.5"  # pydantic file upload and form data in api docs
+sqlalchemy = "^1.3.20"  # orm database interaction
+geoalchemy2 = "^0.8.4"  # handling geometries with sqlalchemy
+aiofiles = "^0.6.0"  # file responses and serving static files
+databases = {extras = ["postgresql", "sqlite"], version = "^0.4.0"}  # async support for PostgreSQL and SQLite
+psycopg2-binary = "^2.8.6"  # PostgreSQL adapter
+tenacity = "^6.2.0"  # retrying library (waiting for database to restart)
+uvicorn = "^0.12.3"  # ASGI server
+
+[tool.poetry.dev-dependencies]
+pytest = "^6.1.2"  # testing
+pytest-cov = "^2.10.1"  # test coverage
+pytest-asyncio = ""  # async testing
+httpx = ""  # needed for async testing
+black = "^19.10b0"  # TODO: used ?
+isort = "^4.3.21"  # TODO: used ?
+autoflake = "^1.3.1"  # TODO: used ?
+mypy = "^0.770"  # TODO: used ?
+
+[build-system]
+requires = ["poetry>=1.1.0b2"]
+build-backend = "poetry.masonry.api"

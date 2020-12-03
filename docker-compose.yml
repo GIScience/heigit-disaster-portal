@@ -1,0 +1,32 @@
+version: '3.0'
+
+services:
+  dap-api:
+    container_name: dap-api
+    image: disaster-area-portal
+    depends_on:
+      - dap-db
+    build:
+      context: dap_api/
+    ports:
+      - 8080:80
+    volumes:
+      - ./dap_api/app:/app
+    env_file:
+      - .env
+    entrypoint: [
+        "/start.sh"
+    ]
+  dap-db:
+    container_name: dap-db
+    image: dap-storage
+    build:
+      context: dap_db/
+    ports:
+      - 5432:5432
+    volumes:
+      - ./dap_db/pgdata:/var/lib/postgresql/data/pgdata
+    env_file:
+      - .env
+    environment:
+      - PGDATA=/var/lib/postgresql/data/pgdata

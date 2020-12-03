@@ -1,0 +1,44 @@
+version: '3.0'
+
+services:
+  dap-api-reload:
+    container_name: dap-api-reload
+    image: disaster-area-portal-dev
+    build:
+      context: dap_api/
+      args:
+        - DEV=1
+    ports:
+      - 8081:80
+    volumes:
+      - ./dap_api/app:/app
+    env_file:
+      - .env
+    entrypoint: ["/start-reload.sh"]
+  dap-db:
+    container_name: dap-db
+    image: dap-storage-dev
+    build:
+      context: dap_db/
+    ports:
+      - 5432:5432
+    volumes:
+      - ./dap_db/pgdata:/var/lib/postgresql/data/pgdata
+    env_file:
+      - .env
+    environment:
+      - PGDATA=/var/lib/postgresql/data/pgdata
+  dap-test-db:
+    container_name: dap-test-db
+    image: dap-storage-dev
+    build:
+      context: dap_db/
+    ports:
+      - 5433:5432
+    volumes:
+      - ./dap_db/pg_test_data:/var/lib/postgresql/data/pgdata
+    env_file:
+      - .env
+    environment:
+      - PGDATA=/var/lib/postgresql/data/pgdata
+
