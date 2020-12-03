@@ -35,7 +35,10 @@ def test_check_if_user_is_admin(db: Session) -> None:
 
 
 def test_check_if_user_is_admin_normal_user(db: Session) -> None:
-    pass
+    user_in = UserCreateOut(email=random_email(), secret=random_lower_string())
+    user = crud.user.create(db, obj_in=user_in)
+    is_admin = crud.user.is_admin(user)
+    assert is_admin is False
 
 
 def test_get_user(db: Session) -> None:
