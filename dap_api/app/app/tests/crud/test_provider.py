@@ -46,7 +46,7 @@ def test_get_provider_by_email(db: Session, provider_owner: User) -> None:
     assert jsonable_encoder(provider) == jsonable_encoder(provider_2)
 
 
-def test_get_multi_provider_by_owner(db: Session, provider_owner: User) -> None:
+def test_get_multi_provider_by_owner(db: Session) -> None:
     user_obj = UserCreateOut(email=random_email(), secret=generate_secret())
     user = crud.user.create(db, obj_in=user_obj)
     create_new_provider(db, user)
@@ -75,4 +75,3 @@ def test_remove_provider(db: Session, provider_owner: User) -> None:
     no_provider = crud.provider.get(db, id=provider_2.id)
     assert jsonable_encoder(provider_2) == jsonable_encoder(provider)
     assert not no_provider
-
