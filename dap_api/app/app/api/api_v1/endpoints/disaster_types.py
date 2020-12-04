@@ -5,7 +5,6 @@ from sqlalchemy.orm import Session
 
 from app import schemas, crud
 from app.api import deps
-from app.security import generate_secret
 
 router = APIRouter()
 
@@ -15,7 +14,7 @@ router = APIRouter()
     response_model=List[schemas.DisasterType],
     summary="Read Disaster Types"
 )
-def read_users(
+def read_d_types(
         db: Session = Depends(deps.get_db),
         skip: int = 0,
         limit: int = 100
