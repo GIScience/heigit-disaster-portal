@@ -1,0 +1,121 @@
+[
+  {
+    "earthquake": "Earthquake info",
+    "sub_types": [
+      {"ground_shaking": "Ground shaking info"},
+      {"tsunami": "Tsunami info"}
+    ]
+  },
+  {
+    "volcanic_activity": "Volcanic activity info",
+    "sub_types": [
+      {"ash_fall": "Ash fall info"},
+      {"lahar": "Lahar info"},
+      {"pyroclastic_flow": "Pyroclastic flow info"},
+      {"lava_flow": "Lava flow info"}
+    ]
+  },
+  {
+    "storm": "Storm info",
+    "sub_types": [
+      {"extra_tropical_storm": "Extra-tropical storm info"},
+      {"tropical_cyclone": "Tropical cyclone info"},
+      {"connective_storm": "Connective storm info"}
+    ]
+  },
+  {
+    "extreme_temperature": "Extreme temperature info",
+    "sub_types": [
+      {"cold_wave": "Cold wave info"},
+      {"heat_wave": "Heat wave info"},
+      {"severe_winter_conditions": "Severe winter conditions info"}
+    ]
+  },
+  {
+    "flood": "Flood info",
+    "sub_types": [
+      {"coastal_flood": "coastal_flood info"},
+      {"riverine_flood": "riverine_flood info"},
+      {"flash_flood": "flash_flood info"},
+      {"ice_jam_flood": "ice_jam_flood info"}
+    ]
+  },
+  {
+    "mass_movement": "mass_movement info",
+    "sub_types": [
+      {"landslide": "landslide info"},
+      {"avalanche": "avalanche info"},
+      {"subsidence": "subsidence info"},
+      {"rock_fall": "Rock or debris fall"},
+      {"mudflow": "mudflow info"}
+    ]
+  },
+  {
+    "drought": "drought info",
+    "sub_types": [
+      {"drought": "drought info"}
+    ]
+  },
+  {
+    "wildfire": "wildfire info",
+    "sub_types": [
+      {"forest_fire": "forest_fire info"},
+      {"land_fire": "Bush, brush or Pasture fire"},
+      {"urban_fire": "urban_fire info"}
+    ]
+  },
+  {
+    "epidemic": "epidemic info",
+    "sub_types": [
+      {"viral_disease": "viral_disease info"},
+      {"bacterial_disease": "bacterial_disease info"},
+      {"parasitic_disease": "parasitic_disease info"},
+      {"fungal_disease": "fungal_disease info"},
+      {"prion_disease": "prion_disease info"}
+    ]
+  },
+  {
+    "infestation": "infestation info",
+    "sub_types": [
+      {"grasshopper": "grasshopper info"},
+      {"locust": "locust info"},
+      {"pathogen": "pathogen info"}
+    ]
+  },
+  {
+    "industrial_accident": "industrial_accident info",
+    "sub_types": [
+      {"chemical_spill": "chemical_spill info"},
+      {"collapse": "collapse info"},
+      {"explosion": "explosion info"},
+      {"fire": "fire info"},
+      {"gas_leak": "gas_leak info"},
+      {"poisoning": "poisoning info"},
+      {"radiation": "radiation info"}
+    ]
+  },
+  {
+    "transport_accident": "transport_accident info",
+    "sub_types": [
+      {"air": "air info"},
+      {"road": "road info"},
+      {"rail": "rail info"},
+      {"water": "water info"}
+    ]
+  },
+  {
+    "humanitarian": "humanitarian info",
+    "sub_types": [
+      {"conflict": "conflict info"},
+      {"population_displacement": "Internally displaced persons"},
+      {"rail": "rail info"},
+      {"water": "water info"}
+    ]
+  },
+  {
+    "other": "other info",
+    "sub_types": [
+      {"other": "other info"}
+    ]
+  }
+]
