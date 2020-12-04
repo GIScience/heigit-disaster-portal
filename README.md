@@ -126,13 +126,15 @@ To quickly run tests you can create a _pytest run configuration_:
 Will open user friendly test interface, instead of scrolling through console :+1:
 (Also having the option to only rerun failed tests)
 
+You will also be able to debug the tests if you run this config in _debug mode_.
+
 Alternatively you could run the tests within the `dap-api-reload` docker container:
 ```
 # access the reload container
 docker exec -i -t dap-api-reload bash
 
 # run the tests (you should be in /app already)
-pytest --cov=app --cov-report=term-missing
+pytest
 ```
 
 ### Coverage
@@ -143,9 +145,13 @@ This is a bit slower and creates coverage for the whole project.
 Also it is only available in the professional PyCharm Edition.
 But it will visually highlight all parts in the code that are not covered by tests yet.
  
-2. Add `--cov=app/ --cov-report=term-missing` as _Additional Arguments_ to the pytest configuration.
+1. Add `--cov=app/ --cov-report=term-missing` as _Additional Arguments_ to the pytest configuration.
 With this the pytest output will also create a coverage report including the lines "missed", blocks that were not
 executed with the test.
+**important:** PyCharm somehow uses the same helpers for coverage & debugging, so when using this approach,
+your breakpoints will not be hit. You can either add the coverage as a second pytest config, or add `--no-cov` as
+_Additional Arguments_ to the pytest configuration, and switch back and forth between debug and coverage mode by
+adding and removing `--no-cov` from the config.
 
 ---
 
