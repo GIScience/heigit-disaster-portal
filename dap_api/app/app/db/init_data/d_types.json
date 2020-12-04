@@ -1,121 +1,382 @@
 [
   {
-    "earthquake": "Earthquake info",
+    "name": "earthquake",
+    "description": "Earthquake info",
+    "id": 1,
     "sub_types": [
-      {"ground_shaking": "Ground shaking info"},
-      {"tsunami": "Tsunami info"}
+      {
+        "name": "ground_shaking",
+        "description": "Ground shaking info",
+        "parent_id": 1,
+        "id": 1
+      },
+      {
+        "name": "tsunami",
+        "description": "Tsunami info",
+        "parent_id": 1,
+        "id": 2
+      }
     ]
   },
   {
-    "volcanic_activity": "Volcanic activity info",
+    "name": "volcanic_activity",
+    "description": "Volcanic activity info",
+    "id": 2,
     "sub_types": [
-      {"ash_fall": "Ash fall info"},
-      {"lahar": "Lahar info"},
-      {"pyroclastic_flow": "Pyroclastic flow info"},
-      {"lava_flow": "Lava flow info"}
+      {
+        "name": "ash_fall",
+        "description": "Ash fall info",
+        "parent_id": 2,
+        "id": 3
+      },
+      {
+        "name": "lahar",
+        "description": "Lahar info",
+        "parent_id": 2,
+        "id": 4
+      },
+      {
+        "name": "pyroclastic_flow",
+        "description": "Pyroclastic flow info",
+        "parent_id": 2,
+        "id": 5
+      },
+      {
+        "name": "lava_flow",
+        "description": "Lava flow info",
+        "parent_id": 2,
+        "id": 6
+      }
     ]
   },
   {
-    "storm": "Storm info",
+    "name": "storm",
+    "description": "Storm info",
+    "id": 3,
     "sub_types": [
-      {"extra_tropical_storm": "Extra-tropical storm info"},
-      {"tropical_cyclone": "Tropical cyclone info"},
-      {"connective_storm": "Connective storm info"}
+      {
+        "name": "extra_tropical_storm",
+        "description": "Extra-tropical storm info",
+        "parent_id": 3,
+        "id": 7
+      },
+      {
+        "name": "tropical_cyclone",
+        "description": "Tropical cyclone info",
+        "parent_id": 3,
+        "id": 8
+      },
+      {
+        "name": "connective_storm",
+        "description": "Connective storm info",
+        "parent_id": 3,
+        "id": 9
+      }
     ]
   },
   {
-    "extreme_temperature": "Extreme temperature info",
+    "name": "extreme_temperature",
+    "description": "Extreme temperature info",
+    "id": 4,
     "sub_types": [
-      {"cold_wave": "Cold wave info"},
-      {"heat_wave": "Heat wave info"},
-      {"severe_winter_conditions": "Severe winter conditions info"}
+      {
+        "name": "cold_wave",
+        "description": "Cold wave info",
+        "parent_id": 4,
+        "id": 10
+      },
+      {
+        "name": "heat_wave",
+        "description": "Heat wave info",
+        "parent_id": 4,
+        "id": 11
+      },
+      {
+        "name": "severe_winter_conditions",
+        "description": "Severe winter conditions info",
+        "parent_id": 4,
+        "id": 12
+      }
     ]
   },
   {
-    "flood": "Flood info",
+    "name": "flood",
+    "description": "Flood info",
+    "id": 5,
     "sub_types": [
-      {"coastal_flood": "coastal_flood info"},
-      {"riverine_flood": "riverine_flood info"},
-      {"flash_flood": "flash_flood info"},
-      {"ice_jam_flood": "ice_jam_flood info"}
+      {
+        "name": "coastal_flood",
+        "description": "coastal_flood info",
+        "parent_id": 5,
+        "id": 13
+      },
+      {
+        "name": "riverine_flood",
+        "description": "riverine_flood info",
+        "parent_id": 5,
+        "id": 14
+      },
+      {
+        "name": "flash_flood",
+        "description": "flash_flood info",
+        "parent_id": 5,
+        "id": 15
+      },
+      {
+        "name": "ice_jam_flood",
+        "description": "ice_jam_flood info",
+        "parent_id": 5,
+        "id": 16
+      }
     ]
   },
   {
-    "mass_movement": "mass_movement info",
+    "name": "mass_movement",
+    "description": "mass_movement info",
+    "id": 6,
     "sub_types": [
-      {"landslide": "landslide info"},
-      {"avalanche": "avalanche info"},
-      {"subsidence": "subsidence info"},
-      {"rock_fall": "Rock or debris fall"},
-      {"mudflow": "mudflow info"}
+      {
+        "name": "landslide",
+        "description": "landslide info",
+        "parent_id": 6,
+        "id": 17
+      },
+      {
+        "name": "avalanche",
+        "description": "avalanche info",
+        "parent_id": 6,
+        "id": 18
+      },
+      {
+        "name": "subsidence",
+        "description": "subsidence info",
+        "parent_id": 6,
+        "id": 19
+      },
+      {
+        "name": "rock_fall",
+        "description": "Rock or debris fall",
+        "parent_id": 6,
+        "id": 20
+      },
+      {
+        "name": "mudflow",
+        "description": "mudflow info",
+        "parent_id": 6,
+        "id": 21
+      }
     ]
   },
   {
-    "drought": "drought info",
+    "name": "drought",
+    "description": "drought info",
+    "id": 7,
     "sub_types": [
-      {"drought": "drought info"}
+      {
+        "name": "drought",
+        "description": "drought info",
+        "parent_id": 7,
+        "id": 22
+      }
     ]
   },
   {
-    "wildfire": "wildfire info",
+    "name": "wildfire",
+    "description": "wildfire info",
+    "id": 8,
     "sub_types": [
-      {"forest_fire": "forest_fire info"},
-      {"land_fire": "Bush, brush or Pasture fire"},
-      {"urban_fire": "urban_fire info"}
+      {
+        "name": "forest_fire",
+        "description": "forest_fire info",
+        "parent_id": 8,
+        "id": 23
+      },
+      {
+        "name": "land_fire",
+        "description": "Bush, brush or Pasture fire",
+        "parent_id": 8,
+        "id": 24
+      },
+      {
+        "name": "urban_fire",
+        "description": "urban_fire info",
+        "parent_id": 8,
+        "id": 25
+      }
     ]
   },
   {
-    "epidemic": "epidemic info",
+    "name": "epidemic",
+    "description": "epidemic info",
+    "id": 9,
     "sub_types": [
-      {"viral_disease": "viral_disease info"},
-      {"bacterial_disease": "bacterial_disease info"},
-      {"parasitic_disease": "parasitic_disease info"},
-      {"fungal_disease": "fungal_disease info"},
-      {"prion_disease": "prion_disease info"}
+      {
+        "name": "viral_disease",
+        "description": "viral_disease info",
+        "parent_id": 9,
+        "id": 26
+      },
+      {
+        "name": "bacterial_disease",
+        "description": "bacterial_disease info",
+        "parent_id": 9,
+        "id": 27
+      },
+      {
+        "name": "parasitic_disease",
+        "description": "parasitic_disease info",
+        "parent_id": 9,
+        "id": 28
+      },
+      {
+        "name": "fungal_disease",
+        "description": "fungal_disease info",
+        "parent_id": 9,
+        "id": 29
+      },
+      {
+        "name": "prion_disease",
+        "description": "prion_disease info",
+        "parent_id": 9,
+        "id": 30
+      }
     ]
   },
   {
-    "infestation": "infestation info",
+    "name": "infestation",
+    "description": "infestation info",
+    "id": 10,
     "sub_types": [
-      {"grasshopper": "grasshopper info"},
-      {"locust": "locust info"},
-      {"pathogen": "pathogen info"}
+      {
+        "name": "grasshopper",
+        "description": "grasshopper info",
+        "parent_id": 10,
+        "id": 31
+      },
+      {
+        "name": "locust",
+        "description": "locust info",
+        "parent_id": 10,
+        "id": 32
+      },
+      {
+        "name": "pathogen",
+        "description": "pathogen info",
+        "parent_id": 10,
+        "id": 33
+      }
     ]
   },
   {
-    "industrial_accident": "industrial_accident info",
+    "name": "industrial_accident",
+    "description": "industrial_accident info",
+    "id": 11,
     "sub_types": [
-      {"chemical_spill": "chemical_spill info"},
-      {"collapse": "collapse info"},
-      {"explosion": "explosion info"},
-      {"fire": "fire info"},
-      {"gas_leak": "gas_leak info"},
-      {"poisoning": "poisoning info"},
-      {"radiation": "radiation info"}
+      {
+        "name": "chemical_spill",
+        "description": "chemical_spill info",
+        "parent_id": 11,
+        "id": 34
+      },
+      {
+        "name": "collapse",
+        "description": "collapse info",
+        "parent_id": 11,
+        "id": 35
+      },
+      {
+        "name": "explosion",
+        "description": "explosion info",
+        "parent_id": 11,
+        "id": 36
+      },
+      {
+        "name": "fire",
+        "description": "fire info",
+        "parent_id": 11,
+        "id": 37
+      },
+      {
+        "name": "gas_leak",
+        "description": "gas_leak info",
+        "parent_id": 11,
+        "id": 38
+      },
+      {
+        "name": "poisoning",
+        "description": "poisoning info",
+        "parent_id": 11,
+        "id": 39
+      },
+      {
+        "name": "radiation",
+        "description": "radiation info",
+        "parent_id": 11,
+        "id": 40
+      }
     ]
   },
   {
-    "transport_accident": "transport_accident info",
+    "name": "transport_accident",
+    "description": "transport_accident info",
+    "id": 12,
     "sub_types": [
-      {"air": "air info"},
-      {"road": "road info"},
-      {"rail": "rail info"},
-      {"water": "water info"}
+      {
+        "name": "air",
+        "description": "air info",
+        "parent_id": 12,
+        "id": 41
+      },
+      {
+        "name": "road",
+        "description": "road info",
+        "parent_id": 12,
+        "id": 42
+      },
+      {
+        "name": "rail",
+        "description": "rail info",
+        "parent_id": 12,
+        "id": 43
+      },
+      {
+        "name": "water",
+        "description": "water info",
+        "parent_id": 12,
+        "id": 44
+      }
     ]
   },
   {
-    "humanitarian": "humanitarian info",
+    "name": "humanitarian",
+    "description": "humanitarian info",
+    "id": 13,
     "sub_types": [
-      {"conflict": "conflict info"},
-      {"population_displacement": "Internally displaced persons"},
-      {"rail": "rail info"},
-      {"water": "water info"}
+      {
+        "name": "conflict",
+        "description": "conflict info",
+        "parent_id": 13,
+        "id": 45
+      },
+      {
+        "name": "population_displacement",
+        "description": "Internally displaced persons",
+        "parent_id": 13,
+        "id": 46
+      }
     ]
   },
   {
-    "other": "other info",
+    "name": "other",
+    "description": "other info",
+    "id": 14,
     "sub_types": [
-      {"other": "other info"}
+      {
+        "name": "other",
+        "description": "other info",
+        "parent_id": 14,
+        "id": 47
+      }
     ]
   }
 ]
