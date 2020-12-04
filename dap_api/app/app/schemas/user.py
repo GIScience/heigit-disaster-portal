@@ -21,6 +21,11 @@ class UserCreateOut(UserCreate):
     secret: str
 
 
+# Properties to pass to create a user from a db entry
+class UserCreateFromDb(UserBase):
+    hashed_secret: str
+
+
 # Properties to receive via API on update
 class UserUpdate(UserBase):
     secret: Optional[str] = None

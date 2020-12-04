@@ -2,9 +2,9 @@ from typing import Any, Dict, Optional, Union
 
 from sqlalchemy.orm import Session
 
-from .base import CRUDBase
 from app.models.user import User
-from app.schemas.user import UserCreate, UserUpdate, UserCreateOut
+from app.schemas.user import UserCreate, UserUpdate, UserCreateOut, UserCreateFromDb
+from .base import CRUDBase
 from ..security import generate_hash
 
 
@@ -25,6 +25,13 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
             is_active=True,
             is_admin=obj_in.is_admin
         )
+        db.add(db_obj)
+        db.commit()
+        db.refresh(db_obj)
+        return db_obj
+
+    def create_from_db_entry(self, db: Session, *, obj_in: UserCreateFromDb) -> User:
+        db_obj = User(**obj_in.dict())
         db.add(db_obj)
         db.commit()
         db.refresh(db_obj)
