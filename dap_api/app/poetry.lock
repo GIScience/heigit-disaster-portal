@@ -242,6 +242,21 @@ python-versions = "*"
 SQLAlchemy = ">=0.8"
 
 [[package]]
+name = "geojson-pydantic"
+version = "0.2.1"
+description = "Pydantic data models for the GeoJSON spec"
+category = "main"
+optional = false
+python-versions = ">=3.6"
+
+[package.dependencies]
+pydantic = "*"
+
+[package.extras]
+dev = ["pytest", "pytest-cov", "pre-commit"]
+test = ["pytest", "pytest-cov"]
+
+[[package]]
 name = "h11"
 version = "0.11.0"
 description = "A pure-Python, bring-your-own-I/O implementation of HTTP/1.1"
@@ -701,7 +716,7 @@ six = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "fea7f13ff334eb7982cd4189499440a82aac8dd57b2f88a89f4ac968b377c5af"
+content-hash = "2ec04a2d7ebad05720833792f506765f42c16e9e87ada9e9f03c5fcd0b68f1e0"
 
 [metadata.files]
 aiofiles = [
@@ -837,6 +852,9 @@ fastapi = [
 geoalchemy2 = [
     {file = "GeoAlchemy2-0.8.4-py2.py3-none-any.whl", hash = "sha256:3b83654db15ed807a7bdb2e7dd1c787a47cfc3e4fb92a0558685001fbb7342da"},
     {file = "GeoAlchemy2-0.8.4.tar.gz", hash = "sha256:d9336f17df3e7a10f94d1ea2488dcfb97a8bc23fe7f5edea425ddab553534b0a"},
+]
+geojson-pydantic = [
+    {file = "geojson-pydantic-0.2.1.tar.gz", hash = "sha256:05cef479985ec30de5e57fbee739d3c68a052a3b06f9b6a759ac6e302d17f919"},
 ]
 h11 = [
     {file = "h11-0.11.0-py2.py3-none-any.whl", hash = "sha256:ab6c335e1b6ef34b205d5ca3e228c9299cc7218b049819ec84a388c2525e5d87"},
