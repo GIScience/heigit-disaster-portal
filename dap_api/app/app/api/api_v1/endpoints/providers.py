@@ -86,7 +86,7 @@ def read_provider_by_id(
 @router.put(
     "/items/{provider_id}",
     response_model=schemas.Provider,
-    summary="Read Provider By Id"
+    summary="Update Provider By Id"
 )
 def update_provider_by_id(
         provider_id: int,
