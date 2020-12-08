@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 from .base import CRUDBase
 
 
-class CRUDUser(CRUDBase[DisasterSubType, DisasterSubTypeCreate, DisasterSubTypeUpdate]):
+class CRUDDisasterSubType(CRUDBase[DisasterSubType, DisasterSubTypeCreate, DisasterSubTypeUpdate]):
     def get_by_name(self, db: Session, *, name: str) -> Optional[DisasterSubType]:
         return db.query(DisasterSubType).filter(DisasterSubType.name == name).first()
 
@@ -23,4 +23,4 @@ class CRUDUser(CRUDBase[DisasterSubType, DisasterSubTypeCreate, DisasterSubTypeU
         return db_obj
 
 
-disaster_sub_type = CRUDUser(DisasterSubType)
+disaster_sub_type = CRUDDisasterSubType(DisasterSubType)
