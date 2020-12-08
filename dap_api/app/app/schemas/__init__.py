@@ -5,3 +5,5 @@ from .disaster_type import DisasterType, DisasterTypeBaseInDB, DisasterTypeCreat
     DisasterTypeBaseInDBBase, DisasterSubType, DisasterTypeBase
 from .disaster_sub_type import DisasterSubType, DisasterSubTypeBase, DisasterSubTypeBaseInDB, \
     DisasterSubTypeBaseInDBBase, DisasterSubTypeCreate, DisasterSubTypeUpdate
+from .disaster_area import DisasterArea, DisasterAreaBase, DisasterAreaCreate, DisasterAreaInDB, DisasterAreaUpdate, \
+    DisasterAreaCreateOut, DisasterAreaInDBBase
