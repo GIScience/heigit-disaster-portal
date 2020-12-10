@@ -16,14 +16,13 @@ router = APIRouter()
 )
 def read_d_types(
         db: Session = Depends(deps.get_db),
-        skip: int = 0,
-        limit: int = 100
+        c: dict = Depends(deps.common_multi_query_params)
 ) -> Any:
     """
     Retrieve disaster types.
     """
-    d_types = crud.disaster_type.get_multi(db, skip=skip, limit=limit)
-    return d_types
+    skip, limit = c.values()
+    return crud.disaster_type.get_multi(db, skip=skip, limit=limit)
 
 
 @router.get(

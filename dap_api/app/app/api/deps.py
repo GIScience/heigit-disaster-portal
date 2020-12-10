@@ -1,3 +1,5 @@
+from fastapi import Query
+
 from app.db.session import SessionLocal
 
 
@@ -8,3 +10,10 @@ def get_db():  # pragma: no cover
         yield db
     finally:
         db.close()
+
+
+def common_multi_query_params(
+        skip: int = Query(0, ge=0),
+        limit: int = Query(100, ge=1)
+):
+    return {"skip": skip, "limit": limit}

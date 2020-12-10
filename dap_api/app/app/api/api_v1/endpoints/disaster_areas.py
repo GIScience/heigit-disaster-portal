@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Optional
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
@@ -17,12 +17,12 @@ router = APIRouter()
 )
 def read_disaster_areas(
         db: Session = Depends(deps.get_db),
-        skip: int = 0,
-        limit: int = 100
+        c: dict = Depends(deps.common_multi_query_params)
 ) -> Any:
     """
     Retrieve disaster areas.
     """
+    skip, limit = c.values()
     return crud.disaster_area.get_multi_as_feature_collection(db, skip=skip, limit=limit)
 
 

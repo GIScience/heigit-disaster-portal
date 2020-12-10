@@ -16,14 +16,13 @@ router = APIRouter()
 )
 def read_providers(
         db: Session = Depends(deps.get_db),
-        skip: int = 0,
-        limit: int = 100
+        c: dict = Depends(deps.common_multi_query_params)
 ) -> Any:
     """
     Retrieve providers.
     """
-    providers = crud.provider.get_multi(db, skip=skip, limit=limit)
-    return providers
+    skip, limit = c.values()
+    return crud.provider.get_multi(db, skip=skip, limit=limit)
 
 
 @router.post(
