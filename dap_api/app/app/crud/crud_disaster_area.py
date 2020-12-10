@@ -48,8 +48,19 @@ class CRUDDisasterArea(CRUDBase[DisasterArea, DisasterAreaCreate, DisasterAreaUp
             self, db: Session, bbox: BBox = None, skip: int = 0, limit: int = 100
     ) -> DisasterAreaCollection:
         entries = self.get_multi(db, bbox, skip, limit)
+        features = [self.get_as_feature(db, e.id) for e in entries]
+        boxes = [f.bbox for f in features]
+        bbox = [0, 0, 0, 0]
+        if boxes:
+            bbox = [
+                min(b[0] for b in boxes),
+                min(b[1] for b in boxes),
+                max(b[2] for b in boxes),
+                max(b[3] for b in boxes)
+            ]
         return DisasterAreaCollection(
-            features=[self.get_as_feature(db, e.id) for e in entries]
+            features=features,
+            bbox=bbox
         )
 
     def get_by_name(self, db: Session, *, name: str) -> Optional[DisasterArea]:
