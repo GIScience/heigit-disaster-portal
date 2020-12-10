@@ -1,11 +1,39 @@
 from sqlite3.dbapi2 import Timestamp
-from typing import Optional, List
+from typing import Optional, List, Union
 
 from geoalchemy2 import func
 from geojson_pydantic.features import Feature, FeatureCollection
 from geojson_pydantic.geometries import Polygon
 from geojson_pydantic.utils import BBox
-from pydantic import BaseModel, validator
+from pydantic import BaseModel, validator, root_validator
+
+
+class BBoxModel(BaseModel):
+    __root__: List[float]
+
+    def __iter__(self):
+        return iter(self.__root__)
+
+    def __getitem__(self, item):
+        return self.__root__[item]
+
+    @root_validator(pre=True)
+    def validate_len(cls, values):
+        if len(values['__root__']) != 4:
+            raise ValueError("bbox needs 4 values: west(lon), south(lat), east(lon), north(lat)")
+        return values
+
+    @root_validator(pre=True)
+    def validate_coords(cls, values):
+        if abs(values['__root__'][0]) > 180:
+            raise ValueError("invalid west longitude")
+        if abs(values['__root__'][1]) > 90:
+            raise ValueError("invalid south latitude")
+        if abs(values['__root__'][2]) > 180:
+            raise ValueError("invalid east longitude")
+        if abs(values['__root__'][3]) > 90:
+            raise ValueError("invalid north latitude")
+        return values
 
 
 class DisasterAreaPropertiesBase(BaseModel):

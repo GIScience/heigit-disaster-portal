@@ -1,6 +1,14 @@
-from fastapi import Query
+"""
+Reusable dependencies that are injected into different endpoints
+"""
+from typing import List, Optional
+
+from fastapi import Query, HTTPException
+from pydantic import ValidationError
 
 from app.db.session import SessionLocal
+
+from app.schemas.disaster_area import BBoxModel
 
 
 # Dependency
@@ -10,6 +18,31 @@ def get_db():  # pragma: no cover
         yield db
     finally:
         db.close()
+
+
+def get_valid_bbox(bbox: Optional[List[str]] = Query(
+    ["-180., -90., 180., 90"],
+    title="Bbox",
+    description="""
+Bounding box to request features in, as comma separated float values west(lon), south(lat), east(lon), north(lat).
+
+Can also be passed in this order in separate query parameter instances like
+`?bbox=west&bbox=south&bbox=east&bbox=north`.
+    """
+)
+):
+    if len(bbox) != 4:
+        bbox = [float(x) for x in bbox[0].split(',')]
+    try:
+        bbox_obj = BBoxModel.parse_obj(bbox)
+    except ValidationError as e:
+        for error in e.errors():
+            error['loc'] = ["query", "bbox"]
+        raise HTTPException(
+            status_code=422,
+            detail=e.errors()
+        )
+    return bbox_obj
 
 
 def common_multi_query_params(
