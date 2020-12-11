@@ -1,5 +1,5 @@
 from sqlite3.dbapi2 import Timestamp
-from typing import Optional, List, Union
+from typing import Optional, List
 
 from geoalchemy2 import func
 from geojson_pydantic.features import Feature, FeatureCollection
@@ -58,8 +58,11 @@ class DisasterAreaPropertiesCreate(DisasterAreaPropertiesBase):
 
 # Properties to receive via API on creation
 class DisasterAreaCreate(DisasterAreaBase):
+    type: str = "Feature"
     geometry: Polygon
     properties: DisasterAreaPropertiesCreate
+    id: Optional[int] = None
+    bbox: Optional[BBox] = None
 
     @validator("geometry")
     def check_validity(cls, geometry):
@@ -74,6 +77,7 @@ class DisasterAreaCreate(DisasterAreaBase):
 
 class DisasterAreaPropertiesCreateOut(DisasterAreaPropertiesCreate):
     created: Timestamp
+    area: float
 
 
 # Properties to return via API on creation
@@ -97,7 +101,7 @@ class DisasterAreaInDBBase(DisasterAreaBase):
 
 # Additional properties to return via API
 class DisasterArea(DisasterAreaInDBBase):
-    pass
+    properties: DisasterAreaPropertiesCreateOut
 
 
 # Additional properties stored in DB
@@ -105,5 +109,6 @@ class DisasterAreaInDB(DisasterAreaInDBBase):
     pass
 
 
+# Schema for feature collection response
 class DisasterAreaCollection(FeatureCollection):
     features: List[DisasterArea]
