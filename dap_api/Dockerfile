@@ -15,12 +15,12 @@ RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-
     poetry config virtualenvs.create false
 
 # Copy using poetry.lock* in case it doesn't exist yet
-COPY app/pyproject.toml ./app/poetry.lock* /app/
+COPY ./pyproject.toml ./poetry.lock* /app/
 
 # install dev-dependencies in debug or reload environment
 RUN if [ "$DEV" = "1" ] ; then poetry install --no-root ; else poetry install --no-root --no-dev ; fi
 
-COPY app /app
+COPY dap_api/app /app
 
 # start script should be on root level
 RUN cp /app/start-reload.sh /start-reload.sh

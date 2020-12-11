@@ -41,22 +41,29 @@ curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poet
 # enable poetry command ( check [poetry documentation](https://python-poetry.org/docs/#enable-tab-completion-for-bash-fish-or-zsh) for shell completion setup)
 source $HOME/.poetry/env
 ```
-When using PyCharm you can use the poetry plugin to create an interpreter with a python3.8 base or higher.
-After creating it, close and open PyCharm again so the Project uses now the correct interpreter and env created by poetry.
-To prevent poetry from creating further virtual envs, run:
+
+On some systems where python2 and python3 are installed in parallel (e.g. Ubuntu), above installation method for poetry 
+may lead to problems due to poetry trying to use python 2. In case you see such an error message, try installing poetry 
+via pip:
 ```
-poetry config virtualenvs.create false
+# Install poetry
+pip3 install poetry
 ```
+
 Now we can install all dependencies locally.
 ```
-# navigate to app folder
-cd dap_api/app
-
 # install dependencies
 poetry install --no-root
 
-# back to root
-cd ../..
+```
+
+When using [PyCharm](https://www.jetbrains.com/pycharm/) you can use the [Poetry plugin](https://plugins.jetbrains.com/plugin/14307-poetry) 
+to create an  interpreter with a python3.8 base or higher. It should use the virtual environment poetry has created. 
+After creating it, you might need to close and open PyCharm again so the Project uses now the correct interpreter and 
+env. In case pycharm creates a separate virtual env, you could prevent poetry from creating further virtual envs by 
+running:
+```
+poetry config virtualenvs.create false
 ```
 
 Build the development image
@@ -95,7 +102,7 @@ To be able to add breakpoints you need to add a _python run configuration_ for t
 1. Choose the file: `<project root>/dap_api/app/debug.py`
 1. Interpreter should be the Project interpreter
 1. The working directory should be `<project root>/dap_api/app`
-1. Switch to the **EnvFile** tab
+1. Switch to the **EnvFile** tab (requires [EnvFile plugin](https://plugins.jetbrains.com/plugin/7861-envfile))
 1. Click **Enable EnvFile**
 1. Click the "+" to add both `.env` & `.env-dev` files located in the project root (in this order !)
 1. Click OK
@@ -118,10 +125,12 @@ To quickly run tests you can create a _pytest run configuration_:
 1. Set the name e.g. Test
 1. Interpreter should be the poetry one by default
 1. Working directory: `<project_root>/dap_api/app/app/test`
-1. Switch to the **EnvFile** tab
+1. Switch to the **EnvFile** tab (requires [EnvFile plugin](https://plugins.jetbrains.com/plugin/7861-envfile))
 1. Click **Enable EnvFile**
 1. Click the "+" to add both `.env` & `.env-dev` files located in the project root (in this order !)
 1. Click OK
+1. In the project browser, right click on the folder heigit-disaster-portal/dap_api/app and select Mark Directory as ->
+Sources Root
 
 Will open user friendly test interface, instead of scrolling through console :+1:
 (Also having the option to only rerun failed tests)

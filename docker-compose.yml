@@ -7,7 +7,8 @@ services:
     depends_on:
       - dap-db
     build:
-      context: dap_api/
+      context: .
+      dockerfile: ./dap_api/Dockerfile
     ports:
       - 8080:80
     volumes:
@@ -21,7 +22,8 @@ services:
     container_name: dap-db
     image: dap-storage
     build:
-      context: dap_db/
+      context: .
+      dockerfile: ./dap_db//Dockerfile
     ports:
       - 5432:5432
     volumes:
