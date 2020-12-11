@@ -1,7 +1,7 @@
 import json
 from typing import Union, Dict, Any, Optional, List
 
-from geoalchemy2 import func
+from geoalchemy2 import func, Geometry
 from geojson_pydantic.geometries import Polygon
 from geojson_pydantic.utils import BBox
 from sqlalchemy.orm import Session
@@ -22,6 +22,16 @@ def get_entry_as_feature(db: Session, entry: DisasterArea):
         bbox=json_geom.get('bbox')
     )
     return d_area
+
+
+def calculate_geometry_area(db: Session, geom: Geometry):
+    # get the best Projection for area calculation
+    best_area_projection = db.execute(func._ST_BestSRID(geom)).scalar()
+    # reproject to
+    transformed_geom = func.ST_Transform(geom, best_area_projection)
+    # calculate polygon area
+    area = db.execute(func.ST_Area(transformed_geom)).scalar()
+    return round(area, 2)
 
 
 class CRUDDisasterArea(CRUDBase[DisasterArea, DisasterAreaCreate, DisasterAreaUpdate]):
@@ -68,13 +78,15 @@ class CRUDDisasterArea(CRUDBase[DisasterArea, DisasterAreaCreate, DisasterAreaUp
 
     def create(self, db: Session, *, obj_in: DisasterAreaCreate) -> DisasterArea:
         geom = func.ST_GeomFromGeoJSON(obj_in.geometry.json())
+        area = calculate_geometry_area(db, geom)
         db_obj = DisasterArea(
             name=obj_in.properties.name,
             provider_id=obj_in.properties.provider_id,
             d_type_id=obj_in.properties.d_type_id,
             ds_type_id=obj_in.properties.ds_type_id,
             description=obj_in.properties.description,
-            geom=geom
+            geom=geom,
+            area=area
         )
         db.add(db_obj)
         db.commit()
@@ -87,7 +99,9 @@ class CRUDDisasterArea(CRUDBase[DisasterArea, DisasterAreaCreate, DisasterAreaUp
             obj_in = obj_in.dict(exclude_unset=True)
         if obj_in.get('geometry'):
             geom = func.ST_GeomFromGeoJSON(json.dumps(obj_in.get('geometry')))
+            area = calculate_geometry_area(db, geom)
             setattr(db_obj, 'geom', geom)
+            setattr(db_obj, 'area', area)
             del obj_in['geometry']
         update_data = obj_in
         if update_data.get('properties'):
