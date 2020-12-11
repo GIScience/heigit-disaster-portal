@@ -8,8 +8,8 @@ SQLALCHEMY_DATABASE_URL = PostgresDsn.build(
     scheme="postgresql",
     user=settings.POSTGRES_USER,
     password=settings.POSTGRES_PASSWORD,
-    host=settings.POSTGRES_SERVER,
-    port="5433",
+    host=settings.POSTGRES_TEST_SERVER,
+    port=settings.POSTGRES_TEST_PORT,
     path=f"/{settings.POSTGRES_DB}"
 )
 engine = create_engine(SQLALCHEMY_DATABASE_URL, pool_pre_ping=True)

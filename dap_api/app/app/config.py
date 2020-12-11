@@ -17,6 +17,8 @@ class Settings(BaseSettings):
     POSTGRES_USER: str = "postgres"
     POSTGRES_PASSWORD: str = ""
     POSTGRES_DB: str = "app"
+    POSTGRES_TEST_SERVER: str = "localhost"
+    POSTGRES_TEST_PORT: str = "5433"
 
     SQLALCHEMY_DATABASE_URI: Optional[PostgresDsn] = None
 
