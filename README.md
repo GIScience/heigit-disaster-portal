@@ -93,9 +93,12 @@ Create and run development containers (or run the configuration)
 docker-compose -f docker-compose.reload.yml up -d
 ```
 
+_Note: The first time it will take some time until the db containers are configured. The dap-api-reload container won't
+be able to connect right away._ 
+
 ### Debugging
 
-To be able to add breakpoints you need to add a _python run configuration_ for the [debug.py script](./app/debug.py):
+To be able to add breakpoints you need to add a _python run configuration_ for the [debug.py script](./dap_api/app/debug.py):
 1. Click the dropdown left of the Run Button (Play symbol) and click edit configurations
 1. Click `+`(add new configuration) and choose Python
 1. Set the name e.g. Debug
@@ -129,8 +132,8 @@ To quickly run tests you can create a _pytest run configuration_:
 1. Click **Enable EnvFile**
 1. Click the "+" to add both `.env` & `.env-dev` files located in the project root (in this order !)
 1. Click OK
-1. In the project browser, right click on the folder heigit-disaster-portal/dap_api/app and select Mark Directory as ->
-Sources Root
+1. In the project browser, right click on the folder `<project_root>/dap_api/app` and select Mark Directory as ->
+Sources Root. (**NOT the `db_api/app/app` folder**)
 
 Will open user friendly test interface, instead of scrolling through console :+1:
 (Also having the option to only rerun failed tests)
@@ -154,13 +157,16 @@ This is a bit slower and creates coverage for the whole project.
 Also it is only available in the professional PyCharm Edition.
 But it will visually highlight all parts in the code that are not covered by tests yet.
  
-1. Add `--cov=app/ --cov-report=term-missing` as _Additional Arguments_ to the pytest configuration.
+1. Add `--cov=app --cov-report=term-missing` as _Additional Arguments_ to the pytest configuration.
 With this the pytest output will also create a coverage report including the lines "missed", blocks that were not
 executed with the test.
 **important:** PyCharm somehow uses the same helpers for coverage & debugging, so when using this approach,
 your breakpoints will not be hit. You can either add the coverage as a second pytest config, or add `--no-cov` as
 _Additional Arguments_ to the pytest configuration, and switch back and forth between debug and coverage mode by
 adding and removing `--no-cov` from the config.
+
+Of course you can also run pytest with coverage in the reload container with
+`pytest --cov=app --cov-report=term-missing`.
 
 ---
 
