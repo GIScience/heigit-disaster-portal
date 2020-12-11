@@ -30,7 +30,7 @@ def create_test_database():
     BaseTable.metadata.drop_all(bind=engine)
     BaseTable.metadata.create_all(bind=engine)
     print()
-    logger.info("Creating initial db data on server %s:%s" % (settings.POSTGRES_TEST_SERVER, settings.POSTGRES_TEST_PORT))
+    logger.info(f"Creating initial db data on server {settings.POSTGRES_TEST_SERVER}:{settings.POSTGRES_TEST_PORT}")
     db = TestSession()
     init_db(db=db)
     logger.info("Initial db data created")
