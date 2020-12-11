@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING
 
 from geoalchemy2 import Geometry, func
-from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, select
+from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Float
 from sqlalchemy.orm import validates
 
 from app.db.base import BaseTable
@@ -21,6 +21,7 @@ class DisasterArea(BaseTable):
     ds_type_id = Column(Integer, ForeignKey("disaster_sub_types.id"))
     description = Column(String, index=True)
     created = Column(DateTime, default=datetime.now())
+    area = Column(Float, index=True)
 
     geom = Column(Geometry('POLYGON', srid=4326))
 
