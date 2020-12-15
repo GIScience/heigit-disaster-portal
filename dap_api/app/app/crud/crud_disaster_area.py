@@ -1,4 +1,5 @@
 import json
+from datetime import datetime
 from typing import Union, Dict, Any, Optional, List
 
 from geoalchemy2 import func, Geometry
@@ -13,7 +14,7 @@ from .base import CRUDBase
 from ..schemas.disaster_area import DisasterAreaPropertiesCreateOut, DisasterAreaCollection
 
 
-def get_entry_as_feature(db: Session, entry: DisasterArea):
+def get_entry_as_feature(db: Session, entry: DisasterArea) -> DisasterAreaSchema:
     json_geom = json.loads(db.execute(entry.geom.ST_AsGeoJson(9, 1)).scalar())
     d_area = DisasterAreaSchema(
         id=entry.id,
@@ -24,7 +25,7 @@ def get_entry_as_feature(db: Session, entry: DisasterArea):
     return d_area
 
 
-def calculate_geometry_area(db: Session, geom: Geometry):
+def calculate_geometry_area(db: Session, geom: Geometry) -> float:
     # get the best Projection for area calculation
     best_area_projection = db.execute(func._ST_BestSRID(geom)).scalar()
     # reproject to
@@ -86,7 +87,8 @@ class CRUDDisasterArea(CRUDBase[DisasterArea, DisasterAreaCreate, DisasterAreaUp
             ds_type_id=obj_in.properties.ds_type_id,
             description=obj_in.properties.description,
             geom=geom,
-            area=area
+            area=area,
+            created=datetime.now()
         )
         db.add(db_obj)
         db.commit()

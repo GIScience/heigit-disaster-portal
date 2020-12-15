@@ -20,7 +20,7 @@ class DisasterArea(BaseTable):
     d_type_id = Column(Integer, ForeignKey("disaster_types.id"), nullable=False)
     ds_type_id = Column(Integer, ForeignKey("disaster_sub_types.id"))
     description = Column(String, index=True)
-    created = Column(DateTime, default=datetime.now())
+    created = Column(DateTime, index=True)
     area = Column(Float, index=True)
 
     geom = Column(Geometry('POLYGON', srid=4326))
