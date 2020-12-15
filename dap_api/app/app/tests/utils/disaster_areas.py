@@ -8,13 +8,15 @@ from app import crud
 from app.models import DisasterArea
 from app.schemas import DisasterAreaCreate
 from app.schemas.disaster_area import DisasterAreaPropertiesCreate
-from app.tests.utils.utils import random_lower_string
+from app.tests.utils.utils import random_lower_string, random_coordinate
 
 
 def create_new_polygon(
-        c: Tuple[NumType, NumType],
-        f: int = 1,
+        c: Tuple[NumType, NumType] = None,
+        f: float = 0.0001,
 ) -> Polygon:
+    if c is None:
+        c = random_coordinate(-10, 10)
     x = 1 * f
     return Polygon(
         coordinates=[[
@@ -30,10 +32,15 @@ def create_new_polygon(
 def create_new_properties(
         p_id: int = 1,
         d_id: int = 1,
-        info: str = random_lower_string(16)
+        name: str = None,
+        info: str = None
 ) -> DisasterAreaPropertiesCreate:
+    if name is None:
+        name = random_lower_string(8)
+    if info is None:
+        info = random_lower_string(16)
     return DisasterAreaPropertiesCreate(
-        name=random_lower_string(8),
+        name=name,
         d_type_id=d_id,
         provider_id=p_id,
         description=info
@@ -42,17 +49,27 @@ def create_new_properties(
 
 def create_new_disaster_area(
         db: Session,
-        c: Tuple[NumType, NumType],
-        f: int = 1,
+        c: Tuple[NumType, NumType] = None,
+        f: float = 0.0001,
+        name: str = None,
         p_id: int = 1,
-        d_id: int = 1
+        d_id: int = 1,
+        info: str = None
+
 ) -> DisasterArea:
+    if c is None:
+        c = random_coordinate(-10, 10)
+    if name is None:
+        name = random_lower_string(8)
+    if info is None:
+        info = random_lower_string(16)
     d_area = DisasterAreaCreate(
         geometry=create_new_polygon(c, f),
         properties=DisasterAreaPropertiesCreate(
-            name=random_lower_string(8),
+            name=name,
             d_type_id=d_id,
-            provider_id=p_id
+            provider_id=p_id,
+            description=info
         )
     )
     return crud.disaster_area.create(
