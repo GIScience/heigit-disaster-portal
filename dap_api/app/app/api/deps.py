@@ -28,7 +28,9 @@ Bounding box to request features in, as comma separated float values west(lon), 
 
 Can also be passed in this order in separate query parameter instances like
 `?bbox=west&bbox=south&bbox=east&bbox=north`.
-    """
+
+**Contrary to the specified bbox array type, float values need to be painstead of a string!**
+"""
 )
 ):
     if len(bbox) != 4:
