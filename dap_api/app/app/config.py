@@ -9,6 +9,7 @@ class Settings(BaseSettings):
     ADMIN_USER: str
     ADMIN_USER_SECRET: str
     API_V1_STR: str = "/api/v1"
+    ORS_BACKEND_URL: str = "https://api.openrouteservice.org/v2"
 
     CORS_ORIGINS: List[str] = []
 
