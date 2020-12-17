@@ -23,9 +23,10 @@ def test_routing_api(
             coordinates=[[[0.0001, 0.0002], [0.0003, 0.0004], [0.0006, 0.0005], [0.0001, 0.0002]]]
         ),
         properties=DisasterAreaPropertiesCreate(
-            name=f"",
+            name="not intersecting",
             d_type_id=1,
-            provider_id=1
+            provider_id=1,
+            description="This polygon is outside of the request bbox"
         )
     ))
     crud.disaster_area.create(db, obj_in=DisasterAreaCreate(
@@ -56,9 +57,10 @@ def test_routing_api(
             ]
         ),
         properties=DisasterAreaPropertiesCreate(
-            name=f"{random_lower_string(8)}",
+            name="intersecting",
             d_type_id=1,
-            provider_id=1
+            provider_id=1,
+            description="This polygon should be in the request bbox"
         )
     ))
 
@@ -188,8 +190,10 @@ def test_routing_api_invalid_mode(
     r = client.post(
         f"{settings.API_V1_STR}/routing/unknown/directions/driving-car/json", json={},
     )
-    assert 400 == r.status_code
-    assert r.text == '{"detail":"Request validation error: Portal mode \'unknown\' not supported"}'
+    r_obj = r.json()
+    assert r.status_code == 422
+    assert r_obj["detail"][0]["loc"] == ["path", "portal_mode"]
+    assert r_obj["detail"][0]["msg"] == "value is not a valid enumeration member; permitted: 'avoid_areas'"
 
 
 def test_routing_api_invalid_api(
@@ -198,8 +202,10 @@ def test_routing_api_invalid_api(
     r = client.post(
         f"{settings.API_V1_STR}/routing/avoid_areas/unknown/driving-car/json", json={},
     )
-    assert 400 == r.status_code
-    assert r.text == '{"detail":"Request validation error: ORS API \'unknown\' not supported"}'
+    r_obj = r.json()
+    assert r.status_code == 422
+    assert r_obj["detail"][0]["loc"] == ["path", "ors_api"]
+    assert r_obj["detail"][0]["msg"] == "value is not a valid enumeration member; permitted: 'directions'"
 
 
 def test_routing_api_invalid_profile(
@@ -208,8 +214,11 @@ def test_routing_api_invalid_profile(
     r = client.post(
         f"{settings.API_V1_STR}/routing/avoid_areas/directions/unknown/json", json={},
     )
-    assert 400 == r.status_code
-    assert r.text == '{"detail":"Request validation error: ORS profile \'unknown\' not supported"}'
+    r_obj = r.json()
+    assert r.status_code == 422
+    assert r_obj["detail"][0]["loc"] == ["path", "ors_profile"]
+    assert r_obj["detail"][0]["msg"] == "value is not a valid enumeration member; permitted: 'driving-car', " \
+                                        "'driving-hgv'"
 
 
 def test_routing_api_invalid_response_type(
@@ -218,5 +227,7 @@ def test_routing_api_invalid_response_type(
     r = client.post(
         f"{settings.API_V1_STR}/routing/avoid_areas/directions/driving-car/unknown", json={},
     )
-    assert 400 == r.status_code
-    assert r.text == '{"detail":"Request validation error: ORS response type \'unknown\' not supported"}'
+    r_obj = r.json()
+    assert r.status_code == 422
+    assert r_obj["detail"][0]["loc"] == ["path", "ors_response_type"]
+    assert r_obj["detail"][0]["msg"] == "value is not a valid enumeration member; permitted: 'json', 'geojson', 'gpx'"
