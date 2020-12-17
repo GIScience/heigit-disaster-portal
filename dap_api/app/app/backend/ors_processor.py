@@ -46,12 +46,16 @@ class ORSProcessor(BaseProcessor):
         response = self.relay_request_post(endpoint, request_header, request_dict)
 
         # process result
-        response_body = json.loads(response.text)
-        if request.portal_options.return_areas_in_response and len(
-                disaster_areas.features) and options.ors_response_type.value != "gpx":
-            response_body["disaster_areas"] = json.loads(disaster_areas.json())
+        response_body = ""
+        if options.ors_response_type.value == "gpx":
+            response_body = response.text
+        else:
+            response_json = json.loads(response.text)
+            if request.portal_options.return_areas_in_response and len(disaster_areas.features):
+                response_json["disaster_areas"] = json.loads(disaster_areas.json())
+            response_body = json.dumps(response_json)
 
-        return ORSResponse(body=json.dumps(response_body), header_type=response.headers.get("Content-Type"))
+        return ORSResponse(body=response_body, header_type=response.headers.get("Content-Type"))
 
     @staticmethod
     def prepare_headers(request_dict: dict, response_type: OrsResponseType, header_authorization: str) -> dict:
