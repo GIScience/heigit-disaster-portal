@@ -1,6 +1,26 @@
-from typing import Optional
+from enum import Enum
+from typing import Optional, Any
 
 from pydantic import BaseModel, Extra
+
+
+class PortalMode(str, Enum):
+    avoid_area = "avoid_areas"
+
+
+class OrsApi(str, Enum):
+    directions = "directions",
+
+
+class OrsProfile(str, Enum):
+    driving_car = "driving-car"
+    driving_hgv = "driving-hgv"
+
+
+class OrsResponseType(str, Enum):
+    json = "json"
+    geojson = "geojson"
+    gpx = "gpx"
 
 
 class PortalOptions(BaseModel):
@@ -20,11 +40,35 @@ class Options(BaseModel):
         extra = Extra.allow
 
 
+class PathOptionsValidation:
+    def __init__(
+            self,
+            portal_mode: PortalMode = "avoid_areas",
+            ors_api: OrsApi = "directions",
+            ors_profile: OrsProfile = "driving-car",
+    ):
+        self.portal_mode = portal_mode
+        self.ors_api = ors_api
+        self.ors_profile = ors_profile
+
+    def __dict__(self):
+        return dict(
+            {
+                "portal_mode": self.portal_mode,
+                "ors_api": self.ors_api,
+                "ors_profile": self.ors_profile
+            }
+        )
+
+    def dict(self):
+        return self.__dict__()
+
+
 class PathOptions(BaseModel):
-    portal_mode: str
-    ors_api: str
-    ors_profile: str
-    ors_response_type: str
+    portal_mode: PortalMode
+    ors_api: OrsApi
+    ors_profile: OrsProfile
+    ors_response_type: OrsResponseType
 
 
 class ORSRequest(BaseModel):
