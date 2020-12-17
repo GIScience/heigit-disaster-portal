@@ -1,24 +1,23 @@
 import json
 
-from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
 from app import crud
 from app.backend.base import BaseProcessor
-from app.schemas import ORSRequest, PathOptions, ORSResponse
+from app.schemas import ORSRequest, PathOptions, ORSResponse, OrsResponseType
 
 
 class ORSProcessor(BaseProcessor):
-    def handle_ors_request(self, db: Session, request: ORSRequest, options: PathOptions, header_authorization: str = "") -> ORSResponse:
-        # validate request
-        self.validate_request(options)
+    def handle_ors_request(self, db: Session, request: ORSRequest, options: PathOptions,
+                           header_authorization: str = "") -> ORSResponse:
 
         # process request
         disaster_areas = []
-        if options.portal_mode == "avoid_areas":
+        if options.portal_mode.value == "avoid_areas":
             disaster_areas = crud.disaster_area.get_multi_as_feature_collection(db, self.get_bounding_box(request))
-            coordinates_to_add = [f.geometry.coordinates for f in disaster_areas.features if f.geometry.type in ["Polygon"]]
-            if len(coordinates_to_add) > 0:
+            coordinates_to_add = [f.geometry.coordinates for f in disaster_areas.features if
+                                  f.geometry.type in ["Polygon"]]
+            if coordinates_to_add:
                 # ORS expects Polygon coordinates to be a list of lists of coordinates, whilst for MultiPolygon
                 # coordinates is expected to be a list of lists of lists of coordinates. If we get a Polygon in the
                 # original request, we need to convert it to a MultiPolygon before adding
@@ -37,7 +36,7 @@ class ORSProcessor(BaseProcessor):
             request_dict.pop("options")
 
         # prepare header for relay request
-        request_header = self.prepare_headers(request_dict, options, header_authorization)
+        request_header = self.prepare_headers(request_dict, options.ors_response_type, header_authorization)
 
         # debug mode: return modified request without relaying to backend
         if request.portal_options.debug:
@@ -48,46 +47,20 @@ class ORSProcessor(BaseProcessor):
 
         # process result
         response_body = json.loads(response.text)
-        if request.portal_options.return_areas_in_response and len(disaster_areas.features) and options.ors_response_type != "gpx":
+        if request.portal_options.return_areas_in_response and len(
+                disaster_areas.features) and options.ors_response_type.value != "gpx":
             response_body["disaster_areas"] = json.loads(disaster_areas.json())
 
         return ORSResponse(body=json.dumps(response_body), header_type=response.headers.get("Content-Type"))
 
     @staticmethod
-    def validate_request(options: PathOptions):
-        valid_modes = ["avoid_areas"]
-        valid_apis = ["directions"]
-        valid_profiles = ["driving-car", "driving-hgv"]
-        valid_response_types = ["json", "geojson", "gpx"]
-        if options.portal_mode not in valid_modes:
-            raise HTTPException(
-                status_code=400,
-                detail=f"Request validation error: Portal mode '{options.portal_mode}' not supported",
-            )
-        if options.ors_api not in valid_apis:
-            raise HTTPException(
-                status_code=400,
-                detail=f"Request validation error: ORS API '{options.ors_api}' not supported",
-            )
-        if options.ors_profile not in valid_profiles:
-            raise HTTPException(
-                status_code=400,
-                detail=f"Request validation error: ORS profile '{options.ors_profile}' not supported",
-            )
-        if options.ors_response_type not in valid_response_types:
-            raise HTTPException(
-                status_code=400,
-                detail=f"Request validation error: ORS response type '{options.ors_response_type}' not supported",
-            )
-
-    @staticmethod
-    def prepare_headers(request_dict: dict, options: PathOptions, header_authorization: str) -> dict:
+    def prepare_headers(request_dict: dict, response_type: OrsResponseType, header_authorization: str) -> dict:
         request_header = {
             "Content-Type": "application/json;charset=UTF-8"
         }
-        if options.ors_response_type == "gpx":
+        if response_type.value == "gpx":
             request_header["Accept"] = "application/gpx+xml"
-        elif options.ors_response_type == "geojson":
+        elif response_type.value == "geojson":
             request_header["Accept"] = "application/geo+json"
         else:
             request_header["Accept"] = "application/json"

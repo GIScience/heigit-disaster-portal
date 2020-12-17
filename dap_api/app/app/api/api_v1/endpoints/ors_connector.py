@@ -1,12 +1,12 @@
 from typing import Any
 
-from fastapi import APIRouter, Depends, Response, HTTPException, Header
+from fastapi import APIRouter, Depends, Response, HTTPException
 from sqlalchemy.orm import Session
 
 from app.api import deps
 from app.backend.ors_processor import ORSProcessor
 from app.config import settings
-from app.schemas import ORSRequest, PathOptions
+from app.schemas import ORSRequest, PathOptions, OrsResponseType, PathOptionsValidation
 
 router = APIRouter()
 ors_processor = ORSProcessor(settings.ORS_BACKEND_URL)
@@ -17,10 +17,8 @@ ors_processor = ORSProcessor(settings.ORS_BACKEND_URL)
     summary="Query ORS"
 )
 def ors_get(
-        portal_mode: str,
-        ors_api: str,
-        ors_profile: str,
-        api_key: str = "",
+        path_options: PathOptionsValidation = Depends(),
+        api_key: str = Depends(deps.ors_api_key_param),
         start: str = "",
         end: str = "",
         debug: bool = False,
@@ -43,14 +41,14 @@ def ors_get(
         )
     request = ORSRequest.parse_obj({
         "portal_options": {
-          "debug": debug
+            "debug": debug
         },
         "coordinates": [
             start.split(","),
             end.split(",")
         ]
     })
-    return process_ors_request(portal_mode, ors_api, ors_profile, "geojson", request, api_key, db)
+    return process_ors_request(request, api_key, db, path_options, ors_response_type=OrsResponseType("geojson"))
 
 
 @router.post(
@@ -58,14 +56,12 @@ def ors_get(
     summary="Query ORS"
 )
 def ors_post(
-        portal_mode: str,
-        ors_api: str,
-        ors_profile: str,
         request: ORSRequest,
-        authorization: str = Header(None),
+        path_options: PathOptionsValidation = Depends(),
+        authorization: str = Depends(deps.ors_auth_header),
         db: Session = Depends(deps.get_db)
 ) -> Any:
-    return process_ors_request(portal_mode, ors_api, ors_profile, "json", request, authorization, db)
+    return process_ors_request(request, authorization, db, path_options, ors_response_type=OrsResponseType("json"))
 
 
 @router.post(
@@ -73,31 +69,23 @@ def ors_post(
     summary="Query ORS"
 )
 def ors_post_response_type(
-        portal_mode: str,
-        ors_api: str,
-        ors_profile: str,
-        ors_response_type: str,
         request: ORSRequest,
-        authorization: str = Header(None),
-        db: Session = Depends(deps.get_db)
+        ors_authorization: str = Depends(deps.ors_auth_header),
+        db: Session = Depends(deps.get_db),
+        path_options: PathOptionsValidation = Depends(),
+        ors_response_type: OrsResponseType = "geojson"
 ) -> Any:
-    return process_ors_request(portal_mode, ors_api, ors_profile, ors_response_type, request, authorization, db)
+    return process_ors_request(request,
+                               ors_authorization, db, path_options, ors_response_type)
 
 
 def process_ors_request(
-        portal_mode: str,
-        ors_api: str,
-        ors_profile: str,
-        ors_response_type: str,
         request: ORSRequest,
         header_authorization: str,
-        db: Session
+        db: Session,
+        path_options: PathOptionsValidation,
+        ors_response_type: OrsResponseType
 ) -> Any:
-    options = PathOptions(
-        portal_mode=portal_mode,
-        ors_api=ors_api,
-        ors_profile=ors_profile,
-        ors_response_type=ors_response_type
-    )
-    result = ors_processor.handle_ors_request(db, request, options, header_authorization)
+    path_options = PathOptions(**path_options.dict(), ors_response_type=ors_response_type)
+    result = ors_processor.handle_ors_request(db, request, path_options, header_authorization)
     return Response(result.body, media_type=result.header_type)
