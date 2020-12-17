@@ -3,11 +3,10 @@ Reusable dependencies that are injected into different endpoints
 """
 from typing import List, Optional
 
-from fastapi import Query, HTTPException
+from fastapi import Query, HTTPException, Header
 from pydantic import ValidationError
 
 from app.db.session import SessionLocal
-
 from app.schemas.disaster_area import BBoxModel
 
 
@@ -29,7 +28,7 @@ Bounding box to request features in, as comma separated float values west(lon), 
 Can also be passed in this order in separate query parameter instances like
 `?bbox=west&bbox=south&bbox=east&bbox=north`.
 
-**Contrary to the specified bbox array type, float values need to be painstead of a string!**
+**Contrary to the specified bbox array type, float values need to be passed instead of a string!**
 """
 )
 ):
@@ -52,3 +51,15 @@ def common_multi_query_params(
         limit: int = Query(100, ge=1)
 ):
     return {"skip": skip, "limit": limit}
+
+
+def ors_api_key_param(ors_api_key: str = Query(...)):
+    if not ors_api_key:
+        raise HTTPException(status_code=400, detail="Openrouteservice api key missing in api_key parameter")
+    return ors_api_key
+
+
+def ors_auth_header(ors_authorization: str = Header(...)):
+    if not ors_authorization:
+        raise HTTPException(status_code=400, detail="Openrouteservice api key missing in authorization header")
+    return ors_authorization
