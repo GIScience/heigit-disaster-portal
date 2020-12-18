@@ -59,6 +59,34 @@ def ors_api_key_param(api_key: str = Query(None)):
     return api_key
 
 
+def ors_start_param(start: str = Query(None)):
+    if not start:
+        raise HTTPException(status_code=400, detail="Start coordinates parameter missing")
+    coordinates = start.split(",")
+    if len(coordinates) != 2:
+        raise HTTPException(status_code=400, detail="Start coordinates parameter invalid")
+    for c in coordinates:
+        try:
+            float(c)
+        except ValueError:
+            raise HTTPException(status_code=400, detail="Start coordinates parameter invalid")
+    return start
+
+
+def ors_end_param(end: str = Query(None)):
+    if not end:
+        raise HTTPException(status_code=400, detail="End coordinates parameter missing")
+    coordinates = end.split(",")
+    if len(coordinates) != 2:
+        raise HTTPException(status_code=400, detail="End coordinates parameter invalid")
+    for c in coordinates:
+        try:
+            float(c)
+        except ValueError:
+            raise HTTPException(status_code=400, detail="End coordinates parameter invalid")
+    return end
+
+
 def ors_auth_header(authorization: str = Header(None)):
     if not authorization:
         raise HTTPException(status_code=400, detail="Openrouteservice api key missing in authorization header")

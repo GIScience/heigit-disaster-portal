@@ -8,11 +8,24 @@ from app import crud
 from app.config import settings
 from app.schemas import DisasterAreaCreate
 from app.schemas.disaster_area import DisasterAreaPropertiesCreate
-from app.tests.utils.utils import random_lower_string
 
 
-# For debugging purposes
-def test_routing_api(
+# ---------------------------------- For debugging purposes ----------------------------------
+
+
+def test_routing_api_get(
+    client: TestClient
+) -> None:
+    r = client.get(f"{settings.API_V1_STR}/routing/avoid_areas/directions/driving-car?api_key=some%20key&start=8.678613,49.411721&end=8.687782,49.424597&debug=1")
+    result = json.dumps(r.json(), indent=4)
+    # Uncomment to display response
+    # print()
+    # print(result)
+    assert 200 <= r.status_code < 300
+    assert len(result) > 0
+
+
+def test_routing_api_post(
     db: Session,
     client: TestClient
 ) -> None:
@@ -172,16 +185,7 @@ def test_routing_api(
     assert len(result) > 0
 
 
-def test_routing_api_get(
-    client: TestClient
-) -> None:
-    r = client.get(f"{settings.API_V1_STR}/routing/avoid_areas/directions/driving-car?api_key=some%20key&start=8.678613,49.411721&end=8.687782,49.424597&debug=1")
-    result = json.dumps(r.json(), indent=4)
-    # Uncomment to display response
-    # print()
-    # print(result)
-    assert 200 <= r.status_code < 300
-    assert len(result) > 0
+# ---------------------------------- HTTP GET validation ----------------------------------
 
 
 def test_routing_api_missing_key_get(
@@ -191,6 +195,48 @@ def test_routing_api_missing_key_get(
     r_obj = r.json()
     assert r.status_code == 400
     assert r_obj["detail"] == "Openrouteservice api key missing in api_key parameter"
+
+
+def test_routing_api_missing_start(
+    client: TestClient
+) -> None:
+    r = client.get(
+        f"{settings.API_V1_STR}/routing/avoid_areas/directions/driving-car?api_key=some%20key&end=8.687782,49.424597")
+    r_obj = r.json()
+    assert r.status_code == 400
+    assert r_obj["detail"] == "Start coordinates parameter missing"
+
+
+def test_routing_api_missing_end(
+    client: TestClient
+) -> None:
+    r = client.get(
+        f"{settings.API_V1_STR}/routing/avoid_areas/directions/driving-car?api_key=some%20key&start=8.678613,49.411721")
+    r_obj = r.json()
+    assert r.status_code == 400
+    assert r_obj["detail"] == "End coordinates parameter missing"
+
+
+def test_routing_api_invalid_start(
+    client: TestClient
+) -> None:
+    r = client.get(
+        f"{settings.API_V1_STR}/routing/avoid_areas/directions/driving-car?api_key=some%20key&start=8.678613&end=8.687782,49.424597")
+    r_obj = r.json()
+    assert r.status_code == 400
+    assert r_obj["detail"] == "Start coordinates parameter invalid"
+
+
+def test_routing_api_invalid_end(
+    client: TestClient
+) -> None:
+    r = client.get(
+        f"{settings.API_V1_STR}/routing/avoid_areas/directions/driving-car?api_key=some%20key&start=8.678613,49.411721&end=8.687782,1.1.1.1")
+    r_obj = r.json()
+    assert r.status_code == 400
+    assert r_obj["detail"] == "End coordinates parameter invalid"
+
+# ---------------------------------- HTTP POST validation ----------------------------------
 
 
 def test_routing_api_missing_key_post(
@@ -208,7 +254,7 @@ def test_routing_api_invalid_mode(
         client: TestClient
 ) -> None:
     r = client.post(
-        f"{settings.API_V1_STR}/routing/unknown/directions/driving-car/json", json={}, headers={"Authorization": "API key"}
+        f"{settings.API_V1_STR}/routing/unknown/directions/driving-car/json", json={}, headers={"Authorization": "xxx"}
     )
     r_obj = r.json()
     assert r.status_code == 422
@@ -220,7 +266,7 @@ def test_routing_api_invalid_api(
         client: TestClient
 ) -> None:
     r = client.post(
-        f"{settings.API_V1_STR}/routing/avoid_areas/unknown/driving-car/json", json={}, headers={"Authorization": "API key"}
+        f"{settings.API_V1_STR}/routing/avoid_areas/unknown/driving-car/json", json={}, headers={"Authorization": "yyy"}
     )
     r_obj = r.json()
     assert r.status_code == 422
@@ -232,7 +278,7 @@ def test_routing_api_invalid_profile(
         client: TestClient
 ) -> None:
     r = client.post(
-        f"{settings.API_V1_STR}/routing/avoid_areas/directions/unknown/json", json={}, headers={"Authorization": "API key"}
+        f"{settings.API_V1_STR}/routing/avoid_areas/directions/unknown/json", json={}, headers={"Authorization": "zzz"}
     )
     r_obj = r.json()
     assert r.status_code == 422
@@ -248,7 +294,6 @@ def test_routing_api_invalid_response_type(
         f"{settings.API_V1_STR}/routing/avoid_areas/directions/driving-car/unknown", json={}, headers={"Authorization": "API key"}
     )
     r_obj = r.json()
-    print(r_obj)
     assert r.status_code == 422
     assert r_obj["detail"][0]["loc"] == ["path", "ors_response_type"]
     assert r_obj["detail"][0]["msg"] == "value is not a valid enumeration member; permitted: 'json', 'geojson', 'gpx'"

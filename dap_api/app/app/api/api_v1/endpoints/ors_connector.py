@@ -19,21 +19,11 @@ ors_processor = ORSProcessor(settings.ORS_BACKEND_URL)
 def ors_get(
         path_options: PathOptionsValidation = Depends(),
         api_key: str = Depends(deps.ors_api_key_param),
-        start: str = "",
-        end: str = "",
+        start: str = Depends(deps.ors_start_param),
+        end: str = Depends(deps.ors_end_param),
         debug: bool = False,
         db: Session = Depends(deps.get_db)
 ) -> Any:
-    if start == "":
-        raise HTTPException(
-            status_code=400,
-            detail=f"Request validation error: No start coordinates provided",
-        )
-    if end == "":
-        raise HTTPException(
-            status_code=400,
-            detail=f"Request validation error: No end coordinates provided",
-        )
     request = ORSRequest.parse_obj({
         "portal_options": {
             "debug": debug
