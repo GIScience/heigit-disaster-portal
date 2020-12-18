@@ -19,8 +19,7 @@ def test_routing_api_get(
     r = client.get(f"{settings.API_V1_STR}/routing/avoid_areas/directions/driving-car?api_key=some%20key&start=8.678613,49.411721&end=8.687782,49.424597&debug=1")
     result = json.dumps(r.json(), indent=4)
     # Uncomment to display response
-    # print()
-    # print(result)
+    # print(f"\n\n{result}")
     assert 200 <= r.status_code < 300
     assert len(result) > 0
 
@@ -103,7 +102,8 @@ def test_routing_api_post(
             # Alternatively, you can unset ORS_BACKEND_URL in .env-dev, in which case ors_processor attempts to connect
             # to ORS at https://api.openrouteservice.org/v2. You have to provide an API key below for this to work.
             "debug": True,
-            "return_areas_in_response": True
+            "return_areas_in_response": True,
+            "bounds_looseness": 50
         },
         "options": {
             "avoid_borders": "controlled",
@@ -179,8 +179,7 @@ def test_routing_api_post(
     )
     result = json.dumps(r.json(), indent=4)
     # Uncomment to display response
-    # print()
-    # print(result)
+    # print(f"\n\n{result}")
     assert 200 <= r.status_code < 300
     assert len(result) > 0
 

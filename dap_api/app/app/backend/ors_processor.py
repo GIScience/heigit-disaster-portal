@@ -11,9 +11,10 @@ class ORSProcessor(BaseProcessor):
     def handle_ors_request(self, db: Session, request: ORSRequest, options: PathOptions,
                            header_authorization: str = "") -> ORSResponse:
         # process request
-        disaster_areas = []
+        disaster_areas = {}
+        lookup_bbox = self.get_bounding_box(request)
         if options.portal_mode.value == "avoid_areas":
-            disaster_areas = crud.disaster_area.get_multi_as_feature_collection(db, self.get_bounding_box(request))
+            disaster_areas = crud.disaster_area.get_multi_as_feature_collection(db, lookup_bbox)
             coordinates_to_add = [f.geometry.coordinates for f in disaster_areas.features if
                                   f.geometry.type in ["Polygon"]]
             if coordinates_to_add:
@@ -44,8 +45,9 @@ class ORSProcessor(BaseProcessor):
             response_body = response.text
         else:
             response_json = response.json()
-            if request.portal_options.return_areas_in_response and len(disaster_areas.features):
+            if request.portal_options.return_areas_in_response:
                 response_json["disaster_areas"] = json.loads(disaster_areas.json())
+                response_json["disaster_areas_lookup_bbox"] = lookup_bbox
             response_body = json.dumps(response_json)
 
         return ORSResponse(body=response_body, header_type=response.headers.get("Content-Type"))
@@ -60,12 +62,13 @@ class ORSProcessor(BaseProcessor):
         ]
         if request.portal_options.bounds_looseness:
             looseness_factor = int(request.portal_options.bounds_looseness) / 100 / 2
-            leeway_x = (bbox[2] - bbox[0]) * looseness_factor
-            leeway_y = (bbox[3] - bbox[1]) * looseness_factor
-            bbox[0] = round(bbox[0] - leeway_x, 6)
-            bbox[1] = round(bbox[1] - leeway_y, 6)
-            bbox[2] = round(bbox[2] + leeway_x, 6)
-            bbox[3] = round(bbox[3] + leeway_y, 6)
+            leeway = max(bbox[2] - bbox[0], bbox[3] - bbox[1]) * looseness_factor
+            bbox = [
+                round(bbox[0] - leeway, 6),
+                round(bbox[1] - leeway, 6),
+                round(bbox[2] + leeway, 6),
+                round(bbox[3] + leeway, 6)
+            ]
         return bbox
 
     @staticmethod

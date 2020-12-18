@@ -26,7 +26,7 @@ class OrsResponseType(str, Enum):
 class PortalOptions(BaseModel):
     debug: Optional[bool] = False
     return_areas_in_response: Optional[bool] = False
-    bounds_looseness: Optional[conint(gt=0, lt=200)] = 0
+    bounds_looseness: Optional[conint(ge=0, le=200)] = 0
 
 
 class AvoidPolygons(BaseModel):
