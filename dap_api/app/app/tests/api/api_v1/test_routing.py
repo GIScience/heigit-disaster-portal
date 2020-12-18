@@ -175,7 +175,7 @@ def test_routing_api_post(
     }
     api_key = "An API key"
     r = client.post(
-        f"{settings.API_V1_STR}/routing/avoid_areas/directions/driving-car/json", json=data, headers={"Authorization": api_key}
+        f"{settings.API_V1_STR}/routing/avoid_areas/directions/driving-car/json", json=data, headers={"ORS-Authorization": api_key}
     )
     result = json.dumps(r.json(), indent=4)
     # Uncomment to display response
@@ -254,7 +254,7 @@ def test_routing_api_invalid_mode(
         client: TestClient
 ) -> None:
     r = client.post(
-        f"{settings.API_V1_STR}/routing/unknown/directions/driving-car/json", json={}, headers={"Authorization": "xxx"}
+        f"{settings.API_V1_STR}/routing/unknown/directions/driving-car/json", json={}, headers={"ORS-Authorization": "xxx"}
     )
     r_obj = r.json()
     assert r.status_code == 422
@@ -266,7 +266,7 @@ def test_routing_api_invalid_api(
         client: TestClient
 ) -> None:
     r = client.post(
-        f"{settings.API_V1_STR}/routing/avoid_areas/unknown/driving-car/json", json={}, headers={"Authorization": "yyy"}
+        f"{settings.API_V1_STR}/routing/avoid_areas/unknown/driving-car/json", json={}, headers={"ORS-Authorization": "yyy"}
     )
     r_obj = r.json()
     assert r.status_code == 422
@@ -278,7 +278,7 @@ def test_routing_api_invalid_profile(
         client: TestClient
 ) -> None:
     r = client.post(
-        f"{settings.API_V1_STR}/routing/avoid_areas/directions/unknown/json", json={}, headers={"Authorization": "zzz"}
+        f"{settings.API_V1_STR}/routing/avoid_areas/directions/unknown/json", json={}, headers={"ORS-Authorization": "zzz"}
     )
     r_obj = r.json()
     assert r.status_code == 422
@@ -291,7 +291,7 @@ def test_routing_api_invalid_response_type(
         client: TestClient
 ) -> None:
     r = client.post(
-        f"{settings.API_V1_STR}/routing/avoid_areas/directions/driving-car/unknown", json={}, headers={"Authorization": "API key"}
+        f"{settings.API_V1_STR}/routing/avoid_areas/directions/driving-car/unknown", json={}, headers={"ORS-Authorization": "API key"}
     )
     r_obj = r.json()
     assert r.status_code == 422

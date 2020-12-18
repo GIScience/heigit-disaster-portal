@@ -87,7 +87,7 @@ def ors_end_param(end: str = Query(None)):
     return end
 
 
-def ors_auth_header(authorization: str = Header(None)):
-    if not authorization:
+def ors_auth_header(ors_authorization: str = Header(None)):
+    if not ors_authorization:
         raise HTTPException(status_code=400, detail="Openrouteservice api key missing in authorization header")
-    return authorization
+    return ors_authorization
