@@ -10,7 +10,6 @@ from app.schemas import ORSRequest, PathOptions, ORSResponse, OrsResponseType
 class ORSProcessor(BaseProcessor):
     def handle_ors_request(self, db: Session, request: ORSRequest, options: PathOptions,
                            header_authorization: str = "") -> ORSResponse:
-
         # process request
         disaster_areas = []
         if options.portal_mode.value == "avoid_areas":
@@ -24,16 +23,10 @@ class ORSProcessor(BaseProcessor):
                 if request.options.avoid_polygons.type == "Polygon":
                     request.options.avoid_polygons.type = "MultiPolygon"
                     request.options.avoid_polygons.coordinates = [request.options.avoid_polygons.coordinates]
-
                 request.options.avoid_polygons.coordinates += coordinates_to_add
 
         # prepare data for relay request
-        request_dict = request.dict()
-        request_dict.pop("portal_options")
-        if len(request.options.avoid_polygons.coordinates) == 0:
-            request_dict.get("options").pop("avoid_polygons")
-        if len(request_dict.get("options")) == 0:
-            request_dict.pop("options")
+        request_dict = self.prepare_request_dic(request)
 
         # prepare header for relay request
         request_header = self.prepare_headers(request_dict, options.ors_response_type, header_authorization)
@@ -42,20 +35,39 @@ class ORSProcessor(BaseProcessor):
         if request.portal_options.debug:
             return ORSResponse(body=json.dumps(request_dict), header_type="application/json;charset=UTF-8")
 
+        # relay to backend
         endpoint = f"/{options.ors_api}/{options.ors_profile}/{options.ors_response_type}"
         response = self.relay_request_post(endpoint, request_header, request_dict)
 
         # process result
-        response_body = ""
         if options.ors_response_type.value == "gpx":
             response_body = response.text
         else:
-            response_json = json.loads(response.text)
+            response_json = response.json()
             if request.portal_options.return_areas_in_response and len(disaster_areas.features):
                 response_json["disaster_areas"] = json.loads(disaster_areas.json())
             response_body = json.dumps(response_json)
 
         return ORSResponse(body=response_body, header_type=response.headers.get("Content-Type"))
+
+    @staticmethod
+    def get_bounding_box(request: ORSRequest) -> list:
+        return [
+            min(c[0] for c in request.coordinates),
+            min(c[1] for c in request.coordinates),
+            max(c[0] for c in request.coordinates),
+            max(c[1] for c in request.coordinates)
+        ]
+
+    @staticmethod
+    def prepare_request_dic(request: ORSRequest) -> dict:
+        request_dict = request.dict()
+        request_dict.pop("portal_options")
+        if len(request.options.avoid_polygons.coordinates) == 0:
+            request_dict.get("options").pop("avoid_polygons")
+        if len(request_dict.get("options")) == 0:
+            request_dict.pop("options")
+        return request_dict
 
     @staticmethod
     def prepare_headers(request_dict: dict, response_type: OrsResponseType, header_authorization: str) -> dict:
@@ -73,12 +85,3 @@ class ORSProcessor(BaseProcessor):
         if len(header_authorization) > 0:
             request_header["Authorization"] = header_authorization
         return request_header
-
-    @staticmethod
-    def get_bounding_box(request: ORSRequest) -> list:
-        return [
-            min(c[0] for c in request.coordinates),
-            min(c[1] for c in request.coordinates),
-            max(c[0] for c in request.coordinates),
-            max(c[1] for c in request.coordinates)
-        ]
