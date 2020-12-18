@@ -1,7 +1,7 @@
 from enum import Enum
 from typing import Optional, Any
 
-from pydantic import BaseModel, Extra
+from pydantic import BaseModel, Extra, conlist
 
 
 class PortalMode(str, Enum):
@@ -29,7 +29,7 @@ class PortalOptions(BaseModel):
 
 
 class AvoidPolygons(BaseModel):
-    coordinates: Optional[list] = []
+    coordinates: conlist(list, min_items=1) = []
     type: str = "MultiPolygon"
 
 
@@ -74,7 +74,7 @@ class PathOptions(BaseModel):
 class ORSRequest(BaseModel):
     portal_options: Optional[PortalOptions] = PortalOptions()
     options: Optional[Options] = Options()
-    coordinates: Optional[list] = []
+    coordinates: conlist(list, min_items=1)
 
     class Config:
         extra = Extra.allow
