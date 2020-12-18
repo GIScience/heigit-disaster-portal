@@ -52,12 +52,21 @@ class ORSProcessor(BaseProcessor):
 
     @staticmethod
     def get_bounding_box(request: ORSRequest) -> list:
-        return [
-            min(c[0] for c in request.coordinates),
-            min(c[1] for c in request.coordinates),
-            max(c[0] for c in request.coordinates),
-            max(c[1] for c in request.coordinates)
+        bbox = [
+            float(min(c[0] for c in request.coordinates)),
+            float(min(c[1] for c in request.coordinates)),
+            float(max(c[0] for c in request.coordinates)),
+            float(max(c[1] for c in request.coordinates))
         ]
+        if request.portal_options.bounds_looseness:
+            looseness_factor = int(request.portal_options.bounds_looseness) / 100 / 2
+            leeway_x = (bbox[2] - bbox[0]) * looseness_factor
+            leeway_y = (bbox[3] - bbox[1]) * looseness_factor
+            bbox[0] = round(bbox[0] - leeway_x, 6)
+            bbox[1] = round(bbox[1] - leeway_y, 6)
+            bbox[2] = round(bbox[2] + leeway_x, 6)
+            bbox[3] = round(bbox[3] + leeway_y, 6)
+        return bbox
 
     @staticmethod
     def prepare_request_dic(request: ORSRequest) -> dict:

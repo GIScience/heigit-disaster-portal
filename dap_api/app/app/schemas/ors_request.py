@@ -1,7 +1,7 @@
 from enum import Enum
-from typing import Optional, Any
+from typing import Optional
 
-from pydantic import BaseModel, Extra, conlist
+from pydantic import BaseModel, Extra, conint, conlist
 
 
 class PortalMode(str, Enum):
@@ -26,6 +26,7 @@ class OrsResponseType(str, Enum):
 class PortalOptions(BaseModel):
     debug: Optional[bool] = False
     return_areas_in_response: Optional[bool] = False
+    bounds_looseness: Optional[conint(gt=0, lt=200)] = 0
 
 
 class AvoidPolygons(BaseModel):
