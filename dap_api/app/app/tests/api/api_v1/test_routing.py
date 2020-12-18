@@ -184,11 +184,31 @@ def test_routing_api_get(
     assert len(result) > 0
 
 
+def test_routing_api_missing_key_get(
+    client: TestClient
+) -> None:
+    r = client.get(f"{settings.API_V1_STR}/routing/avoid_areas/directions/driving-car?start=8.678613,49.411721&end=8.687782,49.424597")
+    r_obj = r.json()
+    assert r.status_code == 400
+    assert r_obj["detail"] == "Openrouteservice api key missing in api_key parameter"
+
+
+def test_routing_api_missing_key_post(
+        client: TestClient
+) -> None:
+    r = client.post(
+        f"{settings.API_V1_STR}/routing/unknown/directions/driving-car/json", json={}
+    )
+    r_obj = r.json()
+    assert r.status_code == 400
+    assert r_obj["detail"] == "Openrouteservice api key missing in authorization header"
+
+
 def test_routing_api_invalid_mode(
         client: TestClient
 ) -> None:
     r = client.post(
-        f"{settings.API_V1_STR}/routing/unknown/directions/driving-car/json", json={},
+        f"{settings.API_V1_STR}/routing/unknown/directions/driving-car/json", json={}, headers={"Authorization": "API key"}
     )
     r_obj = r.json()
     assert r.status_code == 422
@@ -200,7 +220,7 @@ def test_routing_api_invalid_api(
         client: TestClient
 ) -> None:
     r = client.post(
-        f"{settings.API_V1_STR}/routing/avoid_areas/unknown/driving-car/json", json={},
+        f"{settings.API_V1_STR}/routing/avoid_areas/unknown/driving-car/json", json={}, headers={"Authorization": "API key"}
     )
     r_obj = r.json()
     assert r.status_code == 422
@@ -212,7 +232,7 @@ def test_routing_api_invalid_profile(
         client: TestClient
 ) -> None:
     r = client.post(
-        f"{settings.API_V1_STR}/routing/avoid_areas/directions/unknown/json", json={},
+        f"{settings.API_V1_STR}/routing/avoid_areas/directions/unknown/json", json={}, headers={"Authorization": "API key"}
     )
     r_obj = r.json()
     assert r.status_code == 422
@@ -225,9 +245,10 @@ def test_routing_api_invalid_response_type(
         client: TestClient
 ) -> None:
     r = client.post(
-        f"{settings.API_V1_STR}/routing/avoid_areas/directions/driving-car/unknown", json={},
+        f"{settings.API_V1_STR}/routing/avoid_areas/directions/driving-car/unknown", json={}, headers={"Authorization": "API key"}
     )
     r_obj = r.json()
+    print(r_obj)
     assert r.status_code == 422
     assert r_obj["detail"][0]["loc"] == ["path", "ors_response_type"]
     assert r_obj["detail"][0]["msg"] == "value is not a valid enumeration member; permitted: 'json', 'geojson', 'gpx'"

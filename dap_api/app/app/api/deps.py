@@ -53,13 +53,13 @@ def common_multi_query_params(
     return {"skip": skip, "limit": limit}
 
 
-def ors_api_key_param(ors_api_key: str = Query(...)):
-    if not ors_api_key:
+def ors_api_key_param(api_key: str = Query(None)):
+    if not api_key:
         raise HTTPException(status_code=400, detail="Openrouteservice api key missing in api_key parameter")
-    return ors_api_key
+    return api_key
 
 
-def ors_auth_header(ors_authorization: str = Header(...)):
-    if not ors_authorization:
+def ors_auth_header(authorization: str = Header(None)):
+    if not authorization:
         raise HTTPException(status_code=400, detail="Openrouteservice api key missing in authorization header")
-    return ors_authorization
+    return authorization

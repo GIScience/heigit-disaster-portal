@@ -24,11 +24,6 @@ def ors_get(
         debug: bool = False,
         db: Session = Depends(deps.get_db)
 ) -> Any:
-    if api_key == "":
-        raise HTTPException(
-            status_code=400,
-            detail=f"Request validation error: No api_key provided",
-        )
     if start == "":
         raise HTTPException(
             status_code=400,
