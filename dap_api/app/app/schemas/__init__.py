@@ -7,3 +7,5 @@ from .disaster_sub_type import DisasterSubType, DisasterSubTypeBase, DisasterSub
     DisasterSubTypeBaseInDBBase, DisasterSubTypeCreate, DisasterSubTypeUpdate
 from .disaster_area import DisasterArea, DisasterAreaBase, DisasterAreaCreate, DisasterAreaInDB, DisasterAreaUpdate, \
     DisasterAreaCreateOut, DisasterAreaInDBBase
+from .ors_request import ORSRequest, PathOptionsValidation, PathOptions, PortalOptions, ORSResponse, PortalMode, \
+    Options, OrsProfile, AvoidPolygons, OrsResponseType, OrsApi

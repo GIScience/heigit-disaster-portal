@@ -12,7 +12,7 @@ if __name__ == '__main__':
     # start fastapi app
     uvicorn.run("app.main:app",
                 host="0.0.0.0",
-                port=8082,
+                port=8083,
                 log_level="debug",
                 reload=True,
                 reload_dirs=[os.getcwd()])
