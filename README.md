@@ -25,7 +25,8 @@ docker logs --tail 200 dap-api
 docker logs dap-api 2>&1 | grep WARNING
 ```
 
-The interactive api documentation can be accessed at http://localhost:8080/doc
+The interactive api documentation can be accessed at http://localhost:8080/docs
+or alternative documentation on http://localhost:8080/redoc
 
 ## Development setup
 
@@ -96,6 +97,8 @@ docker-compose -f docker-compose.reload.yml up -d
 _Note: The first time it will take some time until the db containers are configured. The dap-api-reload container won't
 be able to connect right away._ 
 
+You can test the service through the interactive docs on http://localhost:8081/docs
+
 ### Debugging
 
 To be able to add breakpoints you need to add a _python run configuration_ for the [debug.py script](./dap_api/app/debug.py):
@@ -113,7 +116,7 @@ To be able to add breakpoints you need to add a _python run configuration_ for t
 Click the debug button on the previously created run configuration.
 
 To test if the breakpoints are working, add one in the return line of the root path function (`@app.get("/")` decorator)
-and open localhost:8082 in your browser.
+and open http://localhost:8083 in your browser.
 
 
 ### Testing
