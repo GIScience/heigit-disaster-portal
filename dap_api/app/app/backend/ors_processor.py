@@ -30,7 +30,7 @@ class ORSProcessor(BaseProcessor):
         request_dict = self.prepare_request_dic(request)
 
         # prepare header for relay request
-        request_header = self.prepare_headers(request_dict, options.ors_response_type, header_authorization)
+        request_header = self.prepare_headers(request_dict, options.ors_response_type.value, header_authorization)
 
         # debug mode: return modified request without relaying to backend
         if request.portal_options.debug:
@@ -82,13 +82,13 @@ class ORSProcessor(BaseProcessor):
         return request_dict
 
     @staticmethod
-    def prepare_headers(request_dict: dict, response_type: OrsResponseType, header_authorization: str) -> dict:
+    def prepare_headers(request_dict: dict, response_type: str, header_authorization: str) -> dict:
         request_header = {
             "Content-Type": "application/json;charset=UTF-8"
         }
-        if response_type.value == "gpx":
+        if response_type == "gpx":
             request_header["Accept"] = "application/gpx+xml"
-        elif response_type.value == "geojson":
+        elif response_type == "geojson":
             request_header["Accept"] = "application/geo+json"
         else:
             request_header["Accept"] = "application/json"
