@@ -11,6 +11,23 @@ router = APIRouter()
 
 @router.get(
     "/",
+    response_model=schemas.CollectionMetadata,
+    summary="Get disaster type collection metadata"
+)
+def read_collection_metadata(
+) -> Any:
+    """
+    Get disaster type collection metadata
+    """
+    return {
+        "id": "disaster_types",
+        "title": "Disaster types",
+        "description": "TODO: disaster type collection info, maybe define in DB Model an call from there"
+    }
+
+
+@router.get(
+    "/items",
     response_model=List[schemas.DisasterType],
     summary="Read Disaster Types"
 )

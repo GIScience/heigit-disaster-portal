@@ -5,14 +5,30 @@ from sqlalchemy.orm import Session
 
 from app import schemas, crud
 from app.api import deps
-from app.schemas.disaster_area import DisasterAreaCollection
 
 router = APIRouter()
 
 
 @router.get(
     "/",
-    response_model=DisasterAreaCollection,
+    response_model=schemas.CollectionMetadata,
+    summary="Get disaster area collection metadata"
+)
+def read_collection_metadata(
+) -> Any:
+    """
+    Get disaster area collection metadata
+    """
+    return {
+        "id": "disaster_areas",
+        "title": "Disaster areas",
+        "description": "TODO: disaster area collection info, maybe define in DB Model an call from there"
+    }
+
+
+@router.get(
+    "/items",
+    response_model=schemas.DisasterAreaCollection,
     summary="Read Disaster Areas"
 )
 def read_disaster_areas(
@@ -28,7 +44,7 @@ def read_disaster_areas(
 
 
 @router.post(
-    "/",
+    "/items",
     response_model=schemas.DisasterAreaCreateOut,
     summary="Create Disaster Area"
 )

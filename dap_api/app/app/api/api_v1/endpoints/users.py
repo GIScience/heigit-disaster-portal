@@ -12,6 +12,23 @@ router = APIRouter()
 
 @router.get(
     "/",
+    response_model=schemas.CollectionMetadata,
+    summary="Get user collection metadata"
+)
+def read_collection_metadata(
+) -> Any:
+    """
+    Get user collection metadata
+    """
+    return {
+        "id": "users",
+        "title": "Users",
+        "description": "TODO: user collection info, maybe define in DB Model an call from there"
+    }
+
+
+@router.get(
+    "/items",
     response_model=List[schemas.User],
     summary="Read Users"
 )
@@ -27,7 +44,7 @@ def read_users(
 
 
 @router.post(
-    "/",
+    "/items",
     response_model=schemas.UserCreateOut,
     summary="Create User"
 )
