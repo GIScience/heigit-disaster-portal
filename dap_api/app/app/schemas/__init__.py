@@ -10,4 +10,4 @@ from .disaster_area import DisasterArea, DisasterAreaBase, DisasterAreaCreate, D
     DisasterAreaPropertiesBase
 from .ors_request import ORSRequest, PathOptionsValidation, PathOptions, PortalOptions, ORSResponse, PortalMode, \
     Options, OrsProfile, AvoidPolygons, OrsResponseType, OrsApi
-from .utils import CollectionMetadata
+from .utils import CollectionMetadata, BadRequestResponse, HttpErrorResponse

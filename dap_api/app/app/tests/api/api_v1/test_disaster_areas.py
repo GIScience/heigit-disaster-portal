@@ -83,7 +83,7 @@ def test_create_d_area_existing_name(
     new_props = DisasterAreaPropertiesCreate(
         name=d_area.name,
         d_type_id=3,
-        provider_id=7,
+        provider_id=1,
         description=random_lower_string(20)
     )
     data = {
@@ -97,6 +97,7 @@ def test_create_d_area_existing_name(
     r_obj = r.json()
     assert r.status_code == 400
     assert "_id" not in r_obj
+    assert r_obj.get("code") == 5409
 
 
 def test_create_d_area_missing_name(
@@ -106,7 +107,7 @@ def test_create_d_area_missing_name(
     new_props = DisasterAreaPropertiesCreate(
         name="deleted",
         d_type_id=3,
-        provider_id=7,
+        provider_id=1,
         description=random_lower_string(20)
     )
     del new_props.name
