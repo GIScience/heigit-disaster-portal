@@ -19,7 +19,7 @@ def test_create_disaster_area(
     d_area_geom = create_new_polygon()
 
     r = client.post(
-        f"{settings.API_V1_STR}/collections/disaster_areas/", json={
+        f"{settings.API_V1_STR}/collections/disaster_areas/items", json={
             "type": "Feature",
             "geometry": d_area_geom.dict(),
             "properties": d_area_props.dict()
@@ -67,7 +67,7 @@ def test_create_d_area_invalid_geom(
         }
     }
     r = client.post(
-        f"{settings.API_V1_STR}/collections/disaster_areas/", json=data,
+        f"{settings.API_V1_STR}/collections/disaster_areas/items", json=data,
     )
     r_obj = r.json()
     assert r.status_code == 422
@@ -92,7 +92,7 @@ def test_create_d_area_existing_name(
         "geometry": d_area_geom.dict()
     }
     r = client.post(
-        f"{settings.API_V1_STR}/collections/disaster_areas/", json=data,
+        f"{settings.API_V1_STR}/collections/disaster_areas/items", json=data,
     )
     r_obj = r.json()
     assert r.status_code == 400
@@ -116,7 +116,7 @@ def test_create_d_area_missing_name(
         "geometry": d_area_geom.dict()
     }
     r = client.post(
-        f"{settings.API_V1_STR}/collections/disaster_areas/", json=data,
+        f"{settings.API_V1_STR}/collections/disaster_areas/items", json=data,
     )
     r_obj = r.json()
     assert r.status_code == 422
@@ -221,7 +221,7 @@ def test_retrieve_d_areas(
     create_new_disaster_area(db)
     create_new_disaster_area(db)
 
-    r = client.get(f"{settings.API_V1_STR}/collections/disaster_areas/")
+    r = client.get(f"{settings.API_V1_STR}/collections/disaster_areas/items")
     all_d_areas = r.json()
 
     assert len(all_d_areas) > 1

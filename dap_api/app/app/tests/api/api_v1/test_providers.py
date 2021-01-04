@@ -16,7 +16,7 @@ def test_create_provider_new_email_new_name(
 
     data = {"owner_id": provider_owner.id, "email": p_mail, "name": p_name}
     r = client.post(
-        f"{settings.API_V1_STR}/collections/providers/", json=data,
+        f"{settings.API_V1_STR}/collections/providers/items", json=data,
     )
     assert 200 <= r.status_code < 300
     created_provider = r.json()
@@ -35,7 +35,7 @@ def test_create_provider_invalid_owner(
 ) -> None:
     data = {"owner_id": -1, "email": random_email(), "name": random_lower_string(8)}
     r = client.post(
-        f"{settings.API_V1_STR}/collections/providers/", json=data,
+        f"{settings.API_V1_STR}/collections/providers/items", json=data,
     )
     r_obj = r.json()
     assert r.status_code == 400
@@ -48,7 +48,7 @@ def test_create_provider_existing_name(
     p = create_new_provider(db, provider_owner)
     data = {"owner_id": provider_owner.id, "email": random_email(), "name": p.name}
     r = client.post(
-        f"{settings.API_V1_STR}/collections/providers/", json=data,
+        f"{settings.API_V1_STR}/collections/providers/items", json=data,
     )
     r_obj = r.json()
     assert r.status_code == 400
@@ -61,7 +61,7 @@ def test_create_provider_existing_email(
     p = create_new_provider(db, provider_owner)
     data = {"owner_id": provider_owner.id, "email": p.email, "name": random_lower_string(8)}
     r = client.post(
-        f"{settings.API_V1_STR}/collections/providers/", json=data,
+        f"{settings.API_V1_STR}/collections/providers/items", json=data,
     )
     r_obj = r.json()
     assert r.status_code == 400
@@ -73,7 +73,7 @@ def test_create_provider_missing_email(
 ) -> None:
     data = {"owner_id": provider_owner.id, "name": random_lower_string(8)}
     r = client.post(
-        f"{settings.API_V1_STR}/collections/providers/", json=data,
+        f"{settings.API_V1_STR}/collections/providers/items", json=data,
     )
     r_obj = r.json()
     assert r.status_code == 422
@@ -86,7 +86,7 @@ def test_create_provider_missing_name(
 ) -> None:
     data = {"owner_id": provider_owner.id, "email": random_email()}
     r = client.post(
-        f"{settings.API_V1_STR}/collections/providers/", json=data,
+        f"{settings.API_V1_STR}/collections/providers/items", json=data,
     )
     r_obj = r.json()
     assert r.status_code == 422
@@ -175,7 +175,7 @@ def test_retrieve_providers(
     create_new_provider(db, provider_owner)
     create_new_provider(db, provider_owner)
 
-    r = client.get(f"{settings.API_V1_STR}/collections/providers/")
+    r = client.get(f"{settings.API_V1_STR}/collections/providers/items")
     all_providers = r.json()
 
     assert len(all_providers) > 1

@@ -14,7 +14,7 @@ def test_create_user_new_email(
     username = random_email()
     data = {"email": username}
     r = client.post(
-        f"{settings.API_V1_STR}/collections/users/", json=data,
+        f"{settings.API_V1_STR}/collections/users/items", json=data,
     )
     assert 200 <= r.status_code < 300
     created_user = r.json()
@@ -31,7 +31,7 @@ def test_create_user_existing_email(
     crud.user.create(db, obj_in=user_obj)
     data = {"email": user_obj.email}
     r = client.post(
-        f"{settings.API_V1_STR}/collections/users/", json=data,
+        f"{settings.API_V1_STR}/collections/users/items", json=data,
     )
     r_obj = r.json()
     assert r.status_code == 400
@@ -44,7 +44,7 @@ def test_create_user_invalid_email(
 ) -> None:
     data = {"email": "invalid_email"}
     r = client.post(
-        f"{settings.API_V1_STR}/collections/users/", json=data,
+        f"{settings.API_V1_STR}/collections/users/items", json=data,
     )
     r_obj = r.json()
     assert r.status_code == 422
@@ -147,7 +147,7 @@ def test_retrieve_users(
     user_obj2 = UserCreateOut(email=username2, secret=generate_secret())
     crud.user.create(db, obj_in=user_obj2)
 
-    r = client.get(f"{settings.API_V1_STR}/collections/users/")
+    r = client.get(f"{settings.API_V1_STR}/collections/users/items")
     all_users = r.json()
 
     assert len(all_users) > 1

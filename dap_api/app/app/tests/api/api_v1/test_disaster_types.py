@@ -8,7 +8,7 @@ from app.config import settings
 def test_retrieve_disaster_types(
         client: TestClient, db: Session
 ) -> None:
-    r = client.get(f"{settings.API_V1_STR}/collections/disaster_types/")
+    r = client.get(f"{settings.API_V1_STR}/collections/disaster_types/items")
     assert 200 <= r.status_code < 300
     d_type_collection = r.json()
     db_entries = crud.disaster_type.get_multi(db)
