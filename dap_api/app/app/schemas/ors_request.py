@@ -82,5 +82,6 @@ class ORSRequest(BaseModel):
 
 
 class ORSResponse(BaseModel):
+    status_code: int
     body: str
     header_type: str

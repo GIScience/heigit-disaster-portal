@@ -73,4 +73,4 @@ def process_ors_request(
 ) -> Any:
     path_options = PathOptions(**path_options.dict(), ors_response_type=ors_response_type)
     result = ors_processor.handle_ors_request(db, request, path_options, header_authorization)
-    return Response(result.body, media_type=result.header_type)
+    return Response(result.body, status_code=result.status_code, media_type=result.header_type)
