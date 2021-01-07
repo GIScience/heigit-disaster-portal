@@ -1,3 +1,5 @@
+from fastapi import HTTPException
+
 import requests
 
 
@@ -6,4 +8,10 @@ class BaseProcessor:
         self.base_path = base_path
 
     def relay_request_post(self, path: str, header: dict, body: dict) -> requests.Response:
-        return requests.post(url=self.base_path + path, headers=header, json=body)
+        try:
+            return requests.post(url=self.base_path + path, headers=header, json=body)
+        except requests.exceptions.ConnectionError as e:
+            raise HTTPException(
+                status_code=500,
+                detail=f"Connection to backend failed: {e}"
+            )

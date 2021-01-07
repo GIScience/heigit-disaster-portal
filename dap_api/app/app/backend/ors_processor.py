@@ -34,7 +34,7 @@ class ORSProcessor(BaseProcessor):
 
         # debug mode: return modified request without relaying to backend
         if request.portal_options.debug:
-            return ORSResponse(body=json.dumps(request_dict), header_type="application/json;charset=UTF-8")
+            return ORSResponse(status_code=200, body=json.dumps(request_dict), header_type="application/json;charset=UTF-8")
 
         # relay to backend
         endpoint = f"/{options.ors_api}/{options.ors_profile}/{options.ors_response_type}"
@@ -50,7 +50,7 @@ class ORSProcessor(BaseProcessor):
                 response_json["disaster_areas_lookup_bbox"] = lookup_bbox
             response_body = json.dumps(response_json)
 
-        return ORSResponse(body=response_body, header_type=response.headers.get("Content-Type"))
+        return ORSResponse(status_code=response.status_code, body=response_body, header_type=response.headers.get("Content-Type"))
 
     @staticmethod
     def get_bounding_box(request: ORSRequest) -> list:
