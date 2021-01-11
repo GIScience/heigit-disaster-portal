@@ -1,11 +1,40 @@
 from sqlite3.dbapi2 import Timestamp
-from typing import Optional, List
+from typing import Optional, List, Dict, Any, Tuple
 
 from geoalchemy2 import func
-from geojson_pydantic.features import Feature, FeatureCollection
-from geojson_pydantic.geometries import Polygon
-from geojson_pydantic.utils import BBox
+from geojson_pydantic.geometries import _GeometryBase
 from pydantic import BaseModel, validator, root_validator
+
+
+# Adjusted from implementation at geojson_pydantic.geometries:
+# The Union[float, int] type of the Coordinate generates an invalid swagger specification,
+# which can't be rendered in the interactive documentation.
+class Polygon(_GeometryBase):
+    type: str = "Polygon"
+    coordinates: List[List[Tuple[float, float]]]
+
+    @validator("coordinates")
+    def check_coordinates(cls, coords):
+        if any([len(c) < 4 for c in coords]):
+            raise ValueError("All linear rings must have four or more coordinates")
+        if any([c[-1] != c[0] for c in coords]):
+            raise ValueError("All linear rings have the same start and end coordinates")
+        return coords
+
+
+class FeatureBase(BaseModel):
+    type: str = "Feature"
+    geometry: Polygon
+    properties: Optional[Dict[Any, Any]]
+
+    class Config:
+        use_enum_values = True
+
+    @validator("geometry", pre=True, always=True)
+    def set_geometry(cls, v):
+        if hasattr(v, "__geo_interface__"):
+            return v.__geo_interface__
+        return v
 
 
 class BBoxModel(BaseModel):
@@ -45,7 +74,7 @@ class DisasterAreaPropertiesBase(BaseModel):
 
 
 # Shared properties
-class DisasterAreaBase(Feature):
+class DisasterAreaBase(FeatureBase):
     geometry: Optional[Polygon]
     properties: Optional[DisasterAreaPropertiesBase]
 
@@ -61,8 +90,6 @@ class DisasterAreaCreate(DisasterAreaBase):
     type: str = "Feature"
     geometry: Polygon
     properties: DisasterAreaPropertiesCreate
-    id: Optional[int] = None
-    bbox: Optional[BBox] = None
 
     @validator("geometry")
     def check_validity(cls, geometry):
@@ -83,8 +110,8 @@ class DisasterAreaPropertiesCreateOut(DisasterAreaPropertiesCreate):
 # Properties to return via API on creation
 class DisasterAreaCreateOut(DisasterAreaCreate):
     properties: DisasterAreaPropertiesCreateOut
-    bbox: BBox
-    pass
+    id: int
+    bbox: BBoxModel
 
 
 # Properties to receive via API on update
@@ -102,6 +129,7 @@ class DisasterAreaInDBBase(DisasterAreaBase):
 # Additional properties to return via API
 class DisasterArea(DisasterAreaInDBBase):
     properties: DisasterAreaPropertiesCreateOut
+    bbox: BBoxModel
 
 
 # Additional properties stored in DB
@@ -110,5 +138,7 @@ class DisasterAreaInDB(DisasterAreaInDBBase):
 
 
 # Schema for feature collection response
-class DisasterAreaCollection(FeatureCollection):
+class DisasterAreaCollection(BaseModel):
+    type: str = "FeatureCollection"
     features: List[DisasterArea]
+    bbox: BBoxModel
