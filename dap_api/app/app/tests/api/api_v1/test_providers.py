@@ -1,3 +1,5 @@
+from typing import Dict
+
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
@@ -9,14 +11,17 @@ from app.tests.utils.utils import random_email, random_lower_string
 
 
 def test_create_provider_new_email_new_name(
-        client: TestClient, db: Session, provider_owner: User
+        client: TestClient, db: Session, provider_owner: User,
+        admin_auth_header: Dict[str, str]
 ) -> None:
     p_mail = random_email()
     p_name = random_lower_string(8)
 
     data = {"owner_id": provider_owner.id, "email": p_mail, "name": p_name}
     r = client.post(
-        f"{settings.API_V1_STR}/collections/providers/items", json=data,
+        f"{settings.API_V1_STR}/collections/providers/items",
+        json=data,
+        headers=admin_auth_header
     )
     assert 200 <= r.status_code < 300
     created_provider = r.json()
@@ -31,11 +36,14 @@ def test_create_provider_new_email_new_name(
 
 
 def test_create_provider_invalid_owner(
-        client: TestClient
+        client: TestClient,
+        admin_auth_header: Dict[str, str]
 ) -> None:
     data = {"owner_id": -1, "email": random_email(), "name": random_lower_string(8)}
     r = client.post(
-        f"{settings.API_V1_STR}/collections/providers/items", json=data,
+        f"{settings.API_V1_STR}/collections/providers/items",
+        json=data,
+        headers=admin_auth_header
     )
     r_obj = r.json()
     assert r.status_code == 400
@@ -43,12 +51,15 @@ def test_create_provider_invalid_owner(
 
 
 def test_create_provider_existing_name(
-        client: TestClient, db: Session, provider_owner: User
+        client: TestClient, db: Session, provider_owner: User,
+        admin_auth_header: Dict[str, str]
 ) -> None:
     p = create_new_provider(db, provider_owner)
     data = {"owner_id": provider_owner.id, "email": random_email(), "name": p.name}
     r = client.post(
-        f"{settings.API_V1_STR}/collections/providers/items", json=data,
+        f"{settings.API_V1_STR}/collections/providers/items",
+        json=data,
+        headers=admin_auth_header
     )
     r_obj = r.json()
     assert r.status_code == 400
@@ -56,12 +67,15 @@ def test_create_provider_existing_name(
 
 
 def test_create_provider_existing_email(
-        client: TestClient, db: Session, provider_owner: User
+        client: TestClient, db: Session, provider_owner: User,
+        admin_auth_header: Dict[str, str]
 ) -> None:
     p = create_new_provider(db, provider_owner)
     data = {"owner_id": provider_owner.id, "email": p.email, "name": random_lower_string(8)}
     r = client.post(
-        f"{settings.API_V1_STR}/collections/providers/items", json=data,
+        f"{settings.API_V1_STR}/collections/providers/items",
+        json=data,
+        headers=admin_auth_header
     )
     r_obj = r.json()
     assert r.status_code == 400
@@ -69,11 +83,14 @@ def test_create_provider_existing_email(
 
 
 def test_create_provider_missing_email(
-        client: TestClient, provider_owner: User
+        client: TestClient, provider_owner: User,
+        admin_auth_header: Dict[str, str]
 ) -> None:
     data = {"owner_id": provider_owner.id, "name": random_lower_string(8)}
     r = client.post(
-        f"{settings.API_V1_STR}/collections/providers/items", json=data,
+        f"{settings.API_V1_STR}/collections/providers/items",
+        json=data,
+        headers=admin_auth_header
     )
     r_obj = r.json()
     assert r.status_code == 422
@@ -82,11 +99,14 @@ def test_create_provider_missing_email(
 
 
 def test_create_provider_missing_name(
-        client: TestClient, provider_owner: User
+        client: TestClient, provider_owner: User,
+        admin_auth_header: Dict[str, str]
 ) -> None:
     data = {"owner_id": provider_owner.id, "email": random_email()}
     r = client.post(
-        f"{settings.API_V1_STR}/collections/providers/items", json=data,
+        f"{settings.API_V1_STR}/collections/providers/items",
+        json=data,
+        headers=admin_auth_header
     )
     r_obj = r.json()
     assert r.status_code == 422
@@ -130,41 +150,51 @@ def test_get_provider_negative_id(
 
 
 def test_update_existing_provider(
-        client: TestClient, db: Session, provider_owner: User
+        client: TestClient, db: Session, provider_owner: User,
+        admin_auth_header: Dict[str, str]
 ) -> None:
     p = create_new_provider(db, provider_owner)
     r = crud.provider.get(db, p.id)
     assert r.description == "Disaster area provider"
     provider_id = p.id
-    r = client.put(f"{settings.API_V1_STR}/collections/providers/items/{provider_id}", json={"description": "New Info"})
+    r = client.put(f"{settings.API_V1_STR}/collections/providers/items/{provider_id}",
+                   json={"description": "New Info"},
+                   headers=admin_auth_header)
 
     assert r.status_code == 200
     assert r.json()["description"] == "New Info"
 
 
 def test_update_not_existing_provider(
-        client: TestClient
+        client: TestClient,
+        admin_auth_header: Dict[str, str]
 ) -> None:
-    r = client.put(f"{settings.API_V1_STR}/collections/providers/items/{-1}", json={"description": "New Info"})
+    r = client.put(f"{settings.API_V1_STR}/collections/providers/items/{-1}",
+                   json={"description": "New Info"},
+                   headers=admin_auth_header)
     assert r.status_code == 404
     assert r.json()["detail"]
 
 
 def test_delete_existing_provider(
-        client: TestClient, db: Session, provider_owner: User
+        client: TestClient, db: Session, provider_owner: User,
+        admin_auth_header: Dict[str, str]
 ) -> None:
     p = create_new_provider(db, provider_owner)
     provider_id = p.id
 
-    r = client.delete(f"{settings.API_V1_STR}/collections/providers/items/{provider_id}")
+    r = client.delete(f"{settings.API_V1_STR}/collections/providers/items/{provider_id}",
+                      headers=admin_auth_header)
     assert r.status_code == 200
     assert crud.provider.get(db, id=provider_id) is None
 
 
 def test_delete_not_existing_provider(
-        client: TestClient
+        client: TestClient,
+        admin_auth_header: Dict[str, str]
 ) -> None:
-    r = client.delete(f"{settings.API_V1_STR}/collections/providers/items/{-1}")
+    r = client.delete(f"{settings.API_V1_STR}/collections/providers/items/{-1}",
+                      headers=admin_auth_header)
     assert r.status_code == 404
     assert r.json()["detail"]
 
