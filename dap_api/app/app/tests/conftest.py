@@ -1,5 +1,5 @@
 import logging
-from typing import Generator
+from typing import Generator, Dict
 
 import pytest
 from fastapi.testclient import TestClient
@@ -14,7 +14,7 @@ from app.schemas import UserCreateOut
 from app.security import generate_secret
 from app.tests.utils.overrides import override_get_db
 from app.tests.utils.test_db import engine, TestSession
-from app.tests.utils.utils import random_email
+from app.tests.utils.utils import random_email, get_admin_header
 
 app.dependency_overrides[get_db] = override_get_db
 
@@ -39,7 +39,6 @@ def create_test_database():
 
 @pytest.fixture(scope="session")
 def db() -> Generator:
-
     yield TestSession()
 
 
@@ -55,13 +54,11 @@ def provider_owner(db: TestSession):
     user_obj = UserCreateOut(email=username, secret=generate_secret())
     return crud.user.create(db, obj_in=user_obj)
 
-#
-#
-# @pytest.fixture(scope="module")
-# def superuser_token_headers(client: TestClient) -> Dict[str, str]:
-#     return get_superuser_token_headers(client)
-#
-#
+
+@pytest.fixture(scope="module")
+def admin_auth_header() -> Dict[str, str]:
+    return get_admin_header()
+
 # @pytest.fixture(scope="module")
 # def normal_user_token_headers(client: TestClient, db: Session) -> Dict[str, str]:
 #     return authentication_token_from_email(

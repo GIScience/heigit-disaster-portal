@@ -1,8 +1,10 @@
 import random
 import string
-from typing import Tuple
+from typing import Tuple, Dict
 
 from geojson_pydantic.utils import NumType
+
+from app.config import settings
 
 
 def random_lower_string(length: int = 32) -> str:
@@ -14,5 +16,9 @@ def random_email() -> str:
 
 
 def random_coordinate(min_value: int, max_value: int) -> Tuple[NumType, NumType]:
-    return round(random.uniform(min_value, max_value), 9),\
+    return round(random.uniform(min_value, max_value), 9), \
            round(random.uniform(min_value, max_value), 9)
+
+
+def get_admin_header() -> Dict[str, str]:
+    return {"Authorization": f"Bearer {settings.ADMIN_USER_SECRET}"}
