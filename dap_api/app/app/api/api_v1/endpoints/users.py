@@ -3,7 +3,7 @@ from typing import Any, List
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from app import schemas, crud
+from app import schemas, crud, models
 from app.api import deps
 from app.security import generate_secret
 
@@ -51,6 +51,7 @@ def read_users(
 def create_user(
         *,
         db: Session = Depends(deps.get_db),
+        admin: models.User = Depends(deps.check_admin_auth),
         user_in: schemas.UserCreate
 ) -> Any:
     """
@@ -97,10 +98,11 @@ def read_user_by_id(
     response_model=schemas.User,
     summary="Update User By Id"
 )
-def read_user_by_id(
+def update_user_by_id(
         user_id: int,
         user_in: schemas.UserUpdate,
         db: Session = Depends(deps.get_db),
+        admin: models.User = Depends(deps.check_admin_auth)
 ) -> Any:
     """
     Update a specific user by id.
@@ -120,9 +122,10 @@ def read_user_by_id(
     response_model=schemas.User,
     summary="Delete User By Id",
 )
-def read_user_by_id(
+def delete_user_by_id(
         user_id: int,
         db: Session = Depends(deps.get_db),
+        admin: models.User = Depends(deps.check_admin_auth)
 ) -> Any:
     """
     Delete a specific user by id.

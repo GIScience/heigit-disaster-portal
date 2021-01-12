@@ -1,10 +1,11 @@
 from typing import Any, Optional
 
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
 from fastapi.responses import JSONResponse
+from sqlalchemy.orm import Session
+from starlette import status
 
-from app import schemas, crud
+from app import schemas, crud, models
 from app.api import deps
 
 router = APIRouter()
@@ -65,7 +66,8 @@ Error `code`:
 def create_disaster_area(
         *,
         db: Session = Depends(deps.get_db),
-        disaster_area_in: schemas.DisasterAreaCreate
+        disaster_area_in: schemas.DisasterAreaCreate,
+        user: models.User = Depends(deps.check_auth_header)
 ) -> Any:
     """
     Create new disaster area.
@@ -76,6 +78,12 @@ def create_disaster_area(
             "code": 2404,
             "message": "A provider with the given provider_id does not exist."
         })
+    if not user.is_admin or user.id == provider.owner_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="You are not allowed to publish data for this provider. "
+                   f"Please contact them at {provider.email}",
+        )
     disaster_type = crud.disaster_type.get(db, id=disaster_area_in.properties.d_type_id)
     if not disaster_type:
         return JSONResponse(status_code=400, content={
@@ -127,7 +135,8 @@ def read_disaster_area_by_id(
 def update_disaster_area_by_id(
         disaster_area_id: int,
         disaster_area_in: schemas.DisasterAreaUpdate,
-        db: Session = Depends(deps.get_db)
+        db: Session = Depends(deps.get_db),
+        user: models.User = Depends(deps.check_auth_header)
 ) -> Any:
     """
     Update a specific disaster area by id.
@@ -137,6 +146,13 @@ def update_disaster_area_by_id(
         raise HTTPException(
             status_code=404,
             detail="Disaster area not found",
+        )
+    provider = crud.provider.get(db, id=disaster_area.provider_id)
+    if not user.is_admin or user.id == provider.owner_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="You are not allowed to edit data for this provider. "
+                   f"Please contact them at {provider.email}",
         )
     disaster_area = crud.disaster_area.update(db, db_obj=disaster_area, obj_in=disaster_area_in)
     return crud.disaster_area.get_as_feature(db, disaster_area.id)
@@ -150,9 +166,10 @@ def update_disaster_area_by_id(
         404: {"model": schemas.HttpErrorResponse, "description": "Item not found"}
     }
 )
-def read_disaster_area_by_id(
+def delete_disaster_area_by_id(
         disaster_area_id: int,
         db: Session = Depends(deps.get_db),
+        user: models.User = Depends(deps.check_auth_header)
 ) -> Any:
     """
     Delete a specific disaster area by id.
@@ -162,6 +179,13 @@ def read_disaster_area_by_id(
         raise HTTPException(
             status_code=404,
             detail="The disaster_area with this id does not exist in the system",
+        )
+    provider = crud.provider.get(db, id=disaster_area.provider_id)
+    if not user.is_admin or user.id == provider.owner_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="You are not allowed to edit data for this provider. "
+                   f"Please contact them at {provider.email}",
         )
     area_feature = crud.disaster_area.get_as_feature(db, disaster_area.id)
     crud.disaster_area.remove(db, id=disaster_area_id)

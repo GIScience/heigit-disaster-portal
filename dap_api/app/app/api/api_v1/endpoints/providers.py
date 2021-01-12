@@ -3,7 +3,7 @@ from typing import Any, List
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from app import schemas, crud
+from app import schemas, crud, models
 from app.api import deps
 
 router = APIRouter()
@@ -50,6 +50,7 @@ def read_providers(
 def create_provider(
         *,
         db: Session = Depends(deps.get_db),
+        admin: models.User = Depends(deps.check_admin_auth),
         provider_in: schemas.ProviderCreate
 ) -> Any:
     """
@@ -107,7 +108,8 @@ def read_provider_by_id(
 def update_provider_by_id(
         provider_id: int,
         provider_in: schemas.ProviderUpdate,
-        db: Session = Depends(deps.get_db)
+        db: Session = Depends(deps.get_db),
+        admin: models.User = Depends(deps.check_admin_auth)
 ) -> Any:
     """
     Update a specific provider by id.
@@ -127,9 +129,10 @@ def update_provider_by_id(
     response_model=schemas.Provider,
     summary="Delete Provider By Id",
 )
-def read_provider_by_id(
+def delete_provider_by_id(
         provider_id: int,
         db: Session = Depends(deps.get_db),
+        admin: models.User = Depends(deps.check_admin_auth)
 ) -> Any:
     """
     Delete a specific provider by id.
