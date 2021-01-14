@@ -102,7 +102,7 @@ def check_auth_header(db: Session = Depends(get_db),
                       authorization: HTTPAuthorizationCredentials = Depends(auth_header)) -> models.User:
     http_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Authorization Header missing or invalid.",
+        detail="Authorization header missing or invalid",
     )
     # authorization header is not passed
     if authorization is None:

@@ -78,9 +78,9 @@ def create_disaster_area(
             "code": 2404,
             "message": "A provider with the given provider_id does not exist."
         })
-    if not user.is_admin or user.id == provider.owner_id:
+    if not (user.is_admin or user.id == provider.owner_id):
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
+            status_code=status.HTTP_403_FORBIDDEN,
             detail="You are not allowed to publish data for this provider. "
                    f"Please contact them at {provider.email}",
         )
@@ -148,9 +148,9 @@ def update_disaster_area_by_id(
             detail="Disaster area not found",
         )
     provider = crud.provider.get(db, id=disaster_area.provider_id)
-    if not user.is_admin or user.id == provider.owner_id:
+    if not (user.is_admin or user.id == provider.owner_id):
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
+            status_code=status.HTTP_403_FORBIDDEN,
             detail="You are not allowed to edit data for this provider. "
                    f"Please contact them at {provider.email}",
         )
@@ -181,10 +181,10 @@ def delete_disaster_area_by_id(
             detail="The disaster_area with this id does not exist in the system",
         )
     provider = crud.provider.get(db, id=disaster_area.provider_id)
-    if not user.is_admin or user.id == provider.owner_id:
+    if not (user.is_admin or user.id == provider.owner_id):
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="You are not allowed to edit data for this provider. "
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You are not allowed to delete data for this provider. "
                    f"Please contact them at {provider.email}",
         )
     area_feature = crud.disaster_area.get_as_feature(db, disaster_area.id)
