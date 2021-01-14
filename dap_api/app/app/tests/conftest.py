@@ -21,6 +21,8 @@ app.dependency_overrides[get_db] = override_get_db
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+PROVIDER_OWNER_SECRET = generate_secret()
+
 
 @pytest.fixture(scope="session", autouse=True)
 def create_test_database():
@@ -51,8 +53,13 @@ def client() -> Generator:
 @pytest.fixture(scope="session")
 def provider_owner(db: TestSession):
     username = random_email()
-    user_obj = UserCreateOut(email=username, secret=generate_secret())
+    user_obj = UserCreateOut(email=username, secret=PROVIDER_OWNER_SECRET)
     return crud.user.create(db, obj_in=user_obj)
+
+
+@pytest.fixture(scope="session")
+def provider_owner_secret(db: TestSession):
+    return PROVIDER_OWNER_SECRET
 
 
 @pytest.fixture(scope="module")
