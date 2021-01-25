@@ -3,14 +3,19 @@ Reusable dependencies that are injected into different endpoints
 """
 from typing import List, Optional
 
-from fastapi import Query, HTTPException, Header
+from fastapi import Query, HTTPException, Header, Depends
+from fastapi.security import HTTPAuthorizationCredentials
 from pydantic import ValidationError
+from sqlalchemy.orm import Session
+from starlette import status
 
+from app import crud, models
 from app.db.session import SessionLocal
 from app.schemas.disaster_area import BBoxModel
-
-
 # Dependency
+from app.security import auth_header
+
+
 def get_db():  # pragma: no cover
     db = SessionLocal()
     try:
@@ -91,3 +96,28 @@ def ors_auth_header(ors_authorization: str = Header(None)):
     if not ors_authorization:
         raise HTTPException(status_code=400, detail="Openrouteservice api key missing in authorization header")
     return ors_authorization
+
+
+def check_auth_header(db: Session = Depends(get_db),
+                      authorization: HTTPAuthorizationCredentials = Depends(auth_header)) -> models.User:
+    http_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Authorization header missing or invalid",
+    )
+    # authorization header is not passed
+    if authorization is None:
+        raise http_exception
+    user = crud.user.get_by_secret(db=db, secret=authorization.credentials)
+    # secret is not found
+    if user is None:
+        raise http_exception
+    return user
+
+
+def check_admin_auth(user: models.User = Depends(check_auth_header)) -> models.User:
+    if not user.is_admin:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Action only allowed for administrators"
+        )
+    return user

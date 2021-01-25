@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Dict
 
 import pytest
 from fastapi.testclient import TestClient
@@ -13,7 +13,8 @@ from app.tests.utils.utils import random_lower_string
 
 
 def test_create_disaster_area(
-        client: TestClient
+        client: TestClient,
+        admin_auth_header: Dict[str, str]
 ) -> None:
     d_area_props = create_new_properties()
     d_area_geom = create_new_polygon()
@@ -24,6 +25,7 @@ def test_create_disaster_area(
             "geometry": d_area_geom.dict(),
             "properties": d_area_props.dict()
         },
+        headers=admin_auth_header
     )
     assert 200 <= r.status_code < 300
     created_d_area = r.json()
@@ -53,9 +55,10 @@ def test_create_disaster_area(
 )
 def test_create_d_area_invalid_geom(
         client: TestClient,
+        admin_auth_header: Dict[str, str],
         coords: List[List[List[float]]],
         e_loc: List[str],
-        e_msg: str
+        e_msg: str,
 ) -> None:
     new_props = create_new_properties()
     data = {
@@ -67,7 +70,7 @@ def test_create_d_area_invalid_geom(
         }
     }
     r = client.post(
-        f"{settings.API_V1_STR}/collections/disaster_areas/items", json=data,
+        f"{settings.API_V1_STR}/collections/disaster_areas/items", json=data, headers=admin_auth_header
     )
     r_obj = r.json()
     assert r.status_code == 422
@@ -76,7 +79,8 @@ def test_create_d_area_invalid_geom(
 
 
 def test_create_d_area_existing_name(
-        client: TestClient, db: Session
+        client: TestClient, db: Session,
+        admin_auth_header: Dict[str, str]
 ) -> None:
     d_area = create_new_disaster_area(db)
     d_area_geom = create_new_polygon()
@@ -92,7 +96,9 @@ def test_create_d_area_existing_name(
         "geometry": d_area_geom.dict()
     }
     r = client.post(
-        f"{settings.API_V1_STR}/collections/disaster_areas/items", json=data,
+        f"{settings.API_V1_STR}/collections/disaster_areas/items",
+        json=data,
+        headers=admin_auth_header
     )
     r_obj = r.json()
     assert r.status_code == 400
@@ -101,7 +107,8 @@ def test_create_d_area_existing_name(
 
 
 def test_create_d_area_missing_name(
-        client: TestClient
+        client: TestClient,
+        admin_auth_header: Dict[str, str]
 ) -> None:
     d_area_geom = create_new_polygon()
     new_props = DisasterAreaPropertiesCreate(
@@ -117,7 +124,9 @@ def test_create_d_area_missing_name(
         "geometry": d_area_geom.dict()
     }
     r = client.post(
-        f"{settings.API_V1_STR}/collections/disaster_areas/items", json=data,
+        f"{settings.API_V1_STR}/collections/disaster_areas/items",
+        json=data,
+        headers=admin_auth_header
     )
     r_obj = r.json()
     assert r.status_code == 422
@@ -154,7 +163,8 @@ def test_get_d_area_negative_id(
 
 
 def test_update_existing_d_area_properties(
-        client: TestClient, db: Session
+        client: TestClient, db: Session,
+        admin_auth_header: Dict[str, str]
 ) -> None:
     d_area = create_new_disaster_area(db)
     previous_description = d_area.description
@@ -163,7 +173,8 @@ def test_update_existing_d_area_properties(
                        "properties": {
                            "description": "New Info"
                        }
-                   })
+                   },
+                   headers=admin_auth_header)
     updated_area = r.json()
     assert r.status_code == 200
     assert updated_area.get("properties").get("description") == "New Info"
@@ -172,46 +183,54 @@ def test_update_existing_d_area_properties(
 
 
 def test_update_existing_d_area_geometry(
-        client: TestClient, db: Session
+        client: TestClient, db: Session,
+        admin_auth_header: Dict[str, str]
 ) -> None:
     d_area = create_new_disaster_area(db)
     d_area_feature = crud.disaster_area.get_as_feature(db, d_area.id)
     geom = create_new_polygon()
     data = {"geometry": geom.dict()}
     r = client.put(f"{settings.API_V1_STR}/collections/disaster_areas/items/{d_area.id}",
-                   json=data)
+                   json=data,
+                   headers=admin_auth_header)
 
     assert r.status_code == 200
     assert r.json()["geometry"] != d_area_feature.geometry.json()
 
 
 def test_update_not_existing_d_area(
-        client: TestClient
+        client: TestClient,
+        admin_auth_header: Dict[str, str]
 ) -> None:
     r = client.put(f"{settings.API_V1_STR}/collections/disaster_areas/items/{-1}",
                    json={
                        "properties": {
                            "description": "New Info"
                        }
-                   })
+                   },
+                   headers=admin_auth_header)
     assert r.status_code == 404
     assert r.json()["detail"]
 
 
 def test_delete_existing_d_area(
-        client: TestClient, db: Session
+        client: TestClient, db: Session,
+        admin_auth_header: Dict[str, str]
 ) -> None:
     d_area = create_new_disaster_area(db)
-    r = client.delete(f"{settings.API_V1_STR}/collections/disaster_areas/items/{d_area.id}")
+    r = client.delete(f"{settings.API_V1_STR}/collections/disaster_areas/items/{d_area.id}",
+                      headers=admin_auth_header)
     assert r.status_code == 200
     r_obj = r.json()
     assert crud.disaster_area.get(db, id=r_obj.get("id"))
 
 
 def test_delete_not_existing_d_area(
-        client: TestClient
+        client: TestClient,
+        admin_auth_header: Dict[str, str]
 ) -> None:
-    r = client.delete(f"{settings.API_V1_STR}/collections/disaster_areas/items/{-1}")
+    r = client.delete(f"{settings.API_V1_STR}/collections/disaster_areas/items/{-1}",
+                      headers=admin_auth_header)
     assert r.status_code == 404
     assert r.json()["detail"]
 

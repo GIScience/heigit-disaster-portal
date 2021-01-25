@@ -12,6 +12,9 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
     def get_by_email(self, db: Session, *, email: str) -> Optional[User]:
         return db.query(User).filter(User.email == email).first()
 
+    def get_by_secret(self, db: Session, *, secret: str) -> Optional[User]:
+        return db.query(User).filter(User.hashed_secret == generate_hash(secret)).first()
+
     def is_admin(self, user_obj: User) -> bool:
         return user_obj.is_admin
 
