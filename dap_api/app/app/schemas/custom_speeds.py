@@ -1,12 +1,26 @@
 from sqlite3.dbapi2 import Timestamp
-from typing import Optional, List, Dict, Any, Tuple
-from pydantic import BaseModel, validator, root_validator, Field
+from typing import Optional, Dict
+from pydantic import BaseModel, Field, Extra
 
 
 class CustomSpeedsPropertiesBase(BaseModel):
     name: str
     description: Optional[str] = None
     provider_id: Optional[int] = None
+    created: Optional[Timestamp]
+
+
+class CustomSpeedsProperties(CustomSpeedsPropertiesBase):
+    name: str
+    provider_id: int
+
+
+class CustomSpeedsPropertiesOut(CustomSpeedsProperties):
+    created: Timestamp
+
+
+class CustomSpeedsPropertiesUpdate(CustomSpeedsPropertiesBase):
+    name: Optional[str]
 
 
 class RoadSpeeds(BaseModel):
@@ -33,6 +47,9 @@ class RoadSpeeds(BaseModel):
     crossing: Optional[int]
     steps: Optional[int]
     construction: Optional[int]
+
+    class Config:
+        extra = Extra.forbid
 
 
 class SurfaceSpeeds(BaseModel):
@@ -67,6 +84,9 @@ class SurfaceSpeeds(BaseModel):
     grass: Optional[int]
     grass_paver: Optional[int]
 
+    class Config:
+        extra = Extra.forbid
+
 
 class CustomSpeedsContent(BaseModel):
     unit: Optional[str] = "kmh"
@@ -77,22 +97,19 @@ class CustomSpeedsContent(BaseModel):
 # Shared properties
 class CustomSpeeds(BaseModel):
     content: CustomSpeedsContent
-    properties: Optional[CustomSpeedsPropertiesBase]
+    properties: Optional[CustomSpeedsProperties]
 
 
-class CustomSpeedsProperties(CustomSpeedsPropertiesBase):
-    name: str
-    provider_id: int
+class CustomSpeedsOut(BaseModel):
+    id: int
+    content: Dict
+    properties: Optional[CustomSpeedsProperties]
 
 
 # Properties to receive via API on creation
 class CustomSpeedsCreate(CustomSpeeds):
-    content: dict
+    content: CustomSpeedsContent
     properties: CustomSpeedsProperties
-
-
-class CustomSpeedsPropertiesOut(CustomSpeedsProperties):
-    created: Timestamp
 
 
 # Properties to return via API on creation
@@ -103,5 +120,5 @@ class CustomSpeedsCreateOut(CustomSpeedsCreate):
 
 # Properties to receive via API on update
 class CustomSpeedsUpdate(CustomSpeeds):
-    pass
-
+    content: Optional[CustomSpeedsContent]
+    properties: Optional[CustomSpeedsPropertiesUpdate]

@@ -1,7 +1,8 @@
 import json
 from sqlalchemy.orm import Session
 from app import crud
-from app.schemas import CustomSpeeds, CustomSpeedsCreate
+from app.models import CustomSpeeds
+from app.schemas import CustomSpeedsCreate
 from app.schemas.custom_speeds import CustomSpeedsProperties
 from app.tests.utils.utils import random_lower_string
 
@@ -24,7 +25,7 @@ def create_new_custom_speeds(
         },
         "surfaceSpeeds": {
             "paved": 0,
-            "cobblestone": 50,
+            "concrete:lanes": 50,
             "gravel": 75
         }
     }''')

@@ -1,10 +1,4 @@
-from datetime import datetime
-from typing import TYPE_CHECKING
-
-from geoalchemy2 import Geometry, func
-from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Float
-from sqlalchemy.orm import validates
-
+from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
 from app.db.base import BaseTable
 
 

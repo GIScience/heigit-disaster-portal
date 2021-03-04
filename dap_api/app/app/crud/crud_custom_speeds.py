@@ -1,39 +1,61 @@
 import json
 from datetime import datetime
-from typing import Union, Dict, Any, Optional
-
+from typing import Union, Dict, Any, Optional, List
 from sqlalchemy.orm import Session
-
 from app.models import CustomSpeeds
-from app.schemas import CustomSpeeds as CustomSpeedsSchema, CustomSpeedsCreate, CustomSpeedsUpdate
+from app.schemas import CustomSpeeds as CustomSpeedsSchema, CustomSpeedsOut, CustomSpeedsCreate, CustomSpeedsUpdate
 from .base import CRUDBase
+from ..schemas.custom_speeds import CustomSpeedsProperties
+
+
+def convert_custom_speeds(db_cs: CustomSpeeds):
+    if not db_cs:
+        return None
+    return CustomSpeedsOut(
+        id=db_cs.id,
+        content=json.loads(db_cs.content),
+        properties=CustomSpeedsProperties(
+            name=db_cs.name,
+            description=db_cs.description,
+            provider_id=db_cs.provider_id,
+            created=db_cs.created
+        )
+    )
 
 
 class CRUDCustomSpeeds(CRUDBase[CustomSpeedsSchema, CustomSpeedsCreate, CustomSpeedsUpdate]):
-    def get(self, db: Session, id: Any) -> Optional[CustomSpeedsSchema]:
-        entry = db.query(CustomSpeeds).get(id)
-        return entry
+    def get(self, db: Session, cs_id: Any) -> Optional[CustomSpeedsOut]:
+        entry = db.query(CustomSpeeds).get(cs_id)
+        return convert_custom_speeds(entry)
 
-    def get_by_name(self, db: Session, *, name: str) -> Optional[CustomSpeedsSchema]:
+    def get_multi(
+            self, db: Session, skip: int = 0, limit: int = 100
+    ) -> List[CustomSpeedsOut]:
+        res = super().get_multi(db=db, skip=skip, limit=limit)
+        return [convert_custom_speeds(cs) for cs in res]
+
+    @staticmethod
+    def get_by_name(db: Session, *, name: str) -> Optional[CustomSpeedsSchema]:
         return db.query(CustomSpeeds).filter(CustomSpeeds.name == name).first()
 
-    def create(self, db: Session, *, obj_in: CustomSpeedsCreate) -> CustomSpeedsSchema:
+    def create(self, db: Session, *, obj_in: CustomSpeedsCreate) -> CustomSpeeds:
         db_obj = CustomSpeeds(
             name=obj_in.properties.name,
             description=obj_in.properties.description,
             provider_id=obj_in.properties.provider_id,
             created=datetime.now(),
-            content=json.dumps(obj_in.content),
+            content=obj_in.content.json(by_alias=True, exclude_unset=True),
         )
         db.add(db_obj)
         db.commit()
         db.refresh(db_obj)
         return db_obj
 
-    def update(self, db: Session, *, db_obj: CustomSpeeds, obj_in: Union[CustomSpeedsUpdate, Dict[str, Any]]
-               ) -> CustomSpeedsSchema:
+    def update(self, db: Session, *, cs_id: CustomSpeeds, obj_in: Union[CustomSpeedsUpdate, Dict[str, Any]]
+               ) -> CustomSpeedsOut:
+        db_obj = db.query(CustomSpeeds).get(cs_id)
         if isinstance(obj_in, CustomSpeedsUpdate):
-            obj_in = obj_in.dict(exclude_unset=True)
+            obj_in = obj_in.dict(exclude_unset=True, by_alias=True)
         if obj_in.get('content'):
             setattr(db_obj, 'content', json.dumps(obj_in.get('content')))
             del obj_in['content']
