@@ -81,6 +81,41 @@ def test_create_custom_speeds_invalid_content(
     assert r_obj["detail"][0]["msg"] == "extra fields not permitted"
 
 
+def test_create_custom_speeds_invalid_content_unit(
+        client: TestClient,
+        admin_auth_header: Dict[str, str]
+) -> None:
+    name = "Test"
+    desc = "Test set of custom speeds"
+    r = client.post(
+        f"{settings.API_V1_STR}/collections/custom_speeds/items",
+        json={
+            "content": {
+                "unit": "unknown unit",
+                "roadSpeeds": {
+                    "motorway": 0,
+                    "trunk": 0
+                },
+                "surfaceSpeeds": {
+                    "paved": 0,
+                    "concrete:lanes": 50,
+                    "gravel": 75
+                }
+            },
+            "properties": {
+                "name": name,
+                "description": desc,
+                "provider_id": 1,
+            }
+        },
+        headers=admin_auth_header
+    )
+    r_obj = r.json()
+    assert r.status_code == 422
+    assert r_obj["detail"][0]["loc"] == ['body', 'content', 'unit']
+    assert r_obj["detail"][0]["msg"] == "value is not a valid enumeration member; permitted: 'kmh', 'mph'"
+
+
 def test_create_custom_speeds_missing_name(
         client: TestClient,
         admin_auth_header: Dict[str, str]

@@ -1,7 +1,8 @@
 import json
+from typing import Union
 
 from sqlalchemy.orm import Session
-
+from fastapi.responses import JSONResponse
 from app import crud
 from app.backend.base import BaseProcessor
 from app.schemas import ORSRequest, PathOptions, ORSResponse
@@ -10,7 +11,7 @@ from app.backend.geoutil import bbox_buffer_percentage, meters_travelled, bbox_f
 
 class ORSProcessor(BaseProcessor):
     def handle_ors_request(self, db: Session, request: ORSRequest, options: PathOptions,
-                           header_authorization: str = "") -> ORSResponse:
+                           header_authorization: str = "") -> Union[ORSResponse, JSONResponse]:
         # process request
         disaster_areas = {}
         lookup_bbox = self.get_bounding_box(request, options.ors_api, options.ors_profile)
@@ -27,10 +28,17 @@ class ORSProcessor(BaseProcessor):
                     request.options.avoid_polygons.coordinates = [request.options.avoid_polygons.coordinates]
                 request.options.avoid_polygons.coordinates += coordinates_to_add
 
-        # prepare data for relay request
-        request_dict = self.prepare_request_dic(request)
+        if type(request.user_speed_limits) == int:
+            cs = crud.custom_speeds.get(db, request.user_speed_limits)
+            if not cs:
+                return JSONResponse(status_code=400, content={
+                    "code": 6404,
+                    "message": "A Custom speeds entry with the given ID does not exist."
+                })
+            request.user_speed_limits = cs.content
 
-        # prepare header for relay request
+        # prepare relay request
+        request_dict = self.prepare_request_dic(request)
         request_header = self.prepare_headers(request_dict, options.ors_response_type.value, header_authorization)
 
         # debug mode: return modified request without relaying to backend
@@ -38,7 +46,7 @@ class ORSProcessor(BaseProcessor):
             return ORSResponse(
                 status_code=200,
                 body=json.dumps(request_dict),
-                header_type="application/json;charset=UTF-8"
+                media_type="application/json;charset=UTF-8"
             )
 
         # relay to backend
@@ -58,7 +66,7 @@ class ORSProcessor(BaseProcessor):
         return ORSResponse(
             status_code=response.status_code,
             body=response_body,
-            header_type=response.headers.get("Content-Type")
+            media_type=response.headers.get("Content-Type")
         )
 
     @staticmethod
@@ -109,10 +117,11 @@ class ORSProcessor(BaseProcessor):
         request_dict = request.dict()
         request_dict.pop("portal_options")
         request_dict = clean_dict(request_dict)
-        if len(request.options.avoid_polygons.coordinates) == 0:
-            request_dict.get("options").pop("avoid_polygons")
-        if len(request_dict.get("options")) == 0:
-            request_dict.pop("options")
+        if "options" in request_dict:
+            if len(request.options.avoid_polygons.coordinates) == 0:
+                request_dict.get("options").pop("avoid_polygons")
+            if len(request_dict.get("options")) == 0:
+                request_dict.pop("options")
         return request_dict
 
     @staticmethod

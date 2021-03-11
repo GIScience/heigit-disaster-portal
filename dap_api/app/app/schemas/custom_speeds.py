@@ -1,3 +1,4 @@
+from enum import Enum
 from sqlite3.dbapi2 import Timestamp
 from typing import Optional, Dict
 from pydantic import BaseModel, Field, Extra
@@ -21,6 +22,11 @@ class CustomSpeedsPropertiesOut(CustomSpeedsProperties):
 
 class CustomSpeedsPropertiesUpdate(CustomSpeedsPropertiesBase):
     name: Optional[str]
+
+
+class Unit(str, Enum):
+    kmh = "kmh"
+    mph = "mph"
 
 
 class RoadSpeeds(BaseModel):
@@ -89,7 +95,7 @@ class SurfaceSpeeds(BaseModel):
 
 
 class CustomSpeedsContent(BaseModel):
-    unit: Optional[str] = "kmh"
+    unit: Optional[Unit] = "kmh"
     roadSpeeds: Optional[RoadSpeeds]
     surfaceSpeeds: Optional[SurfaceSpeeds]
 
