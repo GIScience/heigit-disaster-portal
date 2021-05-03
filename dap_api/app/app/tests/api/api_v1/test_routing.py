@@ -24,10 +24,9 @@ def test_routing_api_get(
     assert len(result) > 0
 
 
-def test_routing_api_post(
-    db: Session,
-    client: TestClient
-) -> None:
+def create_disaster_areas_for_testing(
+    db: Session
+):
     # create disaster areas in database for testing: one does intersect with the request's bbox and should be added,
     # the other does not intersect and should not turn up.
     crud.disaster_area.create(db, obj_in=DisasterAreaCreate(
@@ -76,6 +75,12 @@ def test_routing_api_post(
         )
     ))
 
+
+def test_routing_api_post(
+    db: Session,
+    client: TestClient
+) -> None:
+    create_disaster_areas_for_testing(db)
     data = {
         "coordinates": [
             [
@@ -184,7 +189,39 @@ def test_routing_api_post(
     assert len(result) > 0
 
 
+def test_isochrones_api_post(
+    client: TestClient
+) -> None:
+    data = {
+        "locations": [
+            [
+                8.678613,
+                49.411721
+            ]
+        ],
+        "range": [
+            300,
+            200
+        ],
+        "portal_options": {
+            "debug": True,
+            "return_areas_in_response": True,
+        },
+    }
+    api_key = "An API key"
+    r = client.post(
+        f"{settings.API_V1_STR}/routing/avoid_areas/isochrones/driving-car", json=data, headers={"ORS-Authorization": api_key}
+    )
+    result = json.dumps(r.json(), indent=4)
+    # Uncomment to display response
+    # print(f"\n\n{result}")
+    assert 200 <= r.status_code < 300
+    assert len(result) > 0
+
+
 # ---------------------------------- HTTP GET validation ----------------------------------
+
+INVALID_ENUM_VALUE_MESSAGE = "value is not a valid enumeration member; permitted: "
 
 
 def test_routing_api_missing_key_get(
@@ -258,7 +295,7 @@ def test_routing_api_invalid_mode(
     r_obj = r.json()
     assert r.status_code == 422
     assert r_obj["detail"][0]["loc"] == ["path", "portal_mode"]
-    assert r_obj["detail"][0]["msg"] == "value is not a valid enumeration member; permitted: 'avoid_areas'"
+    assert str(r_obj["detail"][0]["msg"]).startswith(INVALID_ENUM_VALUE_MESSAGE)
 
 
 def test_routing_api_invalid_api(
@@ -270,7 +307,7 @@ def test_routing_api_invalid_api(
     r_obj = r.json()
     assert r.status_code == 422
     assert r_obj["detail"][0]["loc"] == ["path", "ors_api"]
-    assert r_obj["detail"][0]["msg"] == "value is not a valid enumeration member; permitted: 'directions'"
+    assert str(r_obj["detail"][0]["msg"]).startswith(INVALID_ENUM_VALUE_MESSAGE)
 
 
 def test_routing_api_invalid_profile(
@@ -282,9 +319,7 @@ def test_routing_api_invalid_profile(
     r_obj = r.json()
     assert r.status_code == 422
     assert r_obj["detail"][0]["loc"] == ["path", "ors_profile"]
-    assert r_obj["detail"][0]["msg"] == "value is not a valid enumeration member; permitted: 'driving-car', " \
-                                        "'driving-hgv'"
-
+    assert str(r_obj["detail"][0]["msg"]).startswith(INVALID_ENUM_VALUE_MESSAGE)
 
 def test_routing_api_invalid_response_type(
         client: TestClient
@@ -295,4 +330,4 @@ def test_routing_api_invalid_response_type(
     r_obj = r.json()
     assert r.status_code == 422
     assert r_obj["detail"][0]["loc"] == ["path", "ors_response_type"]
-    assert r_obj["detail"][0]["msg"] == "value is not a valid enumeration member; permitted: 'json', 'geojson', 'gpx'"
+    assert str(r_obj["detail"][0]["msg"]).startswith(INVALID_ENUM_VALUE_MESSAGE)

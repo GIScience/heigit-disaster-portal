@@ -4,7 +4,8 @@ from sqlalchemy.orm import Session
 
 from app import crud
 from app.backend.base import BaseProcessor
-from app.schemas import ORSRequest, PathOptions, ORSResponse, OrsResponseType
+from app.schemas import ORSRequest, PathOptions, ORSResponse
+from app.backend.geoutil import bbox_buffer_percentage, meters_travelled, bbox_from_radius
 
 
 class ORSProcessor(BaseProcessor):
@@ -12,7 +13,7 @@ class ORSProcessor(BaseProcessor):
                            header_authorization: str = "") -> ORSResponse:
         # process request
         disaster_areas = {}
-        lookup_bbox = self.get_bounding_box(request)
+        lookup_bbox = self.get_bounding_box(request, options.ors_api, options.ors_profile)
         if options.portal_mode.value == "avoid_areas":
             disaster_areas = crud.disaster_area.get_multi_as_feature_collection(db, lookup_bbox)
             coordinates_to_add = [f.geometry.coordinates for f in disaster_areas.features if
@@ -34,7 +35,11 @@ class ORSProcessor(BaseProcessor):
 
         # debug mode: return modified request without relaying to backend
         if request.portal_options.debug:
-            return ORSResponse(status_code=200, body=json.dumps(request_dict), header_type="application/json;charset=UTF-8")
+            return ORSResponse(
+                status_code=200,
+                body=json.dumps(request_dict),
+                header_type="application/json;charset=UTF-8"
+            )
 
         # relay to backend
         endpoint = f"/{options.ors_api}/{options.ors_profile}/{options.ors_response_type}"
@@ -50,31 +55,60 @@ class ORSProcessor(BaseProcessor):
                 response_json["disaster_areas_lookup_bbox"] = lookup_bbox
             response_body = json.dumps(response_json)
 
-        return ORSResponse(status_code=response.status_code, body=response_body, header_type=response.headers.get("Content-Type"))
+        return ORSResponse(
+            status_code=response.status_code,
+            body=response_body,
+            header_type=response.headers.get("Content-Type")
+        )
 
     @staticmethod
-    def get_bounding_box(request: ORSRequest) -> list:
-        bbox = [
-            float(min(c[0] for c in request.coordinates)),
-            float(min(c[1] for c in request.coordinates)),
-            float(max(c[0] for c in request.coordinates)),
-            float(max(c[1] for c in request.coordinates))
-        ]
-        if request.portal_options.bounds_looseness:
-            looseness_factor = int(request.portal_options.bounds_looseness) / 100 / 2
-            leeway = max(bbox[2] - bbox[0], bbox[3] - bbox[1]) * looseness_factor
+    def get_bounding_box(request: ORSRequest, target_api, target_profile) -> list:
+        bbox = [0, 0, 0, 0]
+
+        if target_api == "directions":
             bbox = [
-                round(bbox[0] - leeway, 6),
-                round(bbox[1] - leeway, 6),
-                round(bbox[2] + leeway, 6),
-                round(bbox[3] + leeway, 6)
+                float(min(c[0] for c in request.coordinates)),
+                float(min(c[1] for c in request.coordinates)),
+                float(max(c[0] for c in request.coordinates)),
+                float(max(c[1] for c in request.coordinates))
             ]
+            if request.portal_options.bounds_looseness and int(request.portal_options.bounds_looseness) > 0:
+                bbox = bbox_buffer_percentage(bbox, int(request.portal_options.bounds_looseness))
+
+        if target_api == "isochrones":
+            # this is a quick and dirty solution, it would be more efficient to do point-radius lookups in the database
+            # directly. A TODO for the production version.
+            radius = max(request.range)
+            if request.range_type is None or request.range_type == "time":
+                # range is seconds of travel time, convert to distance
+                speed = 80  # default to car
+                if target_profile.startswith("cycling"):
+                    speed = 20
+                if target_profile.startswith("foot"):
+                    speed = 5
+                if target_profile.startswith("wheelchair"):
+                    speed = 4
+                radius = meters_travelled(radius, speed)
+            boxes = []
+            for point in request.locations:
+                boxes.append(bbox_from_radius(point[0], point[1], radius))
+            bbox = [
+                float(min(b[0] for b in boxes)),
+                float(min(b[1] for b in boxes)),
+                float(max(b[2] for b in boxes)),
+                float(max(b[3] for b in boxes))
+            ]
+        return bbox
+
+    @staticmethod
+    def fix_bbox(bbox):
         return bbox
 
     @staticmethod
     def prepare_request_dic(request: ORSRequest) -> dict:
         request_dict = request.dict()
         request_dict.pop("portal_options")
+        request_dict = clean_dict(request_dict)
         if len(request.options.avoid_polygons.coordinates) == 0:
             request_dict.get("options").pop("avoid_polygons")
         if len(request_dict.get("options")) == 0:
@@ -97,3 +131,15 @@ class ORSProcessor(BaseProcessor):
         if len(header_authorization) > 0:
             request_header["Authorization"] = header_authorization
         return request_header
+
+
+def clean_dict(d):
+    clean = {}
+    for k, v in d.items():
+        if isinstance(v, dict):
+            nested = clean_dict(v)
+            if len(nested.keys()) > 0:
+                clean[k] = nested
+        elif v is not None:
+            clean[k] = v
+    return clean
