@@ -46,7 +46,8 @@ def ors_post(
         authorization: str = Depends(deps.ors_auth_header),
         db: Session = Depends(deps.get_db)
 ) -> Any:
-    return process_ors_request(request, authorization, db, path_options, ors_response_type=OrsResponseType("json"))
+    response_type = OrsResponseType("geojson") if path_options.ors_api == "isochrones" else OrsResponseType("json")
+    return process_ors_request(request, authorization, db, path_options, ors_response_type=response_type)
 
 
 @router.post(

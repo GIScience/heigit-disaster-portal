@@ -9,18 +9,31 @@ class PortalMode(str, Enum):
 
 
 class OrsApi(str, Enum):
-    directions = "directions",
+    directions = "directions"
+    isochrones = "isochrones"
 
 
 class OrsProfile(str, Enum):
     driving_car = "driving-car"
     driving_hgv = "driving-hgv"
+    cycling_regular = "cycling-regular"
+    cycling_mountain = "cycling-mountain"
+    cycling_road = "cycling-road"
+    cycling_electric = "cycling-electric"
+    foot_walking = "foot-walking"
+    foot_hiking = "foot-hiking"
+    wheelchair = "wheelchair"
 
 
 class OrsResponseType(str, Enum):
     json = "json"
     geojson = "geojson"
     gpx = "gpx"
+
+
+class OrsIsochroneRangeType(str, Enum):
+    time = "time"
+    distance = "distance"
 
 
 class PortalOptions(BaseModel):
@@ -75,7 +88,10 @@ class PathOptions(BaseModel):
 class ORSRequest(BaseModel):
     portal_options: Optional[PortalOptions] = PortalOptions()
     options: Optional[Options] = Options()
-    coordinates: conlist(list, min_items=1)
+    coordinates: Optional[conlist(list, min_items=1)]
+    locations: Optional[conlist(list, min_items=1)]
+    range: Optional[conlist(float, min_items=1)]
+    range_type: Optional[OrsIsochroneRangeType]
 
     class Config:
         extra = Extra.allow
