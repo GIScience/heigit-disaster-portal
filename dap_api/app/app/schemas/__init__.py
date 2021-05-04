@@ -8,7 +8,7 @@ from .disaster_sub_type import DisasterSubType, DisasterSubTypeBase, DisasterSub
 from .disaster_area import DisasterArea, DisasterAreaBase, DisasterAreaCreate, DisasterAreaInDB, DisasterAreaUpdate, \
     DisasterAreaCreateOut, DisasterAreaInDBBase, DisasterAreaCollection, DisasterAreaPropertiesCreate, \
     DisasterAreaPropertiesBase
-from .custom_speeds import CustomSpeeds, CustomSpeedsOut, CustomSpeedsCreate, CustomSpeedsUpdate
+from .custom_speeds import CustomSpeeds, CustomSpeedsOut, CustomSpeedsCreate, CustomSpeedsUpdate, CustomSpeedsProperties
 from .ors_request import ORSRequest, PathOptionsValidation, PathOptions, PortalOptions, ORSResponse, PortalMode, \
     Options, OrsProfile, AvoidPolygons, OrsResponseType, OrsApi
 from .utils import CollectionMetadata, BadRequestResponse, HttpErrorResponse

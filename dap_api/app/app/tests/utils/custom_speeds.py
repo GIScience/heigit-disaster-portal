@@ -2,8 +2,7 @@ import json
 from sqlalchemy.orm import Session
 from app import crud
 from app.models import CustomSpeeds
-from app.schemas import CustomSpeedsCreate
-from app.schemas.custom_speeds import CustomSpeedsProperties
+from app.schemas import CustomSpeedsCreate, CustomSpeedsProperties
 from app.tests.utils.utils import random_lower_string
 
 

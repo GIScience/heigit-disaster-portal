@@ -29,14 +29,14 @@ def read_collection_metadata(
 @router.get(
     "/items",
     response_model=List[schemas.CustomSpeedsOut],
-    summary="Read Custom Speeds"
+    summary="Read custom speed sets"
 )
 def read_custom_speeds(
         db: Session = Depends(deps.get_db),
         c: dict = Depends(deps.common_multi_query_params)
 ) -> Any:
     """
-    Retrieve disaster areas.
+    Retrieve custom speed sets.
     """
     skip, limit = c.values()
     res = crud.custom_speeds.get_multi(db, skip=skip, limit=limit)
@@ -55,8 +55,7 @@ An additional error code + message is provided.
 
 Error `code`:
 - `2404`: Provider does not exist
-- `3404`: Disaster type does not exist
-- `5409`: Disaster area name already in use
+- `6409`: Custom speed set name already in use
 """
               }
     }
@@ -86,7 +85,7 @@ def create_custom_speeds(
     if custom_speeds:
         return JSONResponse(status_code=400, content={
             "code": 5409,
-            "message": "A disaster area with this name already exists in the system."
+            "message": "A custom speed set with this name already exists in the system."
         })
     db_entry = crud.custom_speeds.create(db, obj_in=custom_speeds_in)
     return crud.custom_speeds.get(db, db_entry.id)
@@ -95,7 +94,7 @@ def create_custom_speeds(
 @router.get(
     "/items/{custom_speeds_id}",
     response_model=schemas.CustomSpeedsOut,
-    summary="Read Custom Speeds By Id",
+    summary="Read custom speeds By Id",
     responses={
         404: {"model": schemas.HttpErrorResponse, "description": "Item not found"}
     }
@@ -105,13 +104,13 @@ def read_custom_speeds_by_id(
         db: Session = Depends(deps.get_db)
 ) -> Any:
     """
-    Get a specific disaster area by id.
+    Get a specific custom speed set by id.
     """
     custom_speeds = crud.custom_speeds.get(db, cs_id=custom_speeds_id)
     if not custom_speeds:
         raise HTTPException(
             status_code=404,
-            detail="The custom_speeds with this id does not exist in the system",
+            detail="The custom speed set with this id does not exist in the system",
         )
     return custom_speeds
 
@@ -119,7 +118,7 @@ def read_custom_speeds_by_id(
 @router.put(
     "/items/{custom_speeds_id}",
     response_model=schemas.CustomSpeedsOut,
-    summary="Update Custom Speeds By Id",
+    summary="Update custom speeds By Id",
     responses={
         404: {"model": schemas.HttpErrorResponse, "description": "Item not found"}
     }
@@ -153,7 +152,7 @@ def update_custom_speeds_by_id(
 @router.delete(
     "/items/{custom_speeds_id}",
     response_model=schemas.CustomSpeedsOut,
-    summary="Delete Disaster Area By Id",
+    summary="Delete custom speeds By Id",
     responses={
         404: {"model": schemas.HttpErrorResponse, "description": "Item not found"}
     }
@@ -164,7 +163,7 @@ def delete_custom_speeds_by_id(
         user: models.User = Depends(deps.check_auth_header)
 ) -> Any:
     """
-    Delete a specific disaster area by id.
+    Delete a specific custom speed set by id.
     """
     cs = crud.custom_speeds.get(db, cs_id=custom_speeds_id)
     if not cs:

@@ -16,12 +16,15 @@ ors_processor = ORSProcessor(settings.ORS_BACKEND_URL)
     "/{portal_mode}/{ors_api}/{ors_profile}",
     summary="Query ORS",
     responses={
-        400: {"model": BadRequestResponse, "description": """Bad Request       
-            An additional error code + message is provided.
-            
-            Error `code`:
-            - `6404`: Custom Speeds does not exist
-        """}
+        400: {"model": BadRequestResponse, "description": """
+Bad Request       
+
+An additional error code + message is provided.
+
+Error `code`:
+- `6404`: Custom speed set does not exist
+"""
+              }
     }
 )
 def ors_get(
@@ -50,12 +53,15 @@ def ors_get(
     "/{portal_mode}/{ors_api}/{ors_profile}",
     summary="Query ORS",
     responses={
-        400: {"model": BadRequestResponse, "description": """Bad Request       
-            An additional error code + message is provided.
+        400: {"model": BadRequestResponse, "description": """
+Bad Request       
 
-            Error `code`:
-            - `6404`: Custom Speeds does not exist
-        """}
+An additional error code + message is provided.
+
+Error `code`:
+- `6404`: Custom Speeds does not exist
+"""
+              }
     }
 )
 def ors_post(
@@ -72,12 +78,15 @@ def ors_post(
     "/{portal_mode}/{ors_api}/{ors_profile}/{ors_response_type}",
     summary="Query ORS",
     responses={
-        400: {"model": BadRequestResponse, "description": """Bad Request       
-            An additional error code + message is provided.
+        400: {"model": BadRequestResponse, "description": """
+Bad Request       
 
-            Error `code`:
-            - `6404`: Custom Speeds does not exist
-        """}
+An additional error code + message is provided.
+
+Error `code`:
+- `6404`: Custom Speeds does not exist
+"""
+              }
     }
 )
 def ors_post_response_type(

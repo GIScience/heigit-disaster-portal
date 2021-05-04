@@ -8,7 +8,6 @@ class CustomSpeedsPropertiesBase(BaseModel):
     name: str
     description: Optional[str] = None
     provider_id: Optional[int] = None
-    created: Optional[Timestamp]
 
 
 class CustomSpeedsProperties(CustomSpeedsPropertiesBase):
@@ -102,29 +101,29 @@ class CustomSpeedsContent(BaseModel):
 
 # Shared properties
 class CustomSpeeds(BaseModel):
-    content: CustomSpeedsContent
     properties: Optional[CustomSpeedsProperties]
+    content: CustomSpeedsContent
 
 
 class CustomSpeedsOut(BaseModel):
     id: int
-    content: Dict
-    properties: Optional[CustomSpeedsProperties]
+    properties: Optional[CustomSpeedsPropertiesOut]
+    content: CustomSpeedsContent
 
 
 # Properties to receive via API on creation
 class CustomSpeedsCreate(CustomSpeeds):
-    content: CustomSpeedsContent
     properties: CustomSpeedsProperties
+    content: CustomSpeedsContent
 
 
 # Properties to return via API on creation
 class CustomSpeedsCreateOut(CustomSpeedsCreate):
-    properties: CustomSpeedsPropertiesOut
     id: int
+    properties: CustomSpeedsPropertiesOut
 
 
 # Properties to receive via API on update
 class CustomSpeedsUpdate(CustomSpeeds):
-    content: Optional[CustomSpeedsContent]
     properties: Optional[CustomSpeedsPropertiesUpdate]
+    content: Optional[CustomSpeedsContent]
