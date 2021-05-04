@@ -1,11 +1,12 @@
 from enum import Enum
-from typing import Optional
+from typing import Optional, Union, Dict
 
 from pydantic import BaseModel, Extra, conint, conlist
 
 
 class PortalMode(str, Enum):
     avoid_area = "avoid_areas"
+    custom_speeds = "custom_speeds"
 
 
 class OrsApi(str, Enum):
@@ -92,6 +93,7 @@ class ORSRequest(BaseModel):
     locations: Optional[conlist(list, min_items=1)]
     range: Optional[conlist(float, min_items=1)]
     range_type: Optional[OrsIsochroneRangeType]
+    user_speed_limits: Union[None, int, Dict]
 
     class Config:
         extra = Extra.allow
@@ -100,4 +102,4 @@ class ORSRequest(BaseModel):
 class ORSResponse(BaseModel):
     status_code: int
     body: str
-    header_type: str
+    media_type: str

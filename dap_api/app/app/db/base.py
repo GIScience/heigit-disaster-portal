@@ -10,5 +10,9 @@ class BaseTable:
 
     # Generate __tablename__ automatically
     @declared_attr
-    def __tablename__(cls) -> str:
+    def __tablename__(self, cls) -> str:
         return cls.__name__.lower()
+
+    def __init__(self, **kwargs):
+        for key in kwargs:
+            self.__setattr__(key, kwargs.get(key))
