@@ -30,6 +30,7 @@ class DisasterArea(BaseTable):
         from app.db.session import SessionLocal
         db = SessionLocal()
         valid_check = db.query(func.ST_IsValidReason(geom)).first()[0]
+        db.close()
         if valid_check != "Valid Geometry":
             raise ValueError(f"Invalid geometry: {valid_check}")
         return geom

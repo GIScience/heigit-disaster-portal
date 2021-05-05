@@ -97,6 +97,7 @@ class DisasterAreaCreate(DisasterAreaBase):
         db = SessionLocal()
         geom = func.ST_GeomFromGeoJSON(geometry.json())
         valid_check = db.query(func.ST_IsValidReason(geom)).first()[0]
+        db.close()
         if valid_check != "Valid Geometry":
             raise ValueError(f"Geometry not valid: {valid_check}")
         return geometry
