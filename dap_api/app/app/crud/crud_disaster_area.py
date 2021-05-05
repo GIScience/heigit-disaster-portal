@@ -15,7 +15,7 @@ from ..schemas.disaster_area import DisasterAreaPropertiesCreateOut, DisasterAre
 
 
 def get_entry_as_feature(db: Session, entry: DisasterArea) -> DisasterAreaSchema:
-    json_geom = json.loads(db.execute(entry.geom.ST_AsGeoJson(9, 1)).scalar())
+    json_geom = json.loads(db.execute(entry.geom.ST_AsGeoJson(7, 1)).scalar())
     d_area = DisasterAreaSchema(
         id=entry.id,
         properties=DisasterAreaPropertiesCreateOut(**entry.__dict__),

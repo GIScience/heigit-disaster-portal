@@ -53,7 +53,7 @@ def test_get_disaster_areas(db: Session) -> None:
 
 
 def test_get_disaster_area_as_feature(db: Session) -> None:
-    d_area = create_new_disaster_area(db, (2, 2))
+    d_area = create_new_disaster_area(db, (2.4321234124, 2.4321143124))
     d_area2 = crud.disaster_area.get_as_feature(db, d_area.id)
     assert d_area.id == d_area2.id
     assert d_area.name == d_area2.properties.name
@@ -61,7 +61,7 @@ def test_get_disaster_area_as_feature(db: Session) -> None:
     # TODO: write better tests
     # in d_area the geometry is still stored in EWKB format. After conversion to geojson values are still integer
     # that's why we pass it to the Polygon model again before getting the json value back.
-    assert d_area2.geometry == Polygon(**json.loads(db.execute(d_area.geom.st_asgeojson()).scalar()))
+    assert d_area2.geometry == Polygon(**json.loads(db.execute(d_area.geom.st_asgeojson(7)).scalar()))
 
 
 def test_get_disaster_areas_by_bbox(db: Session) -> None:
