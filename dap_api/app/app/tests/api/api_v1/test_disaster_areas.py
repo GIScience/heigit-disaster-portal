@@ -250,3 +250,40 @@ def test_retrieve_d_areas(
         assert "provider_id" in area["properties"]
         assert "d_type_id" in area["properties"]
         assert "id" in area
+
+
+def test_retrieve_d_areas_of_type(
+        client: TestClient, db: Session
+) -> None:
+    create_new_disaster_area(db, d_id=4)
+    create_new_disaster_area(db, d_id=6)
+    create_new_disaster_area(db, d_id=6)
+
+    # Has 1 area with d_type_id 4
+    r2 = client.get(f"{settings.API_V1_STR}/collections/disaster_areas/items",
+                    params={"d_type_id": 4})
+
+    json_areas_2 = r2.json()
+    assert len(json_areas_2) > 1
+    areas_4 = json_areas_2.get("features")
+    assert len(areas_4) == 1
+    assert areas_4[0]["properties"]["d_type_id"] == 4
+
+    # Has 2 areas with d_type_id 6
+    r = client.get(f"{settings.API_V1_STR}/collections/disaster_areas/items",
+                   params={"d_type_id": 6})
+    json_areas = r.json()
+
+    assert len(json_areas) > 1
+    areas_6 = json_areas.get("features")
+    assert len(areas_6) == 2
+    for area in areas_6:
+        assert area["properties"]["d_type_id"] == 6
+
+    # invalid d_type_id
+    r = client.get(f"{settings.API_V1_STR}/collections/disaster_areas/items",
+                   params={"d_type_id": -1})
+    r_obj = r.json()
+    assert r.status_code == 422
+    assert r_obj["detail"][0]["loc"] == ["query", "d_type_id"]
+    assert r_obj["detail"][0]["msg"] == "ensure this value is greater than 0"

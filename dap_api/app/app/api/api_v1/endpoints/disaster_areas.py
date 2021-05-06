@@ -1,6 +1,6 @@
 from typing import Any, Optional
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 from starlette import status
@@ -31,18 +31,39 @@ def read_collection_metadata(
 @router.get(
     "/items",
     response_model=schemas.DisasterAreaCollection,
-    summary="Read Disaster Areas"
+    summary="Read Disaster Areas",
+    responses={
+        400: {"model": schemas.BadRequestResponse, "description": """
+Bad Request
+
+An additional error code + message is provided.
+
+Error `code`:
+- `3404`: Disaster type does not exist
+"""
+              }
+    }
 )
 def read_disaster_areas(
         db: Session = Depends(deps.get_db),
         bbox: Optional[list] = Depends(deps.get_valid_bbox),
-        c: dict = Depends(deps.common_multi_query_params)
+        c: dict = Depends(deps.common_multi_query_params),
+        d_type_id: Optional[int] = Query(None, gt=0)
 ) -> Any:
     """
     Retrieve disaster areas.
     """
     skip, limit = c.values()
-    return crud.disaster_area.get_multi_as_feature_collection(db, skip=skip, limit=limit, bbox=bbox)
+    if d_type_id is not None:
+        disaster_type = crud.disaster_type.get(db, id=d_type_id)
+        if not disaster_type:
+            return JSONResponse(status_code=400, content={
+                "code": 3404,
+                "message": "A disaster type with this id does not exists."
+            })
+    return crud.disaster_area.get_multi_as_feature_collection(
+        db, skip=skip, limit=limit, bbox=bbox, d_type_id=d_type_id
+    )
 
 
 @router.post(
