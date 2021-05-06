@@ -41,6 +41,25 @@ def test_get_disaster_area_by_name(db: Session) -> None:
     assert d_area.name == d_area_get.name
 
 
+def test_get_disaster_area_by_d_type(db: Session) -> None:
+    d_area1 = create_new_disaster_area(db, (2, 2), d_id=3)
+    d_area2 = create_new_disaster_area(db, (-2, 2), d_id=5)
+    d_area3 = create_new_disaster_area(db, (1, 2), d_id=3)
+    d_area4 = create_new_disaster_area(db, (-2, 2), d_id=4)
+
+    areas_type_3 = crud.disaster_area.get_multi(db, d_type_id=3)
+    assert all(x in areas_type_3 for x in [d_area1, d_area3])
+    assert all(x not in areas_type_3 for x in [d_area2, d_area4])
+
+    areas_type_5 = crud.disaster_area.get_multi(db, d_type_id=5)
+    assert d_area2 in areas_type_5
+    assert all(x not in areas_type_5 for x in [d_area1, d_area3, d_area4])
+
+    areas_type_7 = crud.disaster_area.get_multi(db, d_type_id=7)
+    assert all(x not in areas_type_7 for x in [d_area1, d_area2, d_area3, d_area4])
+    assert areas_type_7 == []
+
+
 def test_get_disaster_areas(db: Session) -> None:
     d_area1 = create_new_disaster_area(db, (2, 2))
     d_area2 = create_new_disaster_area(db, (-2, 2))

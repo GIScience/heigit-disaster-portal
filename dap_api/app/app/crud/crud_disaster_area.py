@@ -46,19 +46,25 @@ class CRUDDisasterArea(CRUDBase[DisasterArea, DisasterAreaCreate, DisasterAreaUp
         return d_area
 
     def get_multi(
-            self, db: Session, bbox: BBox = None, skip: int = 0, limit: int = 100
+            self, db: Session, bbox: BBox = None, skip: int = 0, limit: int = 100, d_type_id: int = None
     ) -> List[DisasterArea]:
-        if bbox:
-            query_list = db.query(DisasterArea).filter(
-                DisasterArea.geom.intersects(func.ST_MakeEnvelope(*bbox))
-            ).offset(skip).limit(limit).all()
-            return query_list
+        if any([x is not None for x in [bbox, d_type_id]]):
+            query = db.query(DisasterArea)
+            if bbox:
+                query = query.filter(
+                    DisasterArea.geom.intersects(func.ST_MakeEnvelope(*bbox))
+                )
+            if d_type_id:
+                query = query.filter(
+                    DisasterArea.d_type_id == d_type_id
+                )
+            return query.offset(skip).limit(limit).all()
         return super().get_multi(db=db, skip=skip, limit=limit)
 
     def get_multi_as_feature_collection(
-            self, db: Session, bbox: BBox = None, skip: int = 0, limit: int = 100
+            self, db: Session, bbox: BBox = None, skip: int = 0, limit: int = 100, d_type_id: int = None
     ) -> DisasterAreaCollection:
-        entries = self.get_multi(db, bbox, skip, limit)
+        entries = self.get_multi(db, bbox, skip, limit, d_type_id)
         features = [self.get_as_feature(db, e.id) for e in entries]
         boxes = [f.bbox for f in features]
         bbox = [0, 0, 0, 0]
