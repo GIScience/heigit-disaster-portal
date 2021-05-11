@@ -20,7 +20,8 @@ databases = {extras = ["postgresql", "sqlite"], version = "^0.4.0"}  # async sup
 psycopg2-binary = "^2.8.6"  # PostgreSQL adapter
 tenacity = "^6.2.0"  # retrying library (waiting for database to restart)
 uvicorn = "^0.12.3"  # ASGI server
-geopy = "^2.1.0"
+geopy = "^2.1.0"  # geographic calculation functions
+python-dateutil = "^2.8.1"  # correct timestamp parsing
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.1.2"  # testing

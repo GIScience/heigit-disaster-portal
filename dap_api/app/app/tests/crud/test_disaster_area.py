@@ -1,4 +1,5 @@
 import json
+from datetime import datetime as dt
 
 from geojson_pydantic.geometries import Polygon
 from sqlalchemy import func
@@ -39,6 +40,63 @@ def test_get_disaster_area_by_name(db: Session) -> None:
     d_area = create_new_disaster_area(db, (2, 2))
     d_area_get = crud.disaster_area.get_by_name(db, name=d_area.name)
     assert d_area.name == d_area_get.name
+
+
+def test_get_disaster_area_by_d_type(db: Session) -> None:
+    d_area1 = create_new_disaster_area(db, (2, 2), d_id=3)
+    d_area2 = create_new_disaster_area(db, (-2, 2), d_id=5)
+    d_area3 = create_new_disaster_area(db, (1, 2), d_id=3)
+    d_area4 = create_new_disaster_area(db, (-2, 2), d_id=4)
+
+    areas_type_3 = crud.disaster_area.get_multi(db, d_type_id=3)
+    assert all(x in areas_type_3 for x in [d_area1, d_area3])
+    assert all(x not in areas_type_3 for x in [d_area2, d_area4])
+
+    areas_type_5 = crud.disaster_area.get_multi(db, d_type_id=5)
+    assert d_area2 in areas_type_5
+    assert all(x not in areas_type_5 for x in [d_area1, d_area3, d_area4])
+
+    areas_type_7 = crud.disaster_area.get_multi(db, d_type_id=7)
+    assert all(x not in areas_type_7 for x in [d_area1, d_area2, d_area3, d_area4])
+    assert areas_type_7 == []
+
+
+def test_get_disaster_area_by_datetime(db: Session) -> None:
+    t1 = dt.now()
+    d_area1 = create_new_disaster_area(db)
+    d_area2 = create_new_disaster_area(db)
+    t2 = dt.now()
+    d_area3 = create_new_disaster_area(db)
+    d_area4 = create_new_disaster_area(db)
+    t3 = dt.now()
+    d_area5 = create_new_disaster_area(db)
+    t4 = dt.now()
+
+    one_exact_datetime = crud.disaster_area.get_multi(db, date_time=f"{d_area1.created}")
+    assert len(one_exact_datetime) == 1
+    assert one_exact_datetime[0] == d_area1
+
+    t1_to_t2 = crud.disaster_area.get_multi(db, date_time=f"{t1}/{t2}")
+    assert len(t1_to_t2) == 2
+    assert d_area1 in t1_to_t2
+    assert d_area2 in t1_to_t2
+
+    before_t3 = crud.disaster_area.get_multi(db, date_time=f"/{t3}")
+    before_t3_2 = crud.disaster_area.get_multi(db, date_time=f"../{t3}")
+    assert before_t3 == before_t3_2
+    assert all([x in before_t3 for x in [d_area1, d_area2, d_area3, d_area4]])
+
+    after_t2 = crud.disaster_area.get_multi(db, date_time=f"{t2}/")
+    after_t2_2 = crud.disaster_area.get_multi(db, date_time=f"{t2}/..")
+    assert after_t2 == after_t2_2
+    assert len(after_t2) == 3
+    assert all([x in after_t2 for x in [d_area3, d_area4, d_area5]])
+
+    at_t2 = crud.disaster_area.get_multi(db, date_time=f"{t2}")
+    assert at_t2 == []
+
+    after_t4 = crud.disaster_area.get_multi(db, date_time=f"{t4}/")
+    assert after_t4 == []
 
 
 def test_get_disaster_areas(db: Session) -> None:
