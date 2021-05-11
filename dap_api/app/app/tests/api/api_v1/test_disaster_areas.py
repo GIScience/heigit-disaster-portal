@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 from typing import List, Dict
 
 import pytest
@@ -287,3 +288,91 @@ def test_retrieve_d_areas_of_type(
     assert r.status_code == 422
     assert r_obj["detail"][0]["loc"] == ["query", "d_type_id"]
     assert r_obj["detail"][0]["msg"] == "ensure this value is greater than 0"
+
+
+def test_retrieve_d_areas_at_datetime(
+        client: TestClient, db: Session
+) -> None:
+    # area existing at datetime
+    a = create_new_disaster_area(db)
+    r = client.get(f"{settings.API_V1_STR}/collections/disaster_areas/items",
+                   params={"datetime": str(a.created)})
+    datetime_response = r.json()
+
+    assert r.status_code == 200
+    f = datetime_response.get("features")
+    assert len(f) == 1
+    assert f[0]['properties']['name'] == a.name
+
+    # no area at datetime
+    t = datetime.now()
+    r = client.get(f"{settings.API_V1_STR}/collections/disaster_areas/items",
+                   params={"datetime": t})
+    r_obj = r.json()
+    assert len(r_obj.get("features")) == 0
+
+
+@pytest.mark.parametrize(
+    "date_time,e_msg",
+    [
+        (" ",
+         "Invalid timestamp  : ISO string too short"),
+        ("2018-02-12T23:20:50ss",
+         "Invalid timestamp 2018-02-12T23:20:50ss: Unused components in ISO string"),
+        ("2018-02-40T23:20:50",
+         "Invalid timestamp 2018-02-40T23:20:50: day is out of range for month"),
+        ("2018-02-12T24:20:50",
+         "Invalid timestamp 2018-02-12T24:20:50: Hour may only be 24 at 24:00:00.000"),
+        ("2018-13-12T23:20:50",
+         "Invalid timestamp 2018-13-12T23:20:50: month must be in 1..12"),
+        ("2018-12-12T23:20:70",
+         "Invalid timestamp 2018-12-12T23:20:70: second must be in 0..59")
+    ]
+)
+def test_retrieve_d_areas_malformed_datetime(
+        client: TestClient,
+        date_time: str,
+        e_msg: str
+) -> None:
+    r = client.get(f"{settings.API_V1_STR}/collections/disaster_areas/items",
+                   params={"datetime": date_time})
+    r_obj = r.json()
+    assert r.status_code == 422
+    assert r_obj["detail"][0]["loc"] == ["query", "datetime"]
+    assert r_obj["detail"][0]["msg"] == e_msg
+
+
+def test_retrieve_d_areas_at_datetime_interval(
+        client: TestClient, db: Session
+) -> None:
+    t1 = datetime.now()
+    a1 = create_new_disaster_area(db)
+    t2 = a1.created + timedelta(microseconds=5)
+    a2 = create_new_disaster_area(db)
+
+    # closed interval
+    r = client.get(f"{settings.API_V1_STR}/collections/disaster_areas/items",
+                   params={"datetime": f"{t1}/{t2}"})
+    r_obj = r.json()
+    assert r.status_code == 200
+    f = r_obj.get("features")
+    assert len(f) == 1
+    assert f[0]['properties']['name'] == a1.name
+
+    # open end
+    r = client.get(f"{settings.API_V1_STR}/collections/disaster_areas/items",
+                   params={"datetime": f"{t2}/"})
+    r_obj = r.json()
+    assert r.status_code == 200
+    f = r_obj.get("features")
+    assert len(f) == 1
+    assert f[0]['properties']['name'] == a2.name
+
+    # open start
+    r = client.get(f"{settings.API_V1_STR}/collections/disaster_areas/items",
+                   params={"datetime": f"../{t2}"})
+    r_obj = r.json()
+    assert r.status_code == 200
+    f_ids = [f.get("id") for f in r_obj.get("features")]
+    assert a2.id not in f_ids
+    assert a1.id in f_ids

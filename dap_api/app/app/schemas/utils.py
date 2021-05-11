@@ -17,3 +17,9 @@ class BadRequestResponse(BaseModel):
 
 class HttpErrorResponse(BaseModel):
     detail: str = Field(..., title="Error detail", description="Detailed error message")
+
+
+class ErrorDetailObject(BaseModel):
+    loc: List[str]
+    msg: str
+    type: str = "value_error"

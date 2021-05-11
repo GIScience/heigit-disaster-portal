@@ -3,6 +3,7 @@ Reusable dependencies that are injected into different endpoints
 """
 from typing import List, Optional
 
+from dateutil.parser import isoparse
 from fastapi import Query, HTTPException, Header, Depends
 from fastapi.security import HTTPAuthorizationCredentials
 from pydantic import ValidationError
@@ -12,7 +13,8 @@ from starlette import status
 from app import crud, models
 from app.db.session import SessionLocal
 from app.schemas.disaster_area import BBoxModel
-# Dependency
+
+from app.schemas.utils import ErrorDetailObject
 from app.security import auth_header
 
 
@@ -121,3 +123,60 @@ def check_admin_auth(user: models.User = Depends(check_auth_header)) -> models.U
             detail="Action only allowed for administrators"
         )
     return user
+
+
+def date_time_or_interval(date_time: str = Query(
+    "2018-02-12T23:20:50Z/",
+    title="datetime",
+    alias="datetime",
+    description="""Either a date-time or an interval, open or closed. Date and time expressions
+adhere to RFC 3339. Open intervals are expressed using double-dots or an empty string (unknown start/stop).
+Timestamps with timezones (`+01:00` instead of Z) as well as fractions (2018-02-12T23:20:50.25Z) are supported.
+
+Examples:
+
+* A date-time: `2018-02-12T23:20:50Z`
+* A closed interval: `2018-02-12T00:00:00Z/2018-03-18T12:31:12Z`
+* Open intervals: `2018-02-12T00:00:00Z/..` or `/2018-03-18T12:31:12Z`
+
+Only features that have a temporal property that intersects the value of
+`datetime` are selected.
+In addition, all features without a temporal geometry are selected. 
+"""
+)) -> Optional[str]:
+    if date_time is None:
+        return
+    errors = []
+    date_time_array = date_time.split('/')
+    if len(date_time_array) == 1:
+        try:
+            isoparse(date_time)
+        except ValueError as e:
+            errors.append(ErrorDetailObject(
+                loc=["query", "datetime"],
+                msg=f"Invalid timestamp {date_time}: {e}"
+            ).dict())
+    elif len(date_time_array) == 2:
+        date1, date2 = date_time_array
+        if date1 not in ['', '..']:
+            try:
+                isoparse(date1)
+            except ValueError as e:
+                errors.append(ErrorDetailObject(
+                    loc=["query", "datetime"],
+                    msg=f"Invalid start timestamp {date_time}: {e}"
+                ).dict())
+        if date2 not in ['', '..']:
+            try:
+                isoparse(date2)
+            except ValueError as e:
+                errors.append(ErrorDetailObject(
+                    loc=["query", "datetime"],
+                    msg=f"Invalid stop timestamp {date_time}: {e}"
+                ).dict())
+    if not errors == []:
+        raise HTTPException(
+            status_code=422,
+            detail=errors
+        )
+    return date_time
