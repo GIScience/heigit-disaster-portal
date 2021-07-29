@@ -2,7 +2,7 @@
 name = "heigit-disaster-portal"
 version = "0.1.0"
 description = "Disaster Area Portal on basic FastAPI infrastructure using Docker, Gunicorn, FastAPI and Python 3.8 on alpine linux"
-authors = ["Amandus Butzer <butzer@stud.uni-heidelberg.de>"]
+authors = ["Amandus Butzer <amandus.butzer@heigit.org>", "Takara Baumbach <takara.baumbach@heigit.org"]
 
 [tool.poetry.dependencies]
 alembic = "^1.4.3"  # database migration tool
