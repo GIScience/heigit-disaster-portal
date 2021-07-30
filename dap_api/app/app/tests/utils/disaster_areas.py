@@ -1,7 +1,7 @@
 from typing import Tuple
 
 from geojson_pydantic.geometries import Polygon
-from geojson_pydantic.utils import NumType
+from geojson_pydantic.types import NumType
 from sqlalchemy.orm import Session
 
 from app import crud

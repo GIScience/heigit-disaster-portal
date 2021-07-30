@@ -5,7 +5,7 @@ from typing import Union, Dict, Any, Optional, List
 
 from geoalchemy2 import func, Geometry
 from geojson_pydantic.geometries import Polygon
-from geojson_pydantic.utils import BBox
+from geojson_pydantic.types import BBox
 from sqlalchemy.orm import Session
 
 from app.models import DisasterArea

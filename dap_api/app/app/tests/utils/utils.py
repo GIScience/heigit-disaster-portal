@@ -2,7 +2,7 @@ import random
 import string
 from typing import Tuple, Dict
 
-from geojson_pydantic.utils import NumType
+from geojson_pydantic.types import NumType
 
 from app.config import settings
 
