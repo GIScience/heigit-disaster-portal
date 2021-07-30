@@ -16,7 +16,7 @@ requests against the HeiGIT services.
 The API for communicating with services should be kept as close to the original requests as possible with minimal
 alterations and additional parameters.
 
-The avoid areas functionality should be able to identify features from the database that would be avoid areas for the
+The avoid-areas functionality should be able to identify features from the database that would be avoid-areas for the
 request without the user having to explicitly pass these areas in with their request.
 It should also be able to strip these derived areas from the meta information in the response, where normally the full
 query passed to openrouteservice is added.
@@ -57,9 +57,9 @@ Requirements:
 
 ```
 # Install poetry
-curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
+curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/install-poetry.py | python -
 
-# enable poetry command ( check [poetry documentation](https://python-poetry.org/docs/#enable-tab-completion-for-bash-fish-or-zsh) for shell completion setup)
+# enable poetry command (check [poetry documentation](https://python-poetry.org/docs/#enable-tab-completion-for-bash-fish-or-zsh) for shell completion setup)
 source $HOME/.poetry/env
 ```
 
@@ -80,7 +80,7 @@ poetry install --no-root
 
 When using [PyCharm](https://www.jetbrains.com/pycharm/) you can use the [Poetry plugin](https://plugins.jetbrains.com/plugin/14307-poetry) 
 to create an  interpreter with a python3.8 base or higher. It should use the virtual environment poetry has created. 
-After creating it, you might need to close and open PyCharm again so the Project uses now the correct interpreter and 
+After creating it, you might need to close and open PyCharm again, so the Project uses now the correct interpreter and 
 env. In case pycharm creates a separate virtual env, you could prevent poetry from creating further virtual envs by 
 running:
 ```
@@ -97,7 +97,7 @@ This will build an image for 3 containers:
 - dap-db: default postgis database also used with docker-compose.yml
 - dap-test-db: separate test database to not clutter production db
 
-Additionally you can create a _docker-compose run configuration_ with PyCharm.
+Additionally, you can create a _docker-compose run configuration_ with PyCharm.
 The advantage of this:
 - only a few clicks to start
 - automatically connects and opens the Services Toolbar (inspect docker stuff: images, containers, logs, bindings etc.)
@@ -155,10 +155,10 @@ To quickly run tests you can create a _pytest run configuration_:
 1. Click **Enable EnvFile**
 1. Click the "+" to add both `.env` & `.env-dev` files located in the project root (in this order !)
 1. Click OK
-1. In the project browser, right click on the folder `<project_root>/dap_api/app` and select Mark Directory as ->
+1. In the project browser, right-click on the folder `<project_root>/dap_api/app` and select Mark Directory as ->
 Sources Root. (**NOT the `db_api/app/app` folder**)
 
-Will open user friendly test interface, instead of scrolling through console :+1:
+Will open a user-friendly test interface, instead of scrolling through console :+1:
 (Also having the option to only rerun failed tests)
 
 You will also be able to debug the tests if you run this config in _debug mode_.
@@ -177,8 +177,8 @@ For displaying test coverage during development there are 2 viable options:
 
 1. Use the _Run pytest with coverage_ button (next to the debug button) for the previous pytest configuration.
 This is a bit slower and creates coverage for the whole project.
-Also it is only available in the professional PyCharm Edition.
-But it will visually highlight all parts in the code that are not covered by tests yet.
+Also, it is only available in the professional PyCharm Edition.
+It will visually highlight all parts in the code that are not covered by tests yet.
  
 1. Add `--cov=app --cov-report=term-missing` as _Additional Arguments_ to the pytest configuration.
 With this the pytest output will also create a coverage report including the lines "missed", blocks that were not
@@ -188,7 +188,7 @@ your breakpoints will not be hit. You can either add the coverage as a second py
 _Additional Arguments_ to the pytest configuration, and switch back and forth between debug and coverage mode by
 adding and removing `--no-cov` from the config.
 
-Of course you can also run pytest with coverage in the reload container with
+Of course, you can also run pytest with coverage in the reload-container with
 `pytest --cov=app --cov-report=term-missing`.
 
 ---
@@ -205,12 +205,13 @@ If this is working correctly the code coverage can be displayed e.g. with codeco
 ### Database migrations
 
 As during local development your app directory is mounted as a volume inside the container,
-you can also run the migrations with `alembic` commands inside the container and the migration
+you can also run the migrations with `alembic` commands inside the container, and the migration
 code will be in your app directory (instead of being only inside the container).
 So you can add it to your git repository.
 
-Make sure you create a "revision" of your models and that you "upgrade" your database with that revision every time you change them.
-As this is what will update the tables in your database.
+Make sure you create a "revision" of your models and that you "upgrade" your database with that revision every time you 
+change them.
+This is what will update the tables in your database.
 Otherwise, your application will have errors.
 
 * Start an interactive session in the backend container:
@@ -238,6 +239,6 @@ $ alembic upgrade head
 
 If you don't want to start with the default models and want to remove them / modify them, from the beginning,
 without having any previous revision, you can remove the revision files (`.py` Python files) under `./backend/app/alembic/versions/`.
-And then create a first migration as described above.
+Then create a first migration as described above.
 
 See Readme in alembic for further information.
