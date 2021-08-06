@@ -4,7 +4,6 @@ from datetime import datetime
 from typing import Union, Dict, Any, Optional, List
 
 from geoalchemy2 import func, Geometry
-from geojson_pydantic.geometries import Polygon
 from geojson_pydantic.types import BBox
 from sqlalchemy.orm import Session
 
@@ -12,7 +11,7 @@ from app.models import DisasterArea
 from app.schemas import DisasterArea as DisasterAreaSchema
 from app.schemas import DisasterAreaCreate, DisasterAreaUpdate
 from .base import CRUDBase
-from ..schemas.disaster_area import DisasterAreaPropertiesCreateOut, DisasterAreaCollection
+from ..schemas.disaster_area import DisasterAreaPropertiesCreateOut, DisasterAreaCollection, Polygon
 
 
 def get_entry_as_feature(db: Session, entry: DisasterArea) -> DisasterAreaSchema:

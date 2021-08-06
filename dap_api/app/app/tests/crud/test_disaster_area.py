@@ -1,13 +1,12 @@
 import json
 from datetime import datetime as dt
 
-from geojson_pydantic.geometries import Polygon
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from app import crud
 from app.schemas import DisasterAreaCreate
-from app.schemas.disaster_area import DisasterAreaPropertiesCreate, DisasterAreaUpdate
+from app.schemas.disaster_area import DisasterAreaPropertiesCreate, DisasterAreaUpdate, Polygon
 from app.tests.utils.disaster_areas import create_new_disaster_area, create_new_polygon, create_new_properties
 from app.tests.utils.utils import random_lower_string
 
@@ -31,22 +30,22 @@ def test_create_disaster_area(db: Session) -> None:
 
 
 def test_get_disaster_area_by_id(db: Session) -> None:
-    d_area = create_new_disaster_area(db, (2, 2))
+    d_area = create_new_disaster_area(db, [2, 2])
     d_area_get = crud.disaster_area.get(db, id=d_area.id)
     assert d_area.name == d_area_get.name
 
 
 def test_get_disaster_area_by_name(db: Session) -> None:
-    d_area = create_new_disaster_area(db, (2, 2))
+    d_area = create_new_disaster_area(db, [2, 2])
     d_area_get = crud.disaster_area.get_by_name(db, name=d_area.name)
     assert d_area.name == d_area_get.name
 
 
 def test_get_disaster_area_by_d_type(db: Session) -> None:
-    d_area1 = create_new_disaster_area(db, (2, 2), d_id=3)
-    d_area2 = create_new_disaster_area(db, (-2, 2), d_id=5)
-    d_area3 = create_new_disaster_area(db, (1, 2), d_id=3)
-    d_area4 = create_new_disaster_area(db, (-2, 2), d_id=4)
+    d_area1 = create_new_disaster_area(db, [2, 2], d_id=3)
+    d_area2 = create_new_disaster_area(db, [-2, 2], d_id=5)
+    d_area3 = create_new_disaster_area(db, [1, 2], d_id=3)
+    d_area4 = create_new_disaster_area(db, [-2, 2], d_id=4)
 
     areas_type_3 = crud.disaster_area.get_multi(db, d_type_id=3)
     assert all(x in areas_type_3 for x in [d_area1, d_area3])
@@ -100,8 +99,8 @@ def test_get_disaster_area_by_datetime(db: Session) -> None:
 
 
 def test_get_disaster_areas(db: Session) -> None:
-    d_area1 = create_new_disaster_area(db, (2, 2))
-    d_area2 = create_new_disaster_area(db, (-2, 2))
+    d_area1 = create_new_disaster_area(db, [2, 2])
+    d_area2 = create_new_disaster_area(db, [-2, 2])
     d_areas = crud.disaster_area.get_multi(db)
     assert d_area1 in d_areas
     assert d_area2 in d_areas
@@ -111,7 +110,7 @@ def test_get_disaster_areas(db: Session) -> None:
 
 
 def test_get_disaster_area_as_feature(db: Session) -> None:
-    d_area = create_new_disaster_area(db, (2.4321234124, 2.4321143124))
+    d_area = create_new_disaster_area(db, [2.4321234124, 2.4321143124])
     d_area2 = crud.disaster_area.get_as_feature(db, d_area.id)
     assert d_area.id == d_area2.id
     assert d_area.name == d_area2.properties.name
@@ -123,9 +122,9 @@ def test_get_disaster_area_as_feature(db: Session) -> None:
 
 
 def test_get_disaster_areas_by_bbox(db: Session) -> None:
-    d_area1 = create_new_disaster_area(db, (2, 2))
-    d_area2 = create_new_disaster_area(db, (-2, 2))
-    d_area3 = create_new_disaster_area(db, (1, 2))
+    d_area1 = create_new_disaster_area(db, [2, 2])
+    d_area2 = create_new_disaster_area(db, [-2, 2])
+    d_area3 = create_new_disaster_area(db, [1, 2])
     d_areas = crud.disaster_area.get_multi(db, bbox=(0., 0., 2., 2.))
     assert d_area1 in d_areas
     assert d_area2 not in d_areas
@@ -133,7 +132,7 @@ def test_get_disaster_areas_by_bbox(db: Session) -> None:
 
 
 def test_update_disaster_area_properties(db: Session) -> None:
-    d_area = create_new_disaster_area(db, (2, 2), f=2)
+    d_area = create_new_disaster_area(db, [2, 2], f=2)
     d_area_update = dict({"properties": {
         "description": "Updated description"
     }})
@@ -143,8 +142,8 @@ def test_update_disaster_area_properties(db: Session) -> None:
 
 
 def test_update_disaster_area_geometry(db: Session) -> None:
-    d_area = create_new_disaster_area(db, (2, 2), f=2)
-    geom = create_new_polygon((-1, -1))
+    d_area = create_new_disaster_area(db, [2, 2], f=2)
+    geom = create_new_polygon([-1, -1])
     d_area_update = DisasterAreaUpdate(
         geometry=geom,
         properties=create_new_properties(
@@ -159,7 +158,7 @@ def test_update_disaster_area_geometry(db: Session) -> None:
 
 
 def test_remove_disaster_area(db: Session) -> None:
-    d_area = create_new_disaster_area(db, (-1, -4), f=2)
+    d_area = create_new_disaster_area(db, [-1, -4], f=2)
     d_area_2 = crud.disaster_area.remove(db, id=d_area.id)
     no_d_area = crud.provider.get(db, id=d_area_2.id)
     assert d_area == d_area_2

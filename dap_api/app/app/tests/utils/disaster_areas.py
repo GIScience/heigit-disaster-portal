@@ -1,7 +1,6 @@
-from typing import Tuple
+from typing import List
 
 from geojson_pydantic.geometries import Polygon
-from geojson_pydantic.types import NumType
 from sqlalchemy.orm import Session
 
 from app import crud
@@ -12,7 +11,7 @@ from app.tests.utils.utils import random_lower_string, random_coordinate
 
 
 def create_new_polygon(
-        c: Tuple[NumType, NumType] = None,
+        c: List[float] = None,
         f: float = 0.0001,
 ) -> Polygon:
     if c is None:
@@ -49,7 +48,7 @@ def create_new_properties(
 
 def create_new_disaster_area(
         db: Session,
-        c: Tuple[NumType, NumType] = None,
+        c: List[float] = None,
         f: float = 0.0001,
         name: str = None,
         p_id: int = 1,

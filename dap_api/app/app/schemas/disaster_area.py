@@ -1,5 +1,5 @@
 from sqlite3.dbapi2 import Timestamp
-from typing import Optional, List, Dict, Any, Tuple
+from typing import Optional, List, Dict, Any
 
 from geoalchemy2 import func
 from geojson_pydantic.geometries import _GeometryBase
@@ -9,17 +9,20 @@ from pydantic import BaseModel, validator, root_validator
 # Adjusted from implementation at geojson_pydantic.geometries:
 # The Union[float, int] type of the Coordinate generates an invalid swagger specification,
 # which can't be rendered in the interactive documentation.
+# Also defining a custom Coordinate class using a root validator (like BBoxModel) is not playing
+# well with returning the coordinates as a normal list object.
+# Therefore all validations for coordinates are done directly in the Polygon class below
 class Polygon(_GeometryBase):
     type: str = "Polygon"
-    coordinates: List[List[Tuple[float, float]]]
+    coordinates: List[List[List[float]]]
 
     @validator("coordinates")
-    def check_coordinates(cls, coords):
-        if any([len(c) < 4 for c in coords]):
-            raise ValueError("All linear rings must have four or more coordinates")
-        if any([c[-1] != c[0] for c in coords]):
-            raise ValueError("All linear rings have the same start and end coordinates")
-        return coords
+    def check_coordinates(cls, rings):
+        if any([len(c) < 4 for c in rings]):
+            raise ValueError("Linear rings must have four or more coordinates")
+        if any([c[-1] != c[0] for c in rings]):
+            raise ValueError("Linear rings have the same start and end coordinates")
+        return rings
 
 
 class FeatureBase(BaseModel):

@@ -45,10 +45,10 @@ def test_create_disaster_area(
     [
         ([[[0, 0], [0, 1], [0, 0]]],
          ["body", "geometry", "coordinates"],
-         "All linear rings must have four or more coordinates"),
+         "Linear rings must have four or more coordinates"),
         ([[[0, 0], [0, 1], [1, 0], [1, 2]]],
          ["body", "geometry", "coordinates"],
-         "All linear rings have the same start and end coordinates"),
+         "Linear rings have the same start and end coordinates"),
         ([[[0, 0], [0, 1], [1, 0], [1, 1], [0, 0]]],
          ["body", "geometry"],
          "Geometry not valid: Self-intersection[0.5 0.5]"),
