@@ -1,11 +1,12 @@
 import json
 from datetime import datetime
 from typing import Union, Dict, Any, Optional, List
+
 from sqlalchemy.orm import Session
+
 from app.models import CustomSpeeds
 from app.schemas import CustomSpeeds as CustomSpeedsSchema, CustomSpeedsOut, CustomSpeedsCreate, CustomSpeedsUpdate
 from .base import CRUDBase
-from ..schemas.custom_speeds import CustomSpeedsPropertiesOut
 
 
 def convert_custom_speeds(db_cs: CustomSpeeds):
@@ -14,12 +15,12 @@ def convert_custom_speeds(db_cs: CustomSpeeds):
     return CustomSpeedsOut(
         id=db_cs.id,
         content=json.loads(db_cs.content),
-        properties=CustomSpeedsPropertiesOut(
-            name=db_cs.name,
-            description=db_cs.description,
-            provider_id=db_cs.provider_id,
-            created=db_cs.created
-        )
+        properties={
+            "name": db_cs.name,
+            "description": db_cs.description,
+            "provider_id": db_cs.provider_id,
+            "created": db_cs.created
+        }
     )
 
 

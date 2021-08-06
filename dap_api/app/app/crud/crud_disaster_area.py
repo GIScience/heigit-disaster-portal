@@ -1,8 +1,8 @@
 import json
-from dateutil import parser as date_parser
 from datetime import datetime
 from typing import Union, Dict, Any, Optional, List
 
+from dateutil import parser as date_parser
 from geoalchemy2 import func, Geometry
 from geojson_pydantic.types import BBox
 from sqlalchemy.orm import Session
@@ -11,15 +11,15 @@ from app.models import DisasterArea
 from app.schemas import DisasterArea as DisasterAreaSchema
 from app.schemas import DisasterAreaCreate, DisasterAreaUpdate
 from .base import CRUDBase
-from ..schemas.disaster_area import DisasterAreaPropertiesCreateOut, DisasterAreaCollection, Polygon
+from ..schemas.disaster_area import DisasterAreaCollection
 
 
 def get_entry_as_feature(db: Session, entry: DisasterArea) -> DisasterAreaSchema:
     json_geom = json.loads(db.execute(entry.geom.ST_AsGeoJson(7, 1)).scalar())
     d_area = DisasterAreaSchema(
         id=entry.id,
-        properties=DisasterAreaPropertiesCreateOut(**entry.__dict__),
-        geometry=Polygon(**json_geom),
+        properties=entry.__dict__,
+        geometry=json_geom,
         bbox=json_geom.get('bbox')
     )
     return d_area
