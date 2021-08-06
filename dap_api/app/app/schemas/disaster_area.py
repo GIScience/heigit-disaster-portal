@@ -22,6 +22,12 @@ class Polygon(_GeometryBase):
             raise ValueError("Linear rings must have four or more coordinates")
         if any([c[-1] != c[0] for c in rings]):
             raise ValueError("Linear rings have the same start and end coordinates")
+        if any([any([len(c) != 2 for c in ring]) for ring in rings]):
+            raise ValueError("Coordinates can only have two values")
+        if not all([all([-180 <= c[0] <= 180 for c in ring]) for ring in rings]):
+            raise ValueError("Longitude needs to be in range +-180")
+        if not all([all([-90 <= c[1] <= 90 for c in ring]) for ring in rings]):
+            raise ValueError("Latitude needs to be in range +-90")
         return rings
 
 
