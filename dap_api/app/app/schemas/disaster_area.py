@@ -1,5 +1,5 @@
 from sqlite3.dbapi2 import Timestamp
-from typing import Optional, List, Dict, Any
+from typing import Optional, List, Dict, Any, Union
 
 from geoalchemy2 import func
 from geojson_pydantic.geometries import _GeometryBase
@@ -36,9 +36,20 @@ class Polygon(_GeometryBase):
         return rings
 
 
+class MultiPolygon(_GeometryBase):
+    type: str = "MultiPolygon"
+    coordinates: List[List[List[List[float]]]]
+
+    @validator("coordinates")
+    def check_coordinates(cls, polygons):
+        for rings in polygons:
+            check_polygon_rings(rings)
+        return polygons
+
+
 class FeatureBase(BaseModel):
     type: str = "Feature"
-    geometry: Polygon
+    geometry: Union[Polygon, MultiPolygon]
     properties: Optional[Dict[Any, Any]]
 
     class Config:
@@ -89,7 +100,7 @@ class DisasterAreaPropertiesBase(BaseModel):
 
 # Shared properties
 class DisasterAreaBase(FeatureBase):
-    geometry: Optional[Polygon]
+    geometry: Optional[Union[Polygon, MultiPolygon]]
     properties: Optional[DisasterAreaPropertiesBase]
 
 
@@ -102,7 +113,7 @@ class DisasterAreaPropertiesCreate(DisasterAreaPropertiesBase):
 # Properties to receive via API on creation
 class DisasterAreaCreate(DisasterAreaBase):
     type: str = "Feature"
-    geometry: Polygon
+    geometry: Union[Polygon, MultiPolygon]
     properties: DisasterAreaPropertiesCreate
 
     @validator("geometry")
