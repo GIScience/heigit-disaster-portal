@@ -5,8 +5,9 @@ from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from app import crud
+from app.crud.crud_disaster_area import multi_to_single
 from app.schemas import DisasterAreaCreate
-from app.schemas.disaster_area import DisasterAreaPropertiesCreate, DisasterAreaUpdate, Polygon
+from app.schemas.disaster_area import DisasterAreaPropertiesCreate, DisasterAreaUpdate, Polygon, MultiPolygon
 from app.tests.utils.disaster_areas import create_new_disaster_area, create_new_polygon, create_new_properties
 from app.tests.utils.utils import random_lower_string
 
@@ -115,10 +116,13 @@ def test_get_disaster_area_as_feature(db: Session) -> None:
     assert d_area.id == d_area2.id
     assert d_area.name == d_area2.properties.name
     assert d_area2.bbox
+    # need to consider storage format of MultiPolygon but feature output as Polygon for single Polygons
+    initial_multi_geom = json.loads(db.execute(d_area.geom.st_asgeojson(7)).scalar())
+    multi_to_single(initial_multi_geom)
     # TODO: write better tests
     # in d_area the geometry is still stored in EWKB format. After conversion to geojson values are still integer
     # that's why we pass it to the Polygon model again before getting the json value back.
-    assert d_area2.geometry == Polygon(**json.loads(db.execute(d_area.geom.st_asgeojson(7)).scalar()))
+    assert d_area2.geometry == Polygon(**initial_multi_geom)
 
 
 def test_get_disaster_areas_by_bbox(db: Session) -> None:
@@ -154,7 +158,8 @@ def test_update_disaster_area_geometry(db: Session) -> None:
     )
     d_area2 = crud.disaster_area.update(db, db_obj=d_area, obj_in=d_area_update)
     assert d_area2 == d_area
-    assert d_area2.geom == db.execute(func.ST_GeomFromGeoJSON(geom.json())).scalar()
+    # consider multipolygon in storage but polygon during creation
+    assert d_area2.geom == db.execute(func.ST_multi(func.ST_GeomFromGeoJSON(geom.json()))).scalar()
 
 
 def test_remove_disaster_area(db: Session) -> None:
