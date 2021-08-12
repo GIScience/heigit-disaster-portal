@@ -14,6 +14,14 @@ from .base import CRUDBase
 from ..schemas.disaster_area import DisasterAreaCollection
 
 
+def multi_to_single(multi_polygon: dict) -> None:
+    multi_polygon.update(type="Polygon", coordinates=multi_polygon.get("coordinates")[0])
+
+
+def single_to_multi(polygon: dict) -> None:
+    polygon.update(type="MultiPolygon", coordinates=[polygon.get("coordinates")])
+
+
 def get_entry_as_feature(db: Session, entry: DisasterArea) -> DisasterAreaSchema:
     json_geom = json.loads(db.execute(entry.geom.ST_AsGeoJson(7, 1)).scalar())
     d_area = DisasterAreaSchema(
