@@ -23,7 +23,7 @@ class DisasterArea(BaseTable):
     created = Column(DateTime, index=True)
     area = Column(Float, index=True)
 
-    geom = Column(Geometry('POLYGON', srid=4326))
+    geom = Column(Geometry('MULTIPOLYGON', srid=4326))
 
     @validates("geom")
     def validate_geometry(self, key, geom):

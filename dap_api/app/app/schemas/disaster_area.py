@@ -1,30 +1,55 @@
 from sqlite3.dbapi2 import Timestamp
-from typing import Optional, List, Dict, Any, Tuple
+from typing import Optional, List, Dict, Any, Union
 
 from geoalchemy2 import func
 from geojson_pydantic.geometries import _GeometryBase
 from pydantic import BaseModel, validator, root_validator
 
 
+def check_polygon_rings(rings):
+    # TODO: output element of error by using if list comprehensions if not too slow
+    if any([len(c) < 4 for c in rings]):
+        raise ValueError("Linear rings must have four or more coordinates")
+    if any([c[-1] != c[0] for c in rings]):
+        raise ValueError("Linear rings must have the same start and end coordinates")
+    if any([any([len(c) != 2 for c in ring]) for ring in rings]):
+        raise ValueError("Coordinates must have exactly two values")
+    if not all([all([-180 <= c[0] <= 180 for c in ring]) for ring in rings]):
+        raise ValueError("Longitude needs to be in range +-180")
+    if not all([all([-90 <= c[1] <= 90 for c in ring]) for ring in rings]):
+        raise ValueError("Latitude needs to be in range +-90")
+
+
 # Adjusted from implementation at geojson_pydantic.geometries:
 # The Union[float, int] type of the Coordinate generates an invalid swagger specification,
 # which can't be rendered in the interactive documentation.
+# Also defining a custom Coordinate class using a root validator (like BBoxModel) is not playing
+# well with returning the coordinates as a normal list object.
+# Therefore all validations for coordinates are done directly in the Polygon class below
 class Polygon(_GeometryBase):
     type: str = "Polygon"
-    coordinates: List[List[Tuple[float, float]]]
+    coordinates: List[List[List[float]]]
 
     @validator("coordinates")
-    def check_coordinates(cls, coords):
-        if any([len(c) < 4 for c in coords]):
-            raise ValueError("All linear rings must have four or more coordinates")
-        if any([c[-1] != c[0] for c in coords]):
-            raise ValueError("All linear rings have the same start and end coordinates")
-        return coords
+    def check_coordinates(cls, rings):
+        check_polygon_rings(rings)
+        return rings
+
+
+class MultiPolygon(_GeometryBase):
+    type: str = "MultiPolygon"
+    coordinates: List[List[List[List[float]]]]
+
+    @validator("coordinates")
+    def check_coordinates(cls, polygons):
+        for rings in polygons:
+            check_polygon_rings(rings)
+        return polygons
 
 
 class FeatureBase(BaseModel):
     type: str = "Feature"
-    geometry: Polygon
+    geometry: Union[Polygon, MultiPolygon]
     properties: Optional[Dict[Any, Any]]
 
     class Config:
@@ -75,7 +100,7 @@ class DisasterAreaPropertiesBase(BaseModel):
 
 # Shared properties
 class DisasterAreaBase(FeatureBase):
-    geometry: Optional[Polygon]
+    geometry: Optional[Union[Polygon, MultiPolygon]]
     properties: Optional[DisasterAreaPropertiesBase]
 
 
@@ -88,7 +113,7 @@ class DisasterAreaPropertiesCreate(DisasterAreaPropertiesBase):
 # Properties to receive via API on creation
 class DisasterAreaCreate(DisasterAreaBase):
     type: str = "Feature"
-    geometry: Polygon
+    geometry: Union[Polygon, MultiPolygon]
     properties: DisasterAreaPropertiesCreate
 
     @validator("geometry")

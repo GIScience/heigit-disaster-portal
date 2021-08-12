@@ -1,8 +1,6 @@
 import random
 import string
-from typing import Tuple, Dict
-
-from geojson_pydantic.types import NumType
+from typing import Dict, List
 
 from app.config import settings
 
@@ -15,9 +13,11 @@ def random_email() -> str:
     return f"{random_lower_string(12)}@{random_lower_string(4)}.com"
 
 
-def random_coordinate(min_value: int, max_value: int) -> Tuple[NumType, NumType]:
-    return round(random.uniform(min_value, max_value), 9), \
-           round(random.uniform(min_value, max_value), 9)
+def random_coordinate(min_value: int, max_value: int) -> List[float]:
+    return [
+        round(random.uniform(min_value, max_value), 9),
+        round(random.uniform(min_value, max_value), 9)
+    ]
 
 
 def get_admin_header() -> Dict[str, str]:

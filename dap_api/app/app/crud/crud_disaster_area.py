@@ -1,10 +1,9 @@
 import json
-from dateutil import parser as date_parser
 from datetime import datetime
 from typing import Union, Dict, Any, Optional, List
 
+from dateutil import parser as date_parser
 from geoalchemy2 import func, Geometry
-from geojson_pydantic.geometries import Polygon
 from geojson_pydantic.types import BBox
 from sqlalchemy.orm import Session
 
@@ -12,15 +11,25 @@ from app.models import DisasterArea
 from app.schemas import DisasterArea as DisasterAreaSchema
 from app.schemas import DisasterAreaCreate, DisasterAreaUpdate
 from .base import CRUDBase
-from ..schemas.disaster_area import DisasterAreaPropertiesCreateOut, DisasterAreaCollection
+from ..schemas.disaster_area import DisasterAreaCollection
+
+
+def multi_to_single(multi_polygon: dict) -> None:
+    multi_polygon.update(type="Polygon", coordinates=multi_polygon.get("coordinates")[0])
+
+
+def single_to_multi(polygon: dict) -> None:
+    polygon.update(type="MultiPolygon", coordinates=[polygon.get("coordinates")])
 
 
 def get_entry_as_feature(db: Session, entry: DisasterArea) -> DisasterAreaSchema:
     json_geom = json.loads(db.execute(entry.geom.ST_AsGeoJson(7, 1)).scalar())
+    if len(json_geom.get("coordinates")) == 1:
+        multi_to_single(json_geom)
     d_area = DisasterAreaSchema(
         id=entry.id,
-        properties=DisasterAreaPropertiesCreateOut(**entry.__dict__),
-        geometry=Polygon(**json_geom),
+        properties=entry.__dict__,
+        geometry=json_geom,
         bbox=json_geom.get('bbox')
     )
     return d_area
@@ -47,7 +56,8 @@ class CRUDDisasterArea(CRUDBase[DisasterArea, DisasterAreaCreate, DisasterAreaUp
         return d_area
 
     def get_multi(
-            self, db: Session, bbox: BBox = None, skip: int = 0, limit: int = 100, d_type_id: int = None, date_time: str = None
+            self, db: Session, bbox: BBox = None, skip: int = 0, limit: int = 100, d_type_id: int = None,
+            date_time: str = None
     ) -> List[DisasterArea]:
         if any([x is not None for x in [bbox, d_type_id, date_time]]):
             query = db.query(DisasterArea)
@@ -73,7 +83,8 @@ class CRUDDisasterArea(CRUDBase[DisasterArea, DisasterAreaCreate, DisasterAreaUp
         return super().get_multi(db=db, skip=skip, limit=limit)
 
     def get_multi_as_feature_collection(
-            self, db: Session, bbox: BBox = None, skip: int = 0, limit: int = 100, d_type_id: int = None, date_time: str = None
+            self, db: Session, bbox: BBox = None, skip: int = 0, limit: int = 100, d_type_id: int = None,
+            date_time: str = None
     ) -> DisasterAreaCollection:
         entries = self.get_multi(db, bbox, skip, limit, d_type_id, date_time)
         features = [self.get_as_feature(db, e.id) for e in entries]
@@ -95,7 +106,10 @@ class CRUDDisasterArea(CRUDBase[DisasterArea, DisasterAreaCreate, DisasterAreaUp
         return db.query(DisasterArea).filter(DisasterArea.name == name).first()
 
     def create(self, db: Session, *, obj_in: DisasterAreaCreate) -> DisasterArea:
-        geom = func.ST_GeomFromGeoJSON(obj_in.geometry.json())
+        geom_dict = obj_in.geometry.dict()
+        if len(obj_in.geometry.coordinates) == 1:
+            single_to_multi(geom_dict)
+        geom = func.ST_GeomFromGeoJSON(json.dumps(geom_dict))
         area = calculate_geometry_area(db, geom)
         db_obj = DisasterArea(
             name=obj_in.properties.name,
@@ -117,7 +131,10 @@ class CRUDDisasterArea(CRUDBase[DisasterArea, DisasterAreaCreate, DisasterAreaUp
         if isinstance(obj_in, DisasterAreaUpdate):
             obj_in = obj_in.dict(exclude_unset=True)
         if obj_in.get('geometry'):
-            geom = func.ST_GeomFromGeoJSON(json.dumps(obj_in.get('geometry')))
+            geom_dict = obj_in.get('geometry')
+            if len(geom_dict.get("coordinates")) == 1:
+                single_to_multi(geom_dict)
+            geom = func.ST_GeomFromGeoJSON(json.dumps(geom_dict))
             area = calculate_geometry_area(db, geom)
             setattr(db_obj, 'geom', geom)
             setattr(db_obj, 'area', area)
