@@ -6,6 +6,7 @@ from dateutil import parser as date_parser
 from geoalchemy2 import func, Geometry
 from geojson_pydantic.types import BBox
 from sqlalchemy.orm import Session
+from sqlalchemy import desc
 
 from app.models import DisasterArea
 from app.schemas import DisasterArea as DisasterAreaSchema
@@ -79,7 +80,7 @@ class CRUDDisasterArea(CRUDBase[DisasterArea, DisasterAreaCreate, DisasterAreaUp
                         query = query.filter(DisasterArea.created >= date_parser.isoparse(date1))
                     if date2 not in ['', '..']:
                         query = query.filter(DisasterArea.created <= date_parser.isoparse(date2))
-            return query.offset(skip).limit(limit).all()
+            return query.order_by(desc(DisasterArea.area)).offset(skip).limit(limit).all()
         return super().get_multi(db=db, skip=skip, limit=limit)
 
     def get_multi_as_feature_collection(
