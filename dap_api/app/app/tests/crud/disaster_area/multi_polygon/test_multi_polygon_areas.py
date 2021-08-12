@@ -10,7 +10,6 @@ from app.tests.utils.disaster_areas import create_new_disaster_area
 from app.tests.utils.utils import random_lower_string
 
 
-@pytest.mark.skip
 def test_create_disaster_area_multi(db: Session) -> None:
     d_area_obj = DisasterAreaCreate(
         geometry={
@@ -30,7 +29,6 @@ def test_create_disaster_area_multi(db: Session) -> None:
     assert disaster_area.id
 
 
-@pytest.mark.skip
 def test_get_disaster_area_multi(db: Session) -> None:
     d_area = create_new_disaster_area(db, [2.4321234124, 2.4321143124], multi=True)
     d_area2 = crud.disaster_area.get_as_feature(db, d_area.id)
