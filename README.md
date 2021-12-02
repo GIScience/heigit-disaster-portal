@@ -188,6 +188,9 @@ your breakpoints will not be hit. You can either add the coverage as a second py
 _Additional Arguments_ to the pytest configuration, and switch back and forth between debug and coverage mode by
 adding and removing `--no-cov` from the config.
 
+> For the second option you need to check `Pytest: don't add "--no-header --no-summary -q"` in `Preferences` >
+> `Advanced Settings` in PyCharm
+
 Of course, you can also run pytest with coverage in the reload-container with
 `pytest --cov=app --cov-report=term-missing`.
 
