@@ -12,6 +12,7 @@ class Settings(BaseSettings):
     ORS_BACKEND_URL: str = "https://api.openrouteservice.org/v2"
 
     CORS_ORIGINS: List[str] = []
+    CORS_ORIGINS_REGEX: str = ""
 
     SECRET: str = "This is secret"
     POSTGRES_SERVER: str = "db"
