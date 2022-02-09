@@ -1,14 +1,17 @@
 # HeiGIT Disaster Portal API
 
 The HeiGIT disaster portal API was developed to allow the accessing, adding, deleting and editing of features that
-can be used in requests to HeiGIT services in the form of a portal system between users (e.g. the OSCAR platform) and
+can be used in requests to HeiGIT services in the form of a portal system between applications or users and
 services provided by HeiGIT.
-This portal should act as a single entry place to the various services (openrouteservice, ohsome etc.) as well as
+This portal should act as a single entry place to the various services ([openrouteservice], [ohsome] etc.) as well as
 allowing additional processing to be performed on either the requests made to these services, or the responses
 returned from them.
 
-In the initial version, the portal will only communicate with openrouteservice, and will be used for adding avoid areas
-to requests which will be provided by an external source.
+[openrouteservice]: https://openrouteservice.org "ORS website"
+[ohsome]: https://ohsome.org "ohsome website"
+
+In the initial version, the portal will only communicate with [openrouteservice], and will be used for adding avoid
+areas to requests which will be provided by an external source.
 
 To accomplish this, there will need to be two APIs - one for maintaining the database of features, and one for making
 requests against the HeiGIT services.
@@ -20,7 +23,7 @@ The avoid-areas functionality should be able to identify features from the datab
 request without the user having to explicitly pass these areas in with their request.
 It should also be able to strip these derived areas from the meta information in the response, where normally the full
 query passed to openrouteservice is added.
-In the case of the portal, the request to openrouteservice will contain information not directly specified by the user,
+In the case of the portal, the request to [openrouteservice] will contain information not directly specified by the user,
 and it may be desired (e.g. to reduce network transmission) to remove this information from the response.
 
 Requirements:
@@ -31,6 +34,9 @@ Requirements:
 ## Production setup
 
 ```sh
+# copy .env-sample to .env and adjust settings
+cp .env-sample .env
+
 # builds the docker disaster-area-portal image and dap-api container
 docker-compose build
 
@@ -85,6 +91,11 @@ env. In case pycharm creates a separate virtual env, you could prevent poetry fr
 running:
 ```
 poetry config virtualenvs.create false
+```
+
+Copy `.env-sample` to `.env` and adjust settings
+```
+cp .env-sample .env
 ```
 
 Build the development image
@@ -226,7 +237,7 @@ $ docker exec -it dap-api-reload bash
 * If you created a new model in `./app/app/models/`, make sure to import it in `./app/app/db/import_models.py`,
 that imports all the models that will be used by Alembic.
 
-* After changing a model (for example, adding a column), inside the container, create a revision, e.g.:
+* After changing a model (for example, adding a column) inside the container, create a revision, e.g.:
 
 ```console
 $ alembic revision --autogenerate -m "Add column last_name to User model"
