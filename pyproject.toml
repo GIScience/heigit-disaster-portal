@@ -7,7 +7,6 @@ authors = ["Amandus Butzer <amandus.butzer@heigit.org>", "Takara Baumbach <takar
 [tool.poetry.dependencies]
 alembic = "^1.7.5"  # database migration tool
 python = "^3.8"
-docker = "^5.0.3"
 python-dotenv = "^0.19.2"  # reading .env files
 fastapi = "^0.70.0"  # api framework
 email-validator = "^1.1.1"  # pydantic email validation in api docs
@@ -22,6 +21,7 @@ tenacity = "^8.0.1"  # retrying library (waiting for database to restart)
 uvicorn = "^0.15.0"  # ASGI server
 geopy = "^2.1.0"  # geographic calculation functions
 python-dateutil = "^2.8.1"  # correct timestamp parsing
+requests = "^2.27.1"  # easy HTTP request interaction
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.5"  # testing
