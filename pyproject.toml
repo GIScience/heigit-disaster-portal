@@ -36,3 +36,11 @@ mypy = "^0.931"  # TODO: used ?
 [build-system]
 requires = ["poetry>=1.1.0b2"]
 build-backend = "poetry.masonry.api"
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"  # recommended unless multiple async frameworks are used
+minversion = "7.0"
+testpaths = [
+    "tests"
+]
+log_auto_indent = "True"  # auto-indent multilines
