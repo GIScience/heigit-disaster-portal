@@ -4,6 +4,7 @@ services:
   dap-api:
     container_name: dap-api
     image: disaster-area-portal
+    restart: "unless-stopped"
     depends_on:
       - dap-db
     build:
@@ -21,6 +22,7 @@ services:
   dap-db:
     container_name: dap-db
     image: dap-storage
+    restart: "unless-stopped"
     build:
       context: .
       dockerfile: ./dap_db//Dockerfile
