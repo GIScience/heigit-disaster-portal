@@ -10,11 +10,58 @@ from starlette.middleware.cors import CORSMiddleware
 from app.api.api_v1.api import api_router
 from app.config import settings
 
+api_description = """
+The HeiGIT disaster portal API manages features that can be used by applications or users
+in requests to HeiGIT services.
+
+It acts as a single entry place to the various services ([openrouteservice], [ohsome] etc.) as well as
+allowing additional processing to be performed on either the requests made to these services, or the responses
+returned from them.
+
+[openrouteservice]: https://openrouteservice.org "ORS website"
+[ohsome]: https://ohsome.org "ohsome website"
+"""
+
+
+tags = {
+    "users": {
+        "name": "users",
+        "description": "Manage access restrictions to API functionality through users."
+    },
+    "providers": {
+        "name": "providers",
+        "description": "Disaster data providers that officially contribute data sets"
+    },
+    "disaster types": {
+        "name": "disaster types",
+        "description": "Main categories of disasters assigned to areas"
+    },
+    "disaster sub types": {
+        "name": "disaster sub types",
+        "description": "Detailed categories of disasters optionally assigned to areas"
+    },
+    "disaster areas": {
+        "name": "disaster areas",
+        "description": "Storage for disaster area geometries and their meta information"
+    },
+    "custom speeds": {
+        "name": "custom speeds",
+        "description": "Speed sets used to overwrite default speeds for `waytype` or `surface` tags"
+    },
+    "HeiGIT services": {
+        "name": "HeiGIT services",
+        "description": "Endpoints offering various different services provided by HeiGIT"
+    }
+}
+
+
 app = FastAPI(
     title=settings.PROJECT_NAME,
     openapi_url=f"{settings.API_V1_STR}/docs/openapi.json",
     docs_url=None,
-    redoc_url=None
+    redoc_url=None,
+    description=api_description,
+    openapi_tags=list(tags.values())
 )
 
 app.mount("/static", StaticFiles(directory="static"), name="static")

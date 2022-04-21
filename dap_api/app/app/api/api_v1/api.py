@@ -11,4 +11,4 @@ api_router.include_router(disaster_sub_types.router, prefix="/collections/disast
 api_router.include_router(disaster_areas.router, prefix="/collections/disaster_areas", tags=["disaster areas"])
 api_router.include_router(custom_speeds.router, prefix="/collections/custom_speeds", tags=["custom speeds"])
 
-api_router.include_router(ors_connector.router, prefix="/routing")
+api_router.include_router(ors_connector.router, prefix="/routing", tags=["HeiGIT services"])
