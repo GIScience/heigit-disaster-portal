@@ -26,4 +26,4 @@ else
 fi
 
 # Start Uvicorn with live reload of $RELOAD_DIR
-exec uvicorn --reload --reload-dir $RELOAD_DIR --host $HOST --port $PORT --log-level $LOG_LEVEL "$APP_MODULE"
+exec uvicorn --reload --reload-dir $RELOAD_DIR --host $HOST --port $PORT --log-config /app/log_config.yml "$APP_MODULE"

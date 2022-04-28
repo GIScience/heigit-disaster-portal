@@ -14,5 +14,6 @@ if __name__ == '__main__':
                 host="0.0.0.0",
                 port=8083,
                 log_level="debug",
+                log_config="./log_config.yml",
                 reload=True,
                 reload_dirs=[os.getcwd()])

@@ -12,6 +12,7 @@ class Settings(BaseSettings):
     ORS_BACKEND_URL: str = "https://api.openrouteservice.org/v2"
 
     CREATE_EXAMPLE_DATA_ON_STARTUP: bool = False
+    DEBUG: bool = False
 
     CORS_ORIGINS: List[str] = []
     CORS_ORIGINS_REGEX: str = ""

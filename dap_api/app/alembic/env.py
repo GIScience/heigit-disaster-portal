@@ -1,4 +1,5 @@
-from logging.config import fileConfig
+from logging.config import dictConfig
+from app.logger import config as dap_config
 
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
@@ -13,7 +14,7 @@ config = context.config
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
-fileConfig(config.config_file_name)
+dictConfig(dap_config)
 
 # add your model's MetaData object here
 # for 'autogenerate' support
