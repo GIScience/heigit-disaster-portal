@@ -25,7 +25,7 @@ services:
     restart: "unless-stopped"
     build:
       context: .
-      dockerfile: ./dap_db//Dockerfile
+      dockerfile: ./dap_db/Dockerfile
     ports:
       - 5432:5432
     volumes:
@@ -34,3 +34,8 @@ services:
       - .env
     environment:
       - PGDATA=/var/lib/postgresql/data/pgdata
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
