@@ -1,24 +1,22 @@
 """
-Nothing to do here yet
-If we have to initialize the database with users or datasets we can do this here
+Initialization of the database with basic data
+
+make sure all SQL Alchemy models are imported (app.db.import_models) before initializing DB
+otherwise, SQL Alchemy might fail to initialize relationships properly
+for more details: https://github.com/tiangolo/full-stack-fastapi-postgresql/issues/28
 """
-# TODO:
-# add Users: Oscar User
-# add Providers: Oscar Provider(from oscar user)
 import json
 from pathlib import Path
 
+from pydantic import EmailStr
 from sqlalchemy.orm import Session
 
 from app import crud, schemas
 from app.config import settings
 from app.db import import_models  # noqa: F401
 
-
-# make sure all SQL Alchemy models are imported (app.db.import_models) before initializing DB
-# otherwise, SQL Alchemy might fail to initialize relationships properly
-# for more details: https://github.com/tiangolo/full-stack-fastapi-postgresql/issues/28
-# from app.db.base import BaseTable
+from app.security import generate_hash
+from app.tests.utils.disaster_areas import create_new_disaster_area
 
 
 def create_ds_type_if_missing(db: Session, sub_type: schemas.DisasterSubTypeBaseInDBBase) -> None:
@@ -36,29 +34,63 @@ def create_d_type_if_missing(db: Session, d_type: schemas.DisasterTypeBaseInDBBa
         create_ds_type_if_missing(db, sub_type)
 
 
-def create_provider(db: Session, provider: schemas.ProviderInDB) -> None:
-    if not crud.provider.get_by_name(db=db, name=provider.name):
-        p_obj = schemas.ProviderCreate(**provider.dict())
-        crud.provider.create(db=db, obj_in=p_obj)
+def create_example_provider(db: Session) -> None:
+    example_user = crud.user.get_by_email(db, "user@example.com")
+    p_obj = schemas.ProviderCreate(
+        owner_id=example_user.id,
+        email=EmailStr("provider@example.com"),
+        name="Example provider"
+    )
+    crud.provider.create(db=db, obj_in=p_obj)
 
 
-def create_user(db: Session, user: schemas.User) -> None:
-    if not crud.user.get_by_email(db=db, email=user.email):
-        u_ubj = schemas.UserCreateFromDb(**user.dict())
-        crud.user.create_from_db_entry(db, obj_in=u_ubj)
+def create_example_user(db: Session) -> None:
+    u_obj = schemas.UserCreateFromDb(
+        email=EmailStr("user@example.com"),
+        hashed_secret=generate_hash("example")
+    )
+    crud.user.create_from_db_entry(db, obj_in=u_obj)
 
-    for provider in user.providers:
-        create_provider(db, provider)
+
+def create_example_disaster_area(db):
+    example_provider = crud.provider.get_by_name(db, "Example provider")
+    create_new_disaster_area(
+        db,
+        p_id=example_provider.id,
+        name="Example disaster area",
+        info="Example info"
+    )
 
 
-def create_users_and_providers(db: Session) -> None:
-    path = Path(__file__).parent.absolute()
-    with open(f'{path}/init_data/users.json', 'r') as d_type_file:
-        users = json.load(d_type_file)
+def create_example_custom_speeds(db):
+    example_provider = crud.provider.get_by_name(db, "Example provider")
+    speed_obj = schemas.CustomSpeedsCreate(
+        properties=schemas.CustomSpeedsProperties(
+            name="Example speeds",
+            provider_id=example_provider.id
+        ),
+        content=schemas.CustomSpeedsContent(
+            roadSpeeds=schemas.RoadSpeeds(
+                primary=80,
+                secondary=60,
+            )
+        )
+    )
+    crud.custom_speeds.create(db, speed_obj)
 
-    users = [schemas.UserInDB(**obj) for obj in users]
-    for user in users:
-        create_user(db, user)
+
+def create_example_data(db: Session) -> None:
+    if crud.user.count(db) == 1:
+        create_example_user(db)
+
+    if not crud.provider.count(db):
+        create_example_provider(db)
+
+    if not crud.disaster_area.count(db):
+        create_example_disaster_area(db)
+
+    if not crud.custom_speeds.count(db):
+        create_example_custom_speeds(db)
 
 
 def create_admin(db: Session) -> None:
@@ -85,14 +117,10 @@ def create_disaster_types_and_sub_types(db: Session) -> None:
 
 
 def init_db(db: Session) -> None:
-    # Tables should be created with Alembic migrations
-    # But if you don't want to use migrations, create
-    # the tables un-commenting the next line
-    # importBaseTable.metadata.create_all(bind=engine)
-
     create_admin(db)
-    create_users_and_providers(db)
     create_disaster_types_and_sub_types(db)
+    if settings.CREATE_EXAMPLE_DATA_ON_STARTUP:
+        create_example_data(db)
 
 
 if __name__ == '__main__':
