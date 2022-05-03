@@ -1,5 +1,9 @@
 # HeiGIT Disaster Portal API
 
+> Copyright Notice: This repository is licensed under the GNU AGPLv3 license. The basic structure is generated using
+> the [FastAPI project generator](https://github.com/tiangolo/full-stack-fastapi-postgresql) (MIT license).
+> If you want to do a similar project, you might want to start there.
+
 The HeiGIT disaster portal API was developed to allow the accessing, adding, deleting and editing of features that
 can be used in requests to HeiGIT services in the form of a portal system between applications or users and
 services provided by HeiGIT.
@@ -81,7 +85,6 @@ Now we can install all dependencies locally.
 ```
 # install dependencies
 poetry install --no-root
-
 ```
 
 When using [PyCharm](https://www.jetbrains.com/pycharm/) you can use the [Poetry plugin](https://plugins.jetbrains.com/plugin/14307-poetry) 
