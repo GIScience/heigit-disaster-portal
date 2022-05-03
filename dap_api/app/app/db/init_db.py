@@ -39,7 +39,7 @@ def create_d_type_if_missing(db: Session, d_type: schemas.DisasterTypeBaseInDBBa
 
 @log('info')
 def create_example_provider(db: Session) -> None:
-    example_user = crud.user.get_by_email(db, "user@example.com")
+    example_user = crud.user.get_by_email(db, email="user@example.com")
     p_obj = schemas.ProviderCreate(
         owner_id=example_user.id,
         email=EmailStr("provider@example.com"),
@@ -59,7 +59,7 @@ def create_example_user(db: Session) -> None:
 
 @log('info')
 def create_example_disaster_area(db):
-    example_provider = crud.provider.get_by_name(db, "Example provider")
+    example_provider = crud.provider.get_by_name(db, name="Example provider")
     create_new_disaster_area(
         db,
         p_id=example_provider.id,
@@ -70,7 +70,7 @@ def create_example_disaster_area(db):
 
 @log('info')
 def create_example_custom_speeds(db):
-    example_provider = crud.provider.get_by_name(db, "Example provider")
+    example_provider = crud.provider.get_by_name(db, name="Example provider")
     speed_obj = schemas.CustomSpeedsCreate(
         properties=schemas.CustomSpeedsProperties(
             name="Example speeds",
@@ -83,7 +83,7 @@ def create_example_custom_speeds(db):
             )
         )
     )
-    crud.custom_speeds.create(db, speed_obj)
+    crud.custom_speeds.create(db, obj_in=speed_obj)
 
 
 @log('info')

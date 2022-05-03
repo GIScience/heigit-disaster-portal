@@ -1,3 +1,5 @@
+from os.path import realpath
+
 from fastapi import FastAPI
 from fastapi.openapi.docs import (
     get_redoc_html,
@@ -64,7 +66,7 @@ app = FastAPI(
     openapi_tags=list(tags.values())
 )
 
-app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/static", StaticFiles(directory=realpath(f'{realpath(__file__)}/../../static')), name="static")
 
 
 @app.get(f"{settings.API_V1_STR}/docs", include_in_schema=False)
