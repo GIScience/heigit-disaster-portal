@@ -13,6 +13,7 @@ class Settings(BaseSettings):
 
     CREATE_EXAMPLE_DATA_ON_STARTUP: bool = False
     DEBUG: bool = False
+    ENCRYPTION_SALT: str = "StringOf22ChrEndWithAu"
 
     CORS_ORIGINS: List[str] = []
     CORS_ORIGINS_REGEX: str = ""

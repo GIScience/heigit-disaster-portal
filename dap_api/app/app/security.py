@@ -1,11 +1,14 @@
-import base64
 import secrets
 
 from fastapi.security import HTTPBearer
 
+from passlib.hash import bcrypt_sha256
+
+from app.config import settings
+
 
 def generate_hash(secret: str) -> str:
-    return str(base64.urlsafe_b64encode(bytes(secret, "utf-8")), "utf-8")
+    return bcrypt_sha256.using(salt=settings.ENCRYPTION_SALT).hash(secret)
 
 
 def generate_secret(length: int = 32) -> str:
