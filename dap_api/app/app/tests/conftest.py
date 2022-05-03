@@ -1,4 +1,3 @@
-import logging
 from typing import Generator, Dict
 
 import pytest
@@ -9,6 +8,7 @@ from app.api.deps import get_db
 from app.config import settings
 from app.db.base import BaseTable
 from app.db.init_db import init_db
+from app.logger import logger
 from app.main import app
 from app.schemas import UserCreateOut
 from app.security import generate_secret
@@ -18,8 +18,6 @@ from app.tests.utils.utils import random_email, get_admin_header
 
 app.dependency_overrides[get_db] = override_get_db
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
 
 PROVIDER_OWNER_SECRET = generate_secret()
 
