@@ -16,12 +16,13 @@ class ORSProcessor(BaseProcessor):
         disaster_areas = {}
         lookup_bbox = self.get_bounding_box(request, options.ors_api, options.ors_profile)
         if options.portal_mode.value == "avoid_areas":
+            # TODO: add filters for areas
             disaster_areas = crud.disaster_area.get_multi_as_feature_collection(db, lookup_bbox)
             coordinates_to_add = [f.geometry.coordinates for f in disaster_areas.features if
                                   f.geometry.type in ["Polygon"]]
             if coordinates_to_add:
                 # ORS expects Polygon coordinates to be a list of lists of coordinates, whilst for MultiPolygon
-                # coordinates is expected to be a list of lists of lists of coordinates. If we get a Polygon in the
+                # coordinates is expected to be a list of lists, of lists of coordinates. If we get a Polygon in the
                 # original request, we need to convert it to a MultiPolygon before adding
                 if request.options.avoid_polygons.type == "Polygon":
                     request.options.avoid_polygons.type = "MultiPolygon"
@@ -41,7 +42,7 @@ class ORSProcessor(BaseProcessor):
         request_dict = self.prepare_request_dic(request)
         request_header = self.prepare_headers(request_dict, options.ors_response_type.value, header_authorization)
 
-        # debug mode: return modified request without relaying to backend
+        # debug mode: return modified request without relaying to backend TODO: log instead
         if request.portal_options.debug:
             return ORSResponse(
                 status_code=200,
