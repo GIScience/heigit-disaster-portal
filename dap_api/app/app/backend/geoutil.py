@@ -1,7 +1,10 @@
+import json
 from math import sqrt
 
 import geopy
 import geopy.distance
+from geoalchemy2 import func
+from sqlalchemy.sql.functions import Function
 
 
 def point_from_point_bearing_distance(lon, lat, bearing, distance):
@@ -110,3 +113,46 @@ def meters_travelled(seconds, speed):
     @return:
     """
     return round(seconds * speed / 3600 * 1000)
+
+
+def build_diff_query(avoid_item, item, ors_api, ors_res_type) -> Function:
+    """
+    build the sql query to calculate the geometric difference between
+    corresponding isochrone or route items.
+    The returned query can be executed using a db session.
+    @param avoid_item: item of the ors response with avoid areas
+    @param item: item of the ors response without avoid areas
+    @param ors_api: ors service
+    @param ors_res_type: response format
+    @return: sqlalchemy query function
+    """
+    geom_no_avoid = get_geom_from_item(item, ors_res_type)
+    geom = get_geom_from_item(avoid_item, ors_res_type)
+    difference = None
+    # the difference needs to be calculated with the larger/longer geometry as base geometry (first argument)
+    if ors_api == "isochrones":
+        difference = func.ST_Difference(geom_no_avoid, geom)
+    elif ors_api == "directions":
+        difference = func.ST_Difference(geom, geom_no_avoid)
+    m_valid = func.ST_MakeValid(difference)
+    query = func.ST_AsGeoJson(m_valid, 7, 1)
+    if ors_res_type == 'json':
+        query = func.ST_AsEncodedPolyline(m_valid)
+    return query
+
+
+def get_geom_from_item(item: dict, ors_res_type):
+    """
+    extract the geometry from the correct place in the response item
+    depending on the response format
+    @param item:
+    @param ors_res_type: response format
+    @return: item of the ors response
+    """
+    geom = None
+    geom_str = json.dumps(item.get('geometry'))
+    if ors_res_type == 'geojson':
+        geom = func.ST_GeomFromGeoJSON(geom_str)
+    elif ors_res_type == 'json':
+        geom = func.ST_LineFromEncodedPolyline(geom_str)
+    return geom
