@@ -1,7 +1,7 @@
 from enum import Enum
 from typing import Optional, Union, Dict
 
-from pydantic import BaseModel, Extra, conint, conlist
+from pydantic import BaseModel, Extra, conint, conlist, Field
 
 
 class PortalMode(str, Enum):
@@ -41,6 +41,8 @@ class PortalOptions(BaseModel):
     debug: Optional[bool] = False
     return_areas_in_response: Optional[bool] = False
     bounds_looseness: Optional[conint(ge=0, le=200)] = 0
+    generate_difference: Optional[bool] = Field(False, description='Generates difference between requests with and '
+                                                                   'without avoid areas. Uses up 2 ORS requests.')
 
 
 class AvoidPolygons(BaseModel):
