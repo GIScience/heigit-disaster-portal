@@ -6,7 +6,7 @@ from fastapi.responses import JSONResponse
 from app import crud
 from app.backend.base import BaseProcessor
 from app.schemas import ORSRequest, PathOptions, ORSResponse
-from app.backend.geoutil import bbox_buffer_percentage, meters_travelled, bbox_from_radius
+from app.backend.geoutil import bbox_buffer_percentage, meters_travelled, bbox_from_radius, build_diff_query
 
 
 class ORSProcessor(BaseProcessor):
@@ -16,12 +16,13 @@ class ORSProcessor(BaseProcessor):
         disaster_areas = {}
         lookup_bbox = self.get_bounding_box(request, options.ors_api, options.ors_profile)
         if options.portal_mode.value == "avoid_areas":
+            # TODO: add filters for areas
             disaster_areas = crud.disaster_area.get_multi_as_feature_collection(db, lookup_bbox)
             coordinates_to_add = [f.geometry.coordinates for f in disaster_areas.features if
                                   f.geometry.type in ["Polygon"]]
             if coordinates_to_add:
                 # ORS expects Polygon coordinates to be a list of lists of coordinates, whilst for MultiPolygon
-                # coordinates is expected to be a list of lists of lists of coordinates. If we get a Polygon in the
+                # coordinates is expected to be a list of lists, of lists of coordinates. If we get a Polygon in the
                 # original request, we need to convert it to a MultiPolygon before adding
                 if request.options.avoid_polygons.type == "Polygon":
                     request.options.avoid_polygons.type = "MultiPolygon"
@@ -41,7 +42,7 @@ class ORSProcessor(BaseProcessor):
         request_dict = self.prepare_request_dic(request)
         request_header = self.prepare_headers(request_dict, options.ors_response_type.value, header_authorization)
 
-        # debug mode: return modified request without relaying to backend
+        # debug mode: return modified request without relaying to backend TODO: log instead
         if request.portal_options.debug:
             return ORSResponse(
                 status_code=200,
@@ -52,15 +53,31 @@ class ORSProcessor(BaseProcessor):
         # relay to backend
         endpoint = f"/{options.ors_api}/{options.ors_profile}/{options.ors_response_type}"
         response = self.relay_request_post(endpoint, request_header, request_dict)
+        response_json = {}
+        if response.status_code == 200 and request.portal_options.generate_difference:
+            response_json = response.json()
+            new_features = []
+            if "options" in request_dict and "avoid_polygons" in request_dict["options"]:
+                request_dict.get("options").pop("avoid_polygons")
+                response_no_avoid = self.relay_request_post(endpoint, request_header, request_dict)
+
+                new_features = self.calculate_new_features(db, options, request_dict,
+                                                           response_json[result_key(options)],
+                                                           response_no_avoid.json()[result_key(options)])
+            response_json[result_key(options)] = new_features
 
         # process result
         if options.ors_response_type.value == "gpx":
             response_body = response.text
         else:
-            response_json = response.json()
+            if not response_json:
+                response_json = response.json()
             if request.portal_options.return_areas_in_response:
                 response_json["disaster_areas"] = json.loads(disaster_areas.json())
                 response_json["disaster_areas_lookup_bbox"] = lookup_bbox
+
+            # add portal options to query
+            response_json['metadata']['query']['portal_options'] = request.portal_options.dict()
             response_body = json.dumps(response_json)
 
         return ORSResponse(
@@ -68,6 +85,55 @@ class ORSProcessor(BaseProcessor):
             body=response_body,
             media_type=response.headers.get("Content-Type")
         )
+
+    @staticmethod
+    def calculate_new_features(db, options, request_dict, avoid_results, no_avoid_results):
+        out_type = options.ors_response_type.value
+        new_features = []
+        for i, item in enumerate(no_avoid_results):
+            if options.ors_api is "isochrones":
+                avoid_item = ORSProcessor.get_matching_isochrone(avoid_results, item)
+            else:
+                avoid_item = avoid_results[i]
+            # no difference
+            if avoid_item == item:
+                continue
+            query = build_diff_query(avoid_item, item, options.ors_api, out_type)
+            diff_geom = db.execute(query).scalar()
+            avoid_item["geometry"] = json.loads(diff_geom)
+            # no difference
+            if not avoid_item["geometry"]["coordinates"]:
+                continue
+            ORSProcessor.update_info(avoid_item, item, options, request_dict)
+            new_features.append(avoid_item)
+        return new_features
+
+    @staticmethod
+    def get_matching_isochrone(avoid_results, item):
+        # the number of isochrones in the avoid-response can be different from the normal one
+        # thus, they are matched by the group_index and value
+        return next((x for x in avoid_results if
+                     x["properties"]["group_index"] == item["properties"]["group_index"] and
+                     x["properties"]["value"] == item["properties"]["value"]), None)
+
+    @staticmethod
+    def update_info(avoid_item, item, options, request_dict):
+        if options.ors_api == "isochrones":
+            for attribute in request_dict.get("attributes") or []:
+                avoid_item["properties"][attribute] = item.get("properties").get(attribute) - avoid_item.get(
+                    "properties").get(attribute)
+        elif options.ors_api == "directions":
+            item_props = item if options.ors_response_type == "json" else item["properties"]
+            avoid_item_props = avoid_item if options.ors_response_type == "json" else avoid_item["properties"]
+            # recalculate distance and duration
+            avoid_item_props["summary"]["distance"] -= item_props["summary"]["distance"]
+            avoid_item_props["summary"]["duration"] -= item_props["summary"]["duration"]
+            for k, v in avoid_item_props["summary"].items():
+                avoid_item_props["summary"][k] = round(v, 1)
+            # drop unusable properties
+            avoid_item_props.pop("way_points", None)
+            avoid_item_props.pop("segments", None)
+        # TODO: recalculate bbox
 
     @staticmethod
     def get_bounding_box(request: ORSRequest, target_api, target_profile) -> list:
@@ -140,6 +206,13 @@ class ORSProcessor(BaseProcessor):
         if len(header_authorization) > 0:
             request_header["Authorization"] = header_authorization
         return request_header
+
+
+def result_key(options: PathOptions) -> str:
+    """
+    returns the correct key of the result list depending on the response type
+    """
+    return "features" if options.ors_response_type != "json" else "routes"
 
 
 def clean_dict(d):
