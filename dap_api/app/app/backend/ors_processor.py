@@ -112,9 +112,10 @@ class ORSProcessor(BaseProcessor):
     def get_matching_isochrone(avoid_results, item):
         # the number of isochrones in the avoid-response can be different from the normal one
         # thus, they are matched by the group_index and value
-        return next((x for x in avoid_results if
-                     x["properties"]["group_index"] == item["properties"]["group_index"] and
-                     x["properties"]["value"] == item["properties"]["value"]), None)
+        for x in avoid_results:
+            if has_same_prop(x, item, "group_index") and has_same_prop(x, item, "value"):
+                return x
+        return None
 
     @staticmethod
     def update_info(avoid_item, item, options, request_dict):
@@ -213,6 +214,13 @@ def result_key(options: PathOptions) -> str:
     returns the correct key of the result list depending on the response type
     """
     return "features" if options.ors_response_type != "json" else "routes"
+
+
+def has_same_prop(d1: dict, d2: dict, prop: str) -> bool:
+    """
+    Checks whether two features have the same value for a specific property
+    """
+    return d1["properties"][prop] == d2["properties"][prop]
 
 
 def clean_dict(d):

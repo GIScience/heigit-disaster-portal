@@ -3,7 +3,7 @@ import json
 import pytest
 from sqlalchemy.orm import Session
 
-from app.backend.ors_processor import ORSProcessor, result_key
+from app.backend.ors_processor import ORSProcessor, result_key, has_same_prop
 from app.schemas import PathOptions, ORSRequest
 from app.tests.backend.util_test_data import update_info_set_1, update_info_set_2, calc_features_set_1, \
     calc_features_set_2, matching_iso_set_1, matching_iso_set_2, calc_features_set_3, \
@@ -71,3 +71,26 @@ class TestOrsProcessor:
 def test_result_keys():
     assert result_key(basic_options(res="json")) == "routes"
     assert result_key(basic_options()) == "features"
+
+
+def test_has_same_prop():
+    assert has_same_prop(
+        {"properties": {"asd": True, "hello": 42}},
+        {"properties": {"asd": False, "hello": 42}},
+        "hello"
+    ) is True
+    assert has_same_prop(
+        {"properties": {"asd": True, "hello": 42}},
+        {"properties": {"asd": False, "hello": "42"}},
+        "hello"
+    ) is False
+    assert has_same_prop(
+        {"properties": {"asd": True, "hello": 42}},
+        {"properties": {"asd": False, "hello": False}},
+        "hello"
+    ) is False
+    assert has_same_prop(
+        {"properties": {"asd": True, "hello": 42}},
+        {"properties": {"asd": True, "hello": False}},
+        "asd"
+    ) is True
