@@ -91,7 +91,7 @@ class ORSProcessor(BaseProcessor):
         out_type = options.ors_response_type.value
         new_features = []
         for i, item in enumerate(no_avoid_results):
-            if options.ors_api is "isochrones":
+            if options.ors_api == "isochrones":
                 avoid_item = ORSProcessor.get_matching_isochrone(avoid_results, item)
             else:
                 avoid_item = avoid_results[i]
