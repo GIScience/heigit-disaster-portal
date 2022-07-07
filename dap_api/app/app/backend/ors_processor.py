@@ -74,12 +74,13 @@ class ORSProcessor(BaseProcessor):
         else:
             if not response_json:
                 response_json = response.json()
-            if request.portal_options.return_areas_in_response:
-                response_json["disaster_areas"] = json.loads(disaster_areas.json())
-                response_json["disaster_areas_lookup_bbox"] = lookup_bbox
+            if response.status_code == 200:
+                if request.portal_options.return_areas_in_response:
+                    response_json["disaster_areas"] = json.loads(disaster_areas.json())
+                    response_json["disaster_areas_lookup_bbox"] = lookup_bbox
 
-            # add portal options to query
-            response_json['metadata']['query']['portal_options'] = request.portal_options.dict()
+                # add portal options to query
+                response_json['metadata']['query']['portal_options'] = request.portal_options.dict()
             response_body = json.dumps(response_json)
 
         return ORSResponse(

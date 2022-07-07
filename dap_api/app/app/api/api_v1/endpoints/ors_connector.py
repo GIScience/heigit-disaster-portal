@@ -1,7 +1,8 @@
 from typing import Any, Union
 
-from fastapi import APIRouter, Depends, Response
+from fastapi import APIRouter, Depends, Response, Body, HTTPException
 from sqlalchemy.orm import Session
+from starlette import status
 
 from app.api import deps
 from app.backend.ors_processor import ORSProcessor
@@ -116,5 +117,15 @@ def process_ors_request(
         ors_response_type: OrsResponseType
 ) -> Any:
     path_options = PathOptions(**path_options.dict(), ors_response_type=ors_response_type)
+    if path_options.ors_api == "isochrones" and isinstance(request, ORSDirections):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Your request body (directions) doesn't match the ors_api ({path_options.ors_api})"
+        )
+    elif path_options.ors_api == "directions" and isinstance(request, ORSIsochrones):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Your request body (isochrones) doesn't match the ors_api ({path_options.ors_api})"
+        )
     result = ors_processor.handle_ors_request(db, request, path_options, header_authorization)
     return Response(result.body, status_code=result.status_code, media_type=result.media_type)
