@@ -3,6 +3,8 @@ from typing import Optional, Union, Dict
 
 from pydantic import BaseModel, Extra, conint, conlist, Field
 
+from app.schemas.utils import ISO_EXAMPLES, DIR_EXAMPLES, BASE_EXAMPLE
+
 
 class PortalMode(str, Enum):
     avoid_area = "avoid_areas"
@@ -95,6 +97,9 @@ class ORSRequest(BaseModel):
 
     class Config:
         extra = Extra.allow
+        schema_extra = {
+            "examples": BASE_EXAMPLE
+        }
 
 
 class ORSIsochrones(ORSRequest):
@@ -102,9 +107,19 @@ class ORSIsochrones(ORSRequest):
     range: conlist(float, min_items=1)
     range_type: Optional[OrsIsochroneRangeType]
 
+    class Config:
+        schema_extra = {
+            "examples": ISO_EXAMPLES
+        }
+
 
 class ORSDirections(ORSRequest):
     coordinates: conlist(list, min_items=1)
+
+    class Config:
+        schema_extra = {
+            "examples": DIR_EXAMPLES
+        }
 
 
 class ORSResponse(BaseModel):

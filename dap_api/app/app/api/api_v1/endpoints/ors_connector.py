@@ -8,6 +8,7 @@ from app.backend.ors_processor import ORSProcessor
 from app.config import settings
 from app.schemas import PathOptions, OrsResponseType, PathOptionsValidation, BadRequestResponse
 from app.schemas.ors_request import ORSDirections, ORSIsochrones
+from app.schemas.utils import ISO_EXAMPLES, DIR_EXAMPLES, BASE_EXAMPLE
 
 router = APIRouter()
 ors_processor = ORSProcessor(settings.ORS_BACKEND_URL)
@@ -66,7 +67,10 @@ Error `code`:
     }
 )
 def ors_post(
-        request: Union[ORSIsochrones, ORSDirections],
+        request: Union[ORSIsochrones, ORSDirections] = Body(
+            None,
+            examples=BASE_EXAMPLE | ISO_EXAMPLES | DIR_EXAMPLES
+        ),
         path_options: PathOptionsValidation = Depends(),
         authorization: str = Depends(deps.ors_auth_header),
         db: Session = Depends(deps.get_db)
@@ -91,7 +95,10 @@ Error `code`:
     }
 )
 def ors_post_response_type(
-        request: Union[ORSIsochrones, ORSDirections],
+        request: Union[ORSIsochrones, ORSDirections] = Body(
+            None,
+            examples=BASE_EXAMPLE | ISO_EXAMPLES | DIR_EXAMPLES
+        ),
         ors_authorization: str = Depends(deps.ors_auth_header),
         db: Session = Depends(deps.get_db),
         path_options: PathOptionsValidation = Depends(),
