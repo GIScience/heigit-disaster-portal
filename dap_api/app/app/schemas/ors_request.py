@@ -1,8 +1,9 @@
 from enum import Enum
-from typing import Optional, Union, Dict
+from typing import Optional, Union
 
 from pydantic import BaseModel, Extra, conint, conlist, Field
 
+from app.schemas import CustomSpeedsContent
 from app.schemas.utils import ISO_EXAMPLES, DIR_EXAMPLES, BASE_EXAMPLE
 
 
@@ -93,7 +94,10 @@ class PathOptions(BaseModel):
 class ORSRequest(BaseModel):
     portal_options: Optional[PortalOptions] = PortalOptions()
     options: Optional[Options] = Options()
-    user_speed_limits: Union[None, int, Dict]
+    user_speed_limits: Optional[Union[int, CustomSpeedsContent]] = Field(
+        None,
+        description='Either the ID of a `custom_speeds` set from the storage or an object following the '
+                    'CustomSpeedsContent schema')
 
     class Config:
         extra = Extra.allow
