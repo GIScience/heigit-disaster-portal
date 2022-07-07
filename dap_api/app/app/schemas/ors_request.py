@@ -91,14 +91,20 @@ class PathOptions(BaseModel):
 class ORSRequest(BaseModel):
     portal_options: Optional[PortalOptions] = PortalOptions()
     options: Optional[Options] = Options()
-    coordinates: Optional[conlist(list, min_items=1)]
-    locations: Optional[conlist(list, min_items=1)]
-    range: Optional[conlist(float, min_items=1)]
-    range_type: Optional[OrsIsochroneRangeType]
     user_speed_limits: Union[None, int, Dict]
 
     class Config:
         extra = Extra.allow
+
+
+class ORSIsochrones(ORSRequest):
+    locations: conlist(list, min_items=1)
+    range: conlist(float, min_items=1)
+    range_type: Optional[OrsIsochroneRangeType]
+
+
+class ORSDirections(ORSRequest):
+    coordinates: conlist(list, min_items=1)
 
 
 class ORSResponse(BaseModel):

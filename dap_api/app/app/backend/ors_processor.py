@@ -1,16 +1,18 @@
 import json
 from typing import Union
 
-from sqlalchemy.orm import Session
 from fastapi.responses import JSONResponse
+from sqlalchemy.orm import Session
+
 from app import crud
 from app.backend.base import BaseProcessor
-from app.schemas import ORSRequest, PathOptions, ORSResponse
 from app.backend.geoutil import bbox_buffer_percentage, meters_travelled, bbox_from_radius, build_diff_query
+from app.schemas import PathOptions, ORSResponse
+from app.schemas.ors_request import ORSIsochrones, ORSDirections
 
 
 class ORSProcessor(BaseProcessor):
-    def handle_ors_request(self, db: Session, request: ORSRequest, options: PathOptions,
+    def handle_ors_request(self, db: Session, request: Union[ORSDirections, ORSIsochrones], options: PathOptions,
                            header_authorization: str = "") -> Union[ORSResponse, JSONResponse]:
         # process request
         disaster_areas = {}
@@ -137,7 +139,7 @@ class ORSProcessor(BaseProcessor):
         # TODO: recalculate bbox
 
     @staticmethod
-    def get_bounding_box(request: ORSRequest, target_api, target_profile) -> list:
+    def get_bounding_box(request: Union[ORSDirections, ORSIsochrones], target_api, target_profile) -> list:
         bbox = [0, 0, 0, 0]
 
         if target_api == "directions":
@@ -180,7 +182,7 @@ class ORSProcessor(BaseProcessor):
         return bbox
 
     @staticmethod
-    def prepare_request_dic(request: ORSRequest) -> dict:
+    def prepare_request_dic(request: Union[ORSDirections, ORSIsochrones]) -> dict:
         request_dict = request.dict()
         request_dict.pop("portal_options")
         request_dict = clean_dict(request_dict)

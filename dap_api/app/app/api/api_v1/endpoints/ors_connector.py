@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Union
 
 from fastapi import APIRouter, Depends, Response
 from sqlalchemy.orm import Session
@@ -6,7 +6,8 @@ from sqlalchemy.orm import Session
 from app.api import deps
 from app.backend.ors_processor import ORSProcessor
 from app.config import settings
-from app.schemas import ORSRequest, PathOptions, OrsResponseType, PathOptionsValidation, BadRequestResponse
+from app.schemas import PathOptions, OrsResponseType, PathOptionsValidation, BadRequestResponse
+from app.schemas.ors_request import ORSDirections, ORSIsochrones
 
 router = APIRouter()
 ors_processor = ORSProcessor(settings.ORS_BACKEND_URL)
@@ -36,7 +37,7 @@ def ors_get(
         debug: bool = False,
         db: Session = Depends(deps.get_db)
 ) -> Any:
-    request = ORSRequest.parse_obj({
+    request = ORSDirections.parse_obj({
         "portal_options": {
             "debug": debug
         },
@@ -65,7 +66,7 @@ Error `code`:
     }
 )
 def ors_post(
-        request: ORSRequest,
+        request: Union[ORSIsochrones, ORSDirections],
         path_options: PathOptionsValidation = Depends(),
         authorization: str = Depends(deps.ors_auth_header),
         db: Session = Depends(deps.get_db)
@@ -90,7 +91,7 @@ Error `code`:
     }
 )
 def ors_post_response_type(
-        request: ORSRequest,
+        request: Union[ORSIsochrones, ORSDirections],
         ors_authorization: str = Depends(deps.ors_auth_header),
         db: Session = Depends(deps.get_db),
         path_options: PathOptionsValidation = Depends(),
@@ -101,7 +102,7 @@ def ors_post_response_type(
 
 
 def process_ors_request(
-        request: ORSRequest,
+        request: Union[ORSIsochrones, ORSDirections],
         header_authorization: str,
         db: Session,
         path_options: PathOptionsValidation,

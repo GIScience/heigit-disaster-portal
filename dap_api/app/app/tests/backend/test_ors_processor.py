@@ -1,10 +1,12 @@
 import json
+from typing import Union
 
 import pytest
 from sqlalchemy.orm import Session
 
 from app.backend.ors_processor import ORSProcessor, result_key, has_same_prop
-from app.schemas import PathOptions, ORSRequest
+from app.schemas import PathOptions
+from app.schemas.ors_request import ORSIsochrones, ORSDirections
 from app.tests.backend.util_test_data import update_info_set_1, update_info_set_2, calc_features_set_1, \
     calc_features_set_2, matching_iso_set_1, matching_iso_set_2, calc_features_set_3, \
     calc_features_set_4, calc_features_set_5, basic_options
@@ -47,7 +49,8 @@ class TestOrsProcessor:
             update_info_set_2()
 
         ])
-    def test_update_info(self, item, avoid_item, options: PathOptions, request_dict: ORSRequest, out):
+    def test_update_info(self, item, avoid_item, options: PathOptions,
+                         request_dict: Union[ORSDirections, ORSIsochrones], out):
         ORSProcessor.update_info(avoid_item, item, options, request_dict)
         assert json.dumps(avoid_item) == json.dumps(out)
 
