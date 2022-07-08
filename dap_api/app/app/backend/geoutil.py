@@ -1,5 +1,6 @@
 import json
 from math import sqrt
+from typing import List
 
 import geopy
 import geopy.distance
@@ -141,11 +142,23 @@ def build_diff_query(avoid_item, item, ors_api, ors_res_type) -> Function:
     return query
 
 
+def get_bbox_for_encoded_polyline(db, item):
+    """
+    Returns the bbox for the encoded polyline of a json route item
+    @param db: db session
+    @param item: route item in json format
+    @return: bbox for the encoded polyline route
+    """
+    geom = get_geom_from_item(item, "json")
+    bbox_geojson = db.execute(func.ST_AsGeoJson(func.Box2D(geom), 5, 1)).scalar()
+    return json.loads(bbox_geojson)["bbox"]
+
+
 def get_geom_from_item(item: dict, ors_res_type):
     """
-    extract the geometry from the correct place in the response item
+    Extract the geometry from the correct place in the response item
     depending on the response format
-    @param item:
+    @param item: single route or isochrone item
     @param ors_res_type: response format
     @return: item of the ors response
     """
@@ -155,3 +168,16 @@ def get_geom_from_item(item: dict, ors_res_type):
     elif ors_res_type == 'json':
         geom = func.ST_LineFromEncodedPolyline(geom)
     return geom
+
+
+def get_overall_bbox(bboxes: List[List[float]]) -> List[float]:
+    """
+    Returns bbox for multiple bboxes
+    @param bboxes: list of bboxes
+    @return:
+    """
+    tuples = [x for x in list(zip(*bboxes))]
+    bbox = []
+    for i, t in enumerate(tuples):
+        bbox.append(min(t) if i < len(tuples) / 2 else max(t))
+    return bbox

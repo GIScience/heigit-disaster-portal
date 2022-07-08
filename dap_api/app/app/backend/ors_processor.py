@@ -6,7 +6,8 @@ from sqlalchemy.orm import Session
 
 from app import crud
 from app.backend.base import BaseProcessor
-from app.backend.geoutil import bbox_buffer_percentage, meters_travelled, bbox_from_radius, build_diff_query
+from app.backend.geoutil import bbox_buffer_percentage, meters_travelled, bbox_from_radius, build_diff_query, \
+    get_overall_bbox, get_bbox_for_encoded_polyline
 from app.schemas import PathOptions, ORSResponse
 from app.schemas.ors_request import ORSIsochrones, ORSDirections
 
@@ -67,6 +68,7 @@ class ORSProcessor(BaseProcessor):
                                                            response_json[result_key(options)],
                                                            response_no_avoid.json()[result_key(options)])
             response_json[result_key(options)] = new_features
+            response_json["bbox"] = get_overall_bbox([f.get("geometry").get("bbox") for f in new_features])
 
         # process result
         if options.ors_response_type.value == "gpx":
@@ -103,10 +105,14 @@ class ORSProcessor(BaseProcessor):
                 continue
             query = build_diff_query(avoid_item, item, options.ors_api, out_type)
             diff_geom = db.execute(query).scalar()
-            avoid_item["geometry"] = json.loads(diff_geom)
-            # no difference
-            if not avoid_item["geometry"]["coordinates"]:
-                continue
+            if out_type == "json":
+                avoid_item["geometry"] = diff_geom
+                avoid_item["bbox"] = get_bbox_for_encoded_polyline(db, item)
+            else:
+                avoid_item["geometry"] = json.loads(diff_geom)
+                # no difference
+                if not avoid_item["geometry"]["coordinates"]:
+                    continue
             ORSProcessor.update_info(avoid_item, item, options, request_dict)
             new_features.append(avoid_item)
         return new_features
@@ -137,7 +143,6 @@ class ORSProcessor(BaseProcessor):
             # drop unusable properties
             avoid_item_props.pop("way_points", None)
             avoid_item_props.pop("segments", None)
-        # TODO: recalculate bbox
 
     @staticmethod
     def get_bounding_box(request: Union[ORSDirections, ORSIsochrones], target_api, target_profile) -> list:
