@@ -43,20 +43,21 @@ def bbox_length(bbox):
     return max(point_distance(bbox[0], bbox[1], bbox[2], bbox[1]), point_distance(bbox[0], bbox[1], bbox[0], bbox[3]))
 
 
-def restrict_longitude(lon):
+def restrict_longitude(lon: float) -> Union[float, int]:
     """
     Restricts longitude to valid range of -180 to 180
     @param lon: longitude
     @return: valid lon
     """
-    if lon > 180:
-        return lon - 360
-    if lon < -180:
-        return lon + 360
-    return lon
+    if -180 <= lon <= 180:
+        return int(lon) if float(lon).is_integer() else lon
+    elif lon > 180:
+        return restrict_longitude(lon - 360)
+    elif lon < -180:
+        return restrict_longitude(lon + 360)
 
 
-def restrict_latitude(lat):
+def restrict_latitude(lat: float) -> Union[float, int]:
     """
     Restricts latitude to valid range of -90 to 90
     @param lat: latitude
@@ -66,7 +67,7 @@ def restrict_latitude(lat):
         return 90
     if lat < -90:
         return -90
-    return lat
+    return int(lat) if float(lat).is_integer() else lat
 
 
 def buffer_bbox(bbox: List[Union[float, int]], p: float = 0, d: float = 0) -> List[Union[float, int]]:
