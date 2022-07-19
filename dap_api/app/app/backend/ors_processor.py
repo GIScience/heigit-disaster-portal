@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 from app import crud
 from app.backend.base import BaseProcessor
-from app.backend.geoutil import bbox_buffer_percentage, meters_travelled, bbox_from_radius, build_diff_query, \
+from app.backend.geoutil import buffer_bbox, meters_travelled, bbox_from_radius, build_diff_query, \
     get_overall_bbox, get_bbox_for_encoded_polyline
 from app.schemas import PathOptions, ORSResponse
 from app.schemas.ors_request import ORSIsochrones, ORSDirections
@@ -156,7 +156,7 @@ class ORSProcessor(BaseProcessor):
                 float(max(c[1] for c in request.coordinates))
             ]
             if request.portal_options.bounds_looseness and int(request.portal_options.bounds_looseness) > 0:
-                bbox = bbox_buffer_percentage(bbox, int(request.portal_options.bounds_looseness))
+                bbox = buffer_bbox(bbox, p=int(request.portal_options.bounds_looseness))
 
         if target_api == "isochrones":
             # this is a quick and dirty solution, it would be more efficient to do point-radius lookups in the database

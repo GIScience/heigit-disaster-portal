@@ -1,6 +1,6 @@
 import json
 from math import sqrt
-from typing import List
+from typing import List, Union
 
 import geopy
 import geopy.distance
@@ -69,21 +69,22 @@ def restrict_latitude(lat):
     return lat
 
 
-def bbox_buffer_percentage(bbox, buffer):
+def buffer_bbox(bbox: List[Union[float, int]], p: float = 0, d: float = 0) -> List[Union[float, int]]:
     """
-    add buffer percentage to width/length of bbox
-    this is a very rough estimation, need to replace with correct geodesic calculations for production version
-    @param bbox:
-    @param buffer:
+    buffer bbox length and width by percentage and/or distance in terms of coordinate units.
+    Bboxes are generally expecting WGS84 (EPSG: 4326) coordinates.
+    @param bbox: bbox to buffer
+    @param p: buffer percentage
+    @param d: buffer distance
     @return:
     """
-    looseness_factor = buffer / 200
-    leeway = max(bbox[2] - bbox[0], bbox[3] - bbox[1]) * looseness_factor
+    lon_dist = (bbox[2] - bbox[0]) * p / 100
+    lat_dist = (bbox[3] - bbox[1]) * p / 100
     return [
-        restrict_longitude(round(bbox[0] - leeway, 6)),
-        restrict_latitude(round(bbox[1] - leeway, 6)),
-        restrict_longitude(round(bbox[2] + leeway, 6)),
-        restrict_latitude(round(bbox[3] + leeway, 6))
+        restrict_longitude(round(bbox[0] - (lon_dist + d), 6)),
+        restrict_latitude(round(bbox[1] - (lat_dist + d), 6)),
+        restrict_longitude(round(bbox[2] + (lon_dist + d), 6)),
+        restrict_latitude(round(bbox[3] + (lat_dist + d), 6))
     ]
 
 
