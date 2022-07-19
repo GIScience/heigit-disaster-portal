@@ -59,10 +59,6 @@ class TestOrsProcessor:
         assert False
 
     @pytest.mark.skipif(True, reason="TODO")  # TODO: WIP
-    def test_fix_bbox(self):
-        assert False
-
-    @pytest.mark.skipif(True, reason="TODO")  # TODO: WIP
     def test_prepare_request_dic(self):
         assert False
 

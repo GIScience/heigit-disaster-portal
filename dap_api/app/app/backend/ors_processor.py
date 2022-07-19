@@ -184,10 +184,6 @@ class ORSProcessor(BaseProcessor):
         return bbox
 
     @staticmethod
-    def fix_bbox(bbox):
-        return bbox
-
-    @staticmethod
     def prepare_request_dic(request: Union[ORSDirections, ORSIsochrones]) -> dict:
         request_dict = request.dict()
         request_dict.pop("portal_options")
