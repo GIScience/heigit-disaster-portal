@@ -3,8 +3,13 @@ Objects used to parametrize tests.
 These are functions as some objects are altered.
 To keep the pytest output correct, pass a copy of the object to the test set instead.
 """
+import json
+
+from sqlalchemy.orm import Session
+
 from app.schemas import PathOptions
 from typing import Union
+from geoalchemy2 import func
 
 
 def basic_directions_geojson_item(
@@ -20,6 +25,24 @@ def basic_directions_geojson_item(
             "segments": "dummy",
             "summary": {"distance": dis, "duration": dur},
             "way_points": "dummy"},
+        "geometry": geom
+    }
+
+
+def basic_directions_json_item(
+        db: Session,
+        dis: Union[int, float] = 5,
+        dur: Union[int, float] = 5,
+        geom: Union[dict, None] = None) -> dict:
+    if geom is None:
+        geom = "dummy"
+    else:
+        geom = db.execute(func.ST_AsEncodedPolyline(func.ST_GeomFromGeoJSON(json.dumps(geom)))).scalar()
+    return {
+        "bbox": [0, 3, 0, 3],
+        "segments": "dummy",
+        "summary": {"distance": dis, "duration": dur},
+        "way_points": "dummy",
         "geometry": geom
     }
 
