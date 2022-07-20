@@ -1,5 +1,4 @@
 import json
-from math import sqrt
 from typing import List, Union
 
 import geopy
@@ -95,17 +94,18 @@ def buffer_bbox(bbox: List[Union[float, int]], p: float = 0, d: float = 0) -> Li
     ]
 
 
-def bbox_from_radius(lon, lat, radius):
+def bbox_from_radius(lon: float, lat: float, radius: float) -> List[Union[float, int]]:
     """
     calculate bbox for a circle around a point with radius
-    @param lon:
-    @param lat:
-    @param radius:
+    @param lon: center longitude
+    @param lat: center latitude
+    @param radius: of the circle in meters for which the bbox should be calculated
     @return:
     """
-    corner_distance = round(sqrt(2 * pow(radius, 2)))
-    lon1, lat1 = point_from_point_bearing_distance(lon, lat, 315, corner_distance)
-    lon2, lat2 = point_from_point_bearing_distance(lon, lat, 135, corner_distance)
+    lon1, _ = point_from_point_bearing_distance(lon, lat, 270, radius)
+    _, lat1 = point_from_point_bearing_distance(lon, lat, 180, radius)
+    lon2, _ = point_from_point_bearing_distance(lon, lat, 90, radius)
+    _, lat2 = point_from_point_bearing_distance(lon, lat, 0, radius)
     return [
         restrict_longitude(min(lon1, lon2)),
         restrict_latitude(min(lat1, lat2)),
