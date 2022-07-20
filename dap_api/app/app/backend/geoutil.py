@@ -8,19 +8,25 @@ from geoalchemy2 import func
 from sqlalchemy.sql.functions import Function
 
 
-def point_from_point_bearing_distance(lon, lat, bearing, distance):
+
+def point_from_point_bearing_distance(lon: float, lat: float, bearing: float, distance: float) -> (float, float):
     """
     create point from source point, bearing and distance
-    @param lon:
-    @param lat:
-    @param distance:
-    @param bearing:
+    @param lon: longitude
+    @param lat: latitude
+    @param bearing: in degree
+    @param distance: in meters
     @return:
     """
+    lon_prc = lat_prc = 7
+    if bearing in [0, 180]:
+        lon_prc = float_precision(lon)
+    if bearing in [90, 270]:
+        lat_prc = float_precision(lat)
     start = geopy.Point(lat, lon)
     d = geopy.distance.distance(kilometers=distance / 1000)
     goal = d.destination(point=start, bearing=bearing)
-    return goal.longitude, goal.latitude
+    return round(goal.longitude, lon_prc), round(goal.latitude, lat_prc)
 
 
 def point_distance(lon1, lat1, lon2, lat2):
@@ -183,3 +189,17 @@ def get_overall_bbox(bboxes: List[List[float]]) -> List[float]:
     for i, t in enumerate(tuples):
         bbox.append(min(t) if i < len(tuples) / 2 else max(t))
     return bbox
+
+
+def float_precision(f: float, limit: int = 7) -> int:
+    """
+    Returns the precision of a float or the precision limit.
+    Can be used for rounding operations.
+    @param f: input float
+    @param limit: maximum float precision
+    @return: precision of input float
+    """
+    digits = 0
+    if not float(f).is_integer():
+        digits = len(str(f).split(".")[1])
+    return digits if digits <= limit else limit
