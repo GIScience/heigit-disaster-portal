@@ -177,12 +177,7 @@ class ORSProcessor(BaseProcessor):
             boxes = []
             for point in request.locations:
                 boxes.append(bbox_from_radius(point[0], point[1], radius))
-            bbox = [
-                float(min(b[0] for b in boxes)),
-                float(min(b[1] for b in boxes)),
-                float(max(b[2] for b in boxes)),
-                float(max(b[3] for b in boxes))
-            ]
+            bbox = get_overall_bbox(boxes)
         return bbox
 
     @staticmethod
