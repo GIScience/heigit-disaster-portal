@@ -68,7 +68,9 @@ class ORSProcessor(BaseProcessor):
                                                            response_json[result_key(options)],
                                                            response_no_avoid.json()[result_key(options)])
             response_json[result_key(options)] = new_features
-            response_json["bbox"] = get_overall_bbox([f.get("geometry").get("bbox") for f in new_features])
+            bboxes = [f.get("bbox") if options.ors_response_type == "json" else f.get("geometry").get("bbox") for f in
+                      new_features]
+            response_json["bbox"] = get_overall_bbox(bboxes)
 
         # process result
         if options.ors_response_type.value == "gpx":
