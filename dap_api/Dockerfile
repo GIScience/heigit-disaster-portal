@@ -22,5 +22,7 @@ RUN if [ "$DEV" = "1" ] ; then poetry install --no-root ; else poetry install --
 
 COPY dap_api/app /app
 
-# start script should be on root level
+# start scripts should be on root level
 RUN cp /app/start-reload.sh /start-reload.sh
+RUN cp /app/start.sh /start.sh
+
