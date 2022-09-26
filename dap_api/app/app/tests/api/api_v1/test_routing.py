@@ -237,16 +237,15 @@ def test_routing_api_cs_post(
         "portal_options": {
             "debug": True,
         },
-        "user_speed_limits": 123456
+        "user_speed_limits": cs.id
     }
     api_key = "An API key"
     r = client.post(
         f"{settings.API_V1_STR}/routing/avoid_areas/directions/driving-car/json", json=data, headers={"ORS-Authorization": api_key}
     )
     r_obj = r.json()
-    assert r.status_code == 400
-    assert r_obj["code"] == 6404
-    assert r_obj["message"] == "A Custom speeds entry with the given ID does not exist."
+    assert 200 <= r.status_code < 300
+    assert r_obj["user_speed_limits"]["surfaceSpeeds"]["gravel"] == 75
 
 
 def test_routing_api_cs_post_nonexistent(
@@ -270,15 +269,16 @@ def test_routing_api_cs_post_nonexistent(
         "portal_options": {
             "debug": True,
         },
-        "user_speed_limits": cs.id
+        "user_speed_limits": 123456
     }
     api_key = "An API key"
     r = client.post(
         f"{settings.API_V1_STR}/routing/avoid_areas/directions/driving-car/json", json=data, headers={"ORS-Authorization": api_key}
     )
     r_obj = r.json()
-    assert 200 <= r.status_code < 300
-    assert r_obj["user_speed_limits"]["surfaceSpeeds"]["gravel"] == 75
+    assert r.status_code == 400
+    assert r_obj["code"] == 6404
+    assert r_obj["message"] == "A Custom speeds entry with the given ID does not exist."
 
 
 def test_routing_api_cs_post_combined(
