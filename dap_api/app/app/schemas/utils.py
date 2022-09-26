@@ -116,3 +116,37 @@ DIR_EXAMPLES = {
         }
     ),
 }
+
+bbox_parameter = {
+    "default": ["-180., -90., 180., 90"],
+    "title": "Bbox",
+    "description": """
+Bounding box to request features in, as comma separated float values west(lon), south(lat), east(lon), north(lat).
+
+Can also be passed in this order in separate query parameter instances like
+`?bbox=west&bbox=south&bbox=east&bbox=north`.
+
+**Contrary to the specified bbox array type, float values need to be passed instead of a string!**
+"""
+}
+
+datetime_parameter = {
+    "default": "2018-02-12T23:20:50Z/",
+    "title": "datetime",
+    "alias": "datetime",
+    "description": """
+Either a date-time or an interval, open or closed. Date and time expressions
+adhere to RFC 3339. Open intervals are expressed using double-dots or an empty string (unknown start/stop).
+Timestamps with timezones (`+01:00` instead of Z) as well as fractions (2018-02-12T23:20:50.25Z) are supported.
+
+Examples:
+
+* A date-time: `2018-02-12T23:20:50Z`
+* A closed interval: `2018-02-12T00:00:00Z/2018-03-18T12:31:12Z`
+* Open intervals: `2018-02-12T00:00:00Z/..` or `/2018-03-18T12:31:12Z`
+
+Only features that have a temporal property that intersects the value of
+`datetime` are selected.
+In addition, all features without a temporal geometry are selected.
+"""
+}
