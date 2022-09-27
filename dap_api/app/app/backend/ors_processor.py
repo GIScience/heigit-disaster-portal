@@ -84,7 +84,7 @@ class ORSProcessor(BaseProcessor):
                     response_json["disaster_areas_lookup_bbox"] = lookup_bbox
 
                 # add portal options to query
-                response_json['metadata']['query']['portal_options'] = request.portal_options.dict()
+                response_json['metadata']['query']['portal_options'] = request.portal_options.dict(by_alias=True)
             response_body = json.dumps(response_json)
 
         return ORSResponse(

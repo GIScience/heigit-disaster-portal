@@ -1,6 +1,15 @@
+import json
+from pathlib import Path
 from typing import Any, List, Dict
 
 from pydantic import BaseModel, Field
+
+path = Path(__file__).parent.absolute()  # folder path of this file
+with open(f'{path}/../db/init_data/d_types.json', 'r') as d_type_file:
+    d_types = json.load(d_type_file)
+
+# create lookup dict for disaster IDs from database. Result {1:[1,2],2:[3,4,5,6]...}
+D_ID_LOOKUP = {d_t["id"]: [st["id"] for st in d_t["sub_types"]] for d_t in d_types}
 
 
 class CollectionMetadata(BaseModel):
@@ -43,7 +52,12 @@ BASE_EXAMPLE = {
             "debug": False,
             "return_areas_in_response": False,
             "bounds_looseness": 0,
-            "generate_difference": False
+            "generate_difference": False,
+            "disaster_area_filter": {
+                "bbox": [-180., -90., 180., 90.],
+                "datetime": "2018-02-12T23:20:50Z/",
+                "d_type_id": 1
+            }
         },
             "coordinates": [[8.681495, 49.41461], [8.686507, 49.41943], [8.687872, 49.420318]],
             "locations": [[8.681495, 49.41461]],
