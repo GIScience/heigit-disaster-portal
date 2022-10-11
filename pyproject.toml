@@ -15,7 +15,7 @@ geojson-pydantic = "^0.3.4"  # pydantic geojson validation
 SQLAlchemy = "^1.4.35"  # orm database interaction
 GeoAlchemy2 = "^0.11.1"  # handling geometries with sqlalchemy
 aiofiles = "^0.8.0 "  # file responses and serving static files
-databases = "^0.5.3[postgresql,sqlite]"  # async support for PostgreSQL and SQLite
+databases = {extras = ["postgresql", "sqlite"], version = "^0.5.3"}  # async support for PostgreSQL and SQLite
 psycopg2-binary = "^2.9.2"  # PostgreSQL adapter
 tenacity = "^8.0.1"  # retrying library (waiting for database to restart)
 uvicorn = "^0.17.6"  # ASGI server
@@ -36,8 +36,11 @@ isort = "^5.10.1"  # TODO: used ?
 autoflake = "^1.3.1"  # TODO: used ?
 mypy = "^0.950"  # TODO: used ?
 
+[tool.poetry.group.prod.dependencies]
+gunicorn = "^20.1.0"
+
 [build-system]
-requires = ["poetry>=1.1.0b2"]
+requires = ["poetry>=1.2.1"]
 build-backend = "poetry.masonry.api"
 
 [tool.pytest.ini_options]
