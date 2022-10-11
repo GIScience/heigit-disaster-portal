@@ -29,6 +29,7 @@ passlib = {extras = ["bcrypt"], version = "^1.7.4"}
 pytest = "^7.1.2"  # testing
 pytest-cov = "^3.0.0"  # test coverage
 pytest-asyncio = "^0.18.3"  # async testing
+pytest-mock = "^3.10.0"  # mocking responses
 httpx = "^0.22.0"  # needed for async testing
 black = "^22.3.0"  # TODO: used ?
 isort = "^5.10.1"  # TODO: used ?
