@@ -103,6 +103,14 @@ ISO_EXAMPLES = {
             "portal_options": {"generate_difference": True},
             "locations": [[8.681495, 49.41461]], "range": [300]
         }
+    ),
+    "Isochrone-filtered": eg(
+        "Isochrone 5min (filtered)",
+        "Isochrone with 5 minute range using avoid areas from the portal storage filtered by a custom bbox",
+        {
+            "portal_options": {"disaster_area_filter": {"bbox": [8.67503, 49.40974, 8.67881, 49.41189]}},
+            "locations": [[8.681495, 49.41461]], "range": [300]
+        }
     )
 }
 
@@ -126,6 +134,14 @@ DIR_EXAMPLES = {
         "A route with 1 start- and 1 endpoint using avoid areas from the portal storage in this area",
         {
             "portal_options": {"generate_difference": True},
+            "coordinates": [[8.681495, 49.41461], [8.687872, 49.420318]]
+        }
+    ),
+    "Directions-filtered": eg(
+        "Directions (filtered)",
+        "A route with 1 start- and 1 endpoint using avoid areas from the portal storage in this area",
+        {
+            "portal_options": {"disaster_area_filter": {"d_type_id": 12}},
             "coordinates": [[8.681495, 49.41461], [8.687872, 49.420318]]
         }
     ),
