@@ -49,7 +49,8 @@ class ORSProcessor(BaseProcessor):
         request_dict = self.prepare_request_dic(request)
         request_header = self.prepare_headers(request_dict, options.ors_response_type.value, header_authorization)
 
-        # debug mode: return modified request without relaying to backend TODO: log instead
+        # debug mode: return modified request without relaying to backend
+        # TODO: log instead. This is used in tests though, prob. needs mocking
         if request.portal_options.debug:
             return ORSResponse(
                 status_code=200,
