@@ -96,16 +96,72 @@ class TestOrsProcessor:
         ORSProcessor.update_info(avoid_item, item, options, request_dict)
         assert json.dumps(avoid_item) == json.dumps(out)
 
-    @pytest.mark.skipif(True, reason="TODO")  # TODO: WIP
-    def test_get_bounding_box(self):
-        assert False
+    @pytest.mark.parametrize(
+        "coords,out", [
+            ([[0, 0], [1, 1]], [0, 0, 1, 1]),
+            ([[0, 0], [1, 1], [-2, 3]], [-2, 0, 1, 3])
+        ])
+    def test_get_bounding_box_directions(self, coords, out):
+        result = ORSProcessor.get_bounding_box(
+            request=ORSDirections(coordinates=coords),
+            target_api='directions',
+            target_profile='driving-car'
+        )
+        assert result == out
+
+    @pytest.mark.parametrize(
+        "ranges,loc,profile,diffs", [
+            ([60], [[0.1, 0.1]], 'driving-car', [0.01, 0.02]),
+            ([60], [[0.01, 0.01]], 'cycling-regular', [0.002, 0.004]),
+            ([60], [[0.001, 0.001], [2.1, 3.32]], 'foot-walking', [0.0007, 0.0008]),
+            ([120], [[0.1, 0.1]], 'driving-car', [0.02, 0.03]),
+            ([60, 120, 240], [[0.1, 0.1], [1, 1]], 'driving-car', [0.04, 0.05]),
+        ])
+    def test_get_bounding_box_isochrones(self, ranges, loc, profile, diffs):
+        result = ORSProcessor.get_bounding_box(
+            request=ORSIsochrones(
+                range=ranges,
+                locations=loc
+            ),
+            target_api='isochrones',
+            target_profile=profile
+        )
+        # bottom left difference
+        diff_x = abs(loc[0][0] - result[0])
+        diff_y = abs(loc[0][1] - result[1])
+        # top right difference. respects 1 or 2 locations
+        diff_x_top = abs(loc[len(loc) - 1][0] - result[2])
+        diff_y_top = abs(loc[len(loc) - 1][1] - result[3])
+
+        assert diffs[0] < diff_x < diffs[1]
+        assert diffs[0] < diff_y < diffs[1]
+        assert diffs[0] < diff_x_top < diffs[1]
+        assert diffs[0] < diff_y_top < diffs[1]
+
+    def test_get_bounding_box_custom(self):
+        """
+        Should return the bbox specified in disaster_area_filters if present
+        """
+        bbox = [0, 0, 1, 1]
+        request = ORSDirections.parse_obj({
+            "coordinates": [[0, 0], [0, 0]],
+            "portal_options": {
+                "disaster_area_filter": {
+                    "bbox": bbox
+                }
+            }
+        })
+        result = ORSProcessor.get_bounding_box(request, 'directions', 'driving-car')
+        assert result == bbox
 
     @pytest.mark.skipif(True, reason="TODO")  # TODO: WIP
     def test_prepare_request_dic(self):
+        # ORSProcessor.prepare_request_dic()
         assert False
 
     @pytest.mark.skipif(True, reason="TODO")  # TODO: WIP
     def test_prepare_headers(self):
+        # ORSProcessor.prepare_headers()
         assert False
 
 
