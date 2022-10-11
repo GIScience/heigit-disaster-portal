@@ -19,8 +19,12 @@ class ORSProcessor(BaseProcessor):
         disaster_areas = {}
         lookup_bbox = self.get_bounding_box(request, options.ors_api, options.ors_profile)
         if options.portal_mode.value == "avoid_areas":
-            # TODO: add filters for areas
-            disaster_areas = crud.disaster_area.get_multi_as_feature_collection(db, lookup_bbox)
+            disaster_areas = crud.disaster_area.get_multi_as_feature_collection(
+                db=db,
+                bbox=lookup_bbox,
+                date_time=request.portal_options.disaster_area_filter.date_time,
+                d_type_id=request.portal_options.disaster_area_filter.d_type_id
+            )
             coordinates_to_add = [f.geometry.coordinates for f in disaster_areas.features if
                                   f.geometry.type in ["Polygon"]]
             if coordinates_to_add:
@@ -148,8 +152,9 @@ class ORSProcessor(BaseProcessor):
 
     @staticmethod
     def get_bounding_box(request: Union[ORSDirections, ORSIsochrones], target_api, target_profile) -> list:
+        if request.portal_options.disaster_area_filter.bbox:
+            return request.portal_options.disaster_area_filter.dict()['bbox']
         bbox = [0, 0, 0, 0]
-
         if target_api == "directions":
             bbox = [
                 float(min(c[0] for c in request.coordinates)),
