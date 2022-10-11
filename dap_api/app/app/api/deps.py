@@ -14,7 +14,7 @@ from app import crud, models
 from app.db.session import SessionLocal
 from app.schemas.disaster_area import BBoxModel
 
-from app.schemas.utils import ErrorDetailObject
+from app.schemas.utils import ErrorDetailObject, datetime_parameter, bbox_parameter
 from app.security import auth_header
 
 
@@ -27,16 +27,7 @@ def get_db():  # pragma: no cover
 
 
 def get_valid_bbox(bbox: Optional[List[str]] = Query(
-    ["-180., -90., 180., 90"],
-    title="Bbox",
-    description="""
-Bounding box to request features in, as comma separated float values west(lon), south(lat), east(lon), north(lat).
-
-Can also be passed in this order in separate query parameter instances like
-`?bbox=west&bbox=south&bbox=east&bbox=north`.
-
-**Contrary to the specified bbox array type, float values need to be passed instead of a string!**
-"""
+    **bbox_parameter
 )
 ):
     if len(bbox) != 4:
@@ -125,25 +116,7 @@ def check_admin_auth(user: models.User = Depends(check_auth_header)) -> models.U
     return user
 
 
-def date_time_or_interval(date_time: str = Query(
-    "2018-02-12T23:20:50Z/",
-    title="datetime",
-    alias="datetime",
-    description="""Either a date-time or an interval, open or closed. Date and time expressions
-adhere to RFC 3339. Open intervals are expressed using double-dots or an empty string (unknown start/stop).
-Timestamps with timezones (`+01:00` instead of Z) as well as fractions (2018-02-12T23:20:50.25Z) are supported.
-
-Examples:
-
-* A date-time: `2018-02-12T23:20:50Z`
-* A closed interval: `2018-02-12T00:00:00Z/2018-03-18T12:31:12Z`
-* Open intervals: `2018-02-12T00:00:00Z/..` or `/2018-03-18T12:31:12Z`
-
-Only features that have a temporal property that intersects the value of
-`datetime` are selected.
-In addition, all features without a temporal geometry are selected. 
-"""
-)) -> Optional[str]:
+def date_time_or_interval(date_time: str = Query(**datetime_parameter)) -> Optional[str]:
     if date_time is None:
         return
     errors = []

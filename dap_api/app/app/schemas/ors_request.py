@@ -1,10 +1,12 @@
 from enum import Enum
 from typing import Optional, Union
 
-from pydantic import BaseModel, Extra, conint, conlist, Field
+from dateutil.parser import isoparse
+from pydantic import BaseModel, Extra, conint, conlist, Field, validator
 
 from app.schemas import CustomSpeedsContent
-from app.schemas.utils import ISO_EXAMPLES, DIR_EXAMPLES, BASE_EXAMPLE
+from app.schemas.disaster_area import BBoxModel
+from app.schemas.utils import ISO_EXAMPLES, DIR_EXAMPLES, BASE_EXAMPLE, datetime_parameter, D_ID_LOOKUP
 
 
 class PortalMode(str, Enum):
@@ -40,12 +42,58 @@ class OrsIsochroneRangeType(str, Enum):
     distance = "distance"
 
 
+class DisasterAreaFilter(BaseModel):
+    bbox: Union[BBoxModel, None] = Field(
+        default=None,
+        title='Bounding Box',
+        description='Bounding box as comma separated float values west(lon), south(lat), '
+                    'east(lon), north(lat). Only features which intersect this bbox are used.'
+    )
+    date_time: Union[str, None] = Field(**datetime_parameter)
+    d_type_id: Union[int, None] = Field(
+        default=None,
+        title='Disaster type ID',
+        description='ID of a specific disaster type. Only features with this disaster type ID are used'
+    )
+
+    @validator("date_time")
+    def check_date_time(cls, value):
+        if value is None:
+            return value
+        date_time_array = value.split('/')
+        if len(date_time_array) == 1:
+            try:
+                isoparse(value)
+            except ValueError as e:
+                raise ValueError(f"Invalid timestamp {value}: {e}")
+        elif len(date_time_array) == 2:
+            date1, date2 = date_time_array
+            if date1 not in ['', '..']:
+                try:
+                    isoparse(date1)
+                except ValueError as e:
+                    raise ValueError(f"Invalid stop timestamp {date1}: {e}")
+            if date2 not in ['', '..']:
+                try:
+                    isoparse(date2)
+                except ValueError as e:
+                    raise ValueError(f"Invalid stop timestamp {date2}: {e}")
+        return value
+
+    @validator("d_type_id")
+    def check_d_type(cls, value):
+        if value not in D_ID_LOOKUP:
+            raise ValueError(f"Invalid d_type_id '{value}'. A disaster type with this id does not exists.")
+        return value
+
+
 class PortalOptions(BaseModel):
     debug: Optional[bool] = False
     return_areas_in_response: Optional[bool] = False
     bounds_looseness: Optional[conint(ge=0, le=200)] = 0
     generate_difference: Optional[bool] = Field(False, description='Generates difference between requests with and '
                                                                    'without avoid areas. Uses up 2 ORS requests.')
+    disaster_area_filter: Union[DisasterAreaFilter, None] = DisasterAreaFilter()
 
 
 class AvoidPolygons(BaseModel):
