@@ -5,17 +5,16 @@ To keep the pytest output correct, pass a copy of the object to the test set ins
 """
 import json
 
+from geoalchemy2 import func
 from sqlalchemy.orm import Session
 
 from app.schemas import PathOptions
-from typing import Union
-from geoalchemy2 import func
 
 
 def basic_directions_geojson_item(
-        dis: Union[int, float] = 5,
-        dur: Union[int, float] = 5,
-        geom: Union[dict, None] = None) -> dict:
+        dis: int | float = 5,
+        dur: int | float = 5,
+        geom: dict | None = None) -> dict:
     if geom is None:
         geom = {"dummy": "dummy"}
     return {
@@ -31,9 +30,9 @@ def basic_directions_geojson_item(
 
 def basic_directions_json_item(
         db: Session,
-        dis: Union[int, float] = 5,
-        dur: Union[int, float] = 5,
-        geom: Union[dict, None] = None) -> dict:
+        dis: int | float = 5,
+        dur: int | float = 5,
+        geom: dict | None = None) -> dict:
     if geom is None:
         geom = "dummy"
     else:
@@ -48,11 +47,11 @@ def basic_directions_json_item(
 
 
 def basic_isochrones_item(
-        g_id: Union[int, float] = 0,
-        val: Union[int, float] = 200.0,
-        geom: Union[dict, None] = None,
-        a: Union[int, float] = 4,
-        p: Union[int, float] = 50) -> dict:
+        g_id: int | float = 0,
+        val: int | float = 200.0,
+        geom: dict | None = None,
+        a: int | float = 4,
+        p: int | float = 50) -> dict:
     if geom is None:
         geom = {"dummy": "dummy"}
     return {

@@ -1,6 +1,6 @@
 import json
 from datetime import datetime
-from typing import Union, Dict, Any, Optional, List
+from typing import Dict, Any, Optional, List
 
 from dateutil import parser as date_parser
 from geoalchemy2 import func, Geometry
@@ -126,7 +126,7 @@ class CRUDDisasterArea(CRUDBase[DisasterArea, DisasterAreaCreate, DisasterAreaUp
         db.refresh(db_obj)
         return db_obj
 
-    def update(self, db: Session, *, db_obj: DisasterArea, obj_in: Union[DisasterAreaUpdate, Dict[str, Any]]
+    def update(self, db: Session, *, db_obj: DisasterArea, obj_in: DisasterAreaUpdate | Dict[str, Any]
                ) -> DisasterArea:
         if isinstance(obj_in, DisasterAreaUpdate):
             obj_in = obj_in.dict(exclude_unset=True)

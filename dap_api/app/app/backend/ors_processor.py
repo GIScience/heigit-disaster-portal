@@ -1,5 +1,4 @@
 import json
-from typing import Union
 
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
@@ -13,8 +12,8 @@ from app.schemas.ors_request import ORSIsochrones, ORSDirections
 
 
 class ORSProcessor(BaseProcessor):
-    def handle_ors_request(self, db: Session, request: Union[ORSDirections, ORSIsochrones], options: PathOptions,
-                           header_authorization: str = "") -> Union[ORSResponse, JSONResponse]:
+    def handle_ors_request(self, db: Session, request: ORSDirections | ORSIsochrones, options: PathOptions,
+                           header_authorization: str = "") -> ORSResponse | JSONResponse:
         # process request
         disaster_areas = {}
         lookup_bbox = self.get_bounding_box(request, options.ors_api, options.ors_profile)
@@ -152,7 +151,7 @@ class ORSProcessor(BaseProcessor):
             avoid_item_props.pop("segments", None)
 
     @staticmethod
-    def get_bounding_box(request: Union[ORSDirections, ORSIsochrones], target_api, target_profile) -> list:
+    def get_bounding_box(request: ORSDirections | ORSIsochrones, target_api, target_profile) -> list:
         if request.portal_options.disaster_area_filter.bbox:
             return request.portal_options.disaster_area_filter.dict()['bbox']
         bbox = [0, 0, 0, 0]
@@ -187,7 +186,7 @@ class ORSProcessor(BaseProcessor):
         return bbox
 
     @staticmethod
-    def prepare_request_dic(request: Union[ORSDirections, ORSIsochrones]) -> dict:
+    def prepare_request_dic(request: ORSDirections | ORSIsochrones) -> dict:
         request_dict = request.dict()
         request_dict.pop("portal_options")
         request_dict = clean_dict(request_dict)

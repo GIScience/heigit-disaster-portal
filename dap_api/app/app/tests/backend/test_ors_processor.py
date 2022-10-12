@@ -1,9 +1,7 @@
 import json
-from typing import Union
-from pytest_mock import MockerFixture
 
 import pytest
-
+from pytest_mock import MockerFixture
 from sqlalchemy.orm import Session
 
 from app.backend.ors_processor import ORSProcessor, result_key, has_same_prop
@@ -38,7 +36,7 @@ class TestOrsProcessor:
             }), "mock_api_key", "")
         ]
     )
-    def test_handle_ors_request(self, mocker: MockerFixture, db: Session, request_dict: Union[ORSDirections, ORSIsochrones], options: PathOptions,
+    def test_handle_ors_request(self, mocker: MockerFixture, db: Session, request_dict: ORSDirections | ORSIsochrones, options: PathOptions,
                                 header_authorization: str, out):
         mock_requests = mocker.patch('app.backend.base.requests')
         mock_response = mocker.MagicMock()
@@ -92,7 +90,7 @@ class TestOrsProcessor:
 
         ])
     def test_update_info(self, item, avoid_item, options: PathOptions,
-                         request_dict: Union[ORSDirections, ORSIsochrones], out):
+                         request_dict: ORSDirections | ORSIsochrones, out):
         ORSProcessor.update_info(avoid_item, item, options, request_dict)
         assert json.dumps(avoid_item) == json.dumps(out)
 

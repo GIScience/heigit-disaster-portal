@@ -1,5 +1,5 @@
 import json
-from typing import List, Union
+from typing import List
 
 import geopy
 import geopy.distance
@@ -50,7 +50,7 @@ def bbox_length(bbox: List[float]) -> float:
     return max(point_distance(bbox[0], bbox[1], bbox[2], bbox[1]), point_distance(bbox[0], bbox[1], bbox[0], bbox[3]))
 
 
-def restrict_longitude(lon: float) -> Union[float, int]:
+def restrict_longitude(lon: float) -> float | int:
     """
     Restricts longitude to valid range of -180 to 180
     @param lon: longitude
@@ -64,7 +64,7 @@ def restrict_longitude(lon: float) -> Union[float, int]:
         return restrict_longitude(lon + 360)
 
 
-def restrict_latitude(lat: float) -> Union[float, int]:
+def restrict_latitude(lat: float) -> float | int:
     """
     Restricts latitude to valid range of -90 to 90
     @param lat: latitude
@@ -77,7 +77,7 @@ def restrict_latitude(lat: float) -> Union[float, int]:
     return int(lat) if float(lat).is_integer() else lat
 
 
-def buffer_bbox(bbox: List[Union[float, int]], p: float = 0, d: float = 0) -> List[Union[float, int]]:
+def buffer_bbox(bbox: List[float | int], p: float = 0, d: float = 0) -> List[float | int]:
     """
     buffer bbox length and width by percentage and/or distance in terms of coordinate units.
     Bboxes are generally expecting WGS84 (EPSG: 4326) coordinates.
@@ -96,7 +96,7 @@ def buffer_bbox(bbox: List[Union[float, int]], p: float = 0, d: float = 0) -> Li
     ]
 
 
-def bbox_from_radius(lon: float, lat: float, radius: float) -> List[Union[float, int]]:
+def bbox_from_radius(lon: float, lat: float, radius: float) -> List[float | int]:
     """
     calculate bbox for a circle around a point with radius
     @param lon: center longitude
@@ -152,7 +152,7 @@ def build_diff_query(avoid_item: dict, item: dict, ors_api: OrsApi, ors_res_type
     return query
 
 
-def get_bbox_for_encoded_polyline(db: Session, item: dict) -> Union[float, int]:
+def get_bbox_for_encoded_polyline(db: Session, item: dict) -> float | int:
     """
     Returns the bbox for the encoded polyline of a json route item
     @param db: db session

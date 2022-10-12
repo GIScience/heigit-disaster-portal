@@ -1,4 +1,4 @@
-from typing import Any, List, Union
+from typing import Any, List
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
@@ -48,7 +48,7 @@ def read_d_types(
     summary="Read Disaster Type By Name or Id"
 )
 def read_d_type(
-        disaster_type: Union[int, str],
+        disaster_type: int | str,
         db: Session = Depends(deps.get_db),
 ) -> Any:
     """

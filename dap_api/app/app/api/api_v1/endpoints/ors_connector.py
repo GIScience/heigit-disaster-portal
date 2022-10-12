@@ -1,4 +1,4 @@
-from typing import Any, Union
+from typing import Any
 
 from fastapi import APIRouter, Depends, Response, Body, HTTPException
 from sqlalchemy.orm import Session
@@ -68,7 +68,7 @@ Error `code`:
     }
 )
 def ors_post(
-        request: Union[ORSIsochrones, ORSDirections] = Body(
+        request: ORSIsochrones | ORSDirections = Body(
             None,
             examples=BASE_EXAMPLE | ISO_EXAMPLES | DIR_EXAMPLES
         ),
@@ -96,7 +96,7 @@ Error `code`:
     }
 )
 def ors_post_response_type(
-        request: Union[ORSIsochrones, ORSDirections] = Body(
+        request: ORSIsochrones | ORSDirections = Body(
             None,
             examples=BASE_EXAMPLE | ISO_EXAMPLES | DIR_EXAMPLES
         ),
@@ -110,7 +110,7 @@ def ors_post_response_type(
 
 
 def process_ors_request(
-        request: Union[ORSIsochrones, ORSDirections],
+        request: ORSIsochrones | ORSDirections,
         header_authorization: str,
         db: Session,
         path_options: PathOptionsValidation,

@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Optional, Union
+from typing import Optional
 
 from dateutil.parser import isoparse
 from pydantic import BaseModel, Extra, conint, conlist, Field, validator
@@ -43,14 +43,14 @@ class OrsIsochroneRangeType(str, Enum):
 
 
 class DisasterAreaFilter(BaseModel):
-    bbox: Union[BBoxModel, None] = Field(
+    bbox: BBoxModel | None = Field(
         default=None,
         title='Bounding Box',
         description='Bounding box as comma separated float values west(lon), south(lat), '
                     'east(lon), north(lat). Only features which intersect this bbox are used.'
     )
-    date_time: Union[str, None] = Field(**datetime_parameter)
-    d_type_id: Union[int, None] = Field(
+    date_time: str | None = Field(**datetime_parameter)
+    d_type_id: int | None = Field(
         default=None,
         title='Disaster type ID',
         description='ID of a specific disaster type. Only features with this disaster type ID are used'
@@ -93,7 +93,7 @@ class PortalOptions(BaseModel):
     bounds_looseness: Optional[conint(ge=0, le=200)] = 0
     generate_difference: Optional[bool] = Field(False, description='Generates difference between requests with and '
                                                                    'without avoid areas. Uses up 2 ORS requests.')
-    disaster_area_filter: Union[DisasterAreaFilter, None] = DisasterAreaFilter()
+    disaster_area_filter: DisasterAreaFilter | None = DisasterAreaFilter()
 
 
 class AvoidPolygons(BaseModel):
@@ -142,7 +142,7 @@ class PathOptions(BaseModel):
 class ORSRequest(BaseModel):
     portal_options: Optional[PortalOptions] = PortalOptions()
     options: Optional[Options] = Options()
-    user_speed_limits: Optional[Union[int, CustomSpeedsContent]] = Field(
+    user_speed_limits: Optional[int | CustomSpeedsContent] = Field(
         None,
         description='Either the ID of a `custom_speeds` set from the storage or an object following the '
                     'CustomSpeedsContent schema')

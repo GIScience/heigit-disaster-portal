@@ -1,6 +1,6 @@
 import json
 from datetime import datetime
-from typing import Union, Dict, Any, Optional, List
+from typing import Dict, Any, Optional, List
 
 from sqlalchemy.orm import Session
 
@@ -52,7 +52,7 @@ class CRUDCustomSpeeds(CRUDBase[CustomSpeedsSchema, CustomSpeedsCreate, CustomSp
         db.refresh(db_obj)
         return db_obj
 
-    def update(self, db: Session, *, cs_id: CustomSpeeds, obj_in: Union[CustomSpeedsUpdate, Dict[str, Any]]
+    def update(self, db: Session, *, cs_id: CustomSpeeds, obj_in: CustomSpeedsUpdate | Dict[str, Any]
                ) -> CustomSpeedsOut:
         db_obj = db.query(CustomSpeeds).get(cs_id)
         if isinstance(obj_in, CustomSpeedsUpdate):

@@ -1,5 +1,5 @@
 from sqlite3.dbapi2 import Timestamp
-from typing import Optional, List, Dict, Any, Union
+from typing import Optional, List, Dict, Any
 
 from geoalchemy2 import func
 from geojson_pydantic.geometries import _GeometryBase
@@ -21,7 +21,7 @@ def check_polygon_rings(rings):
 
 
 # Adjusted from implementation at geojson_pydantic.geometries:
-# The Union[float, int] type of the Coordinate generates an invalid swagger specification,
+# The float | int type of the Coordinate generates an invalid swagger specification,
 # which can't be rendered in the interactive documentation.
 # Also defining a custom Coordinate class using a root validator (like BBoxModel) is not playing
 # well with returning the coordinates as a normal list object.
@@ -49,7 +49,7 @@ class MultiPolygon(_GeometryBase):
 
 class FeatureBase(BaseModel):
     type: str = "Feature"
-    geometry: Union[Polygon, MultiPolygon]
+    geometry: Polygon | MultiPolygon
     properties: Optional[Dict[Any, Any]]
 
     class Config:
@@ -100,7 +100,7 @@ class DisasterAreaPropertiesBase(BaseModel):
 
 # Shared properties
 class DisasterAreaBase(FeatureBase):
-    geometry: Optional[Union[Polygon, MultiPolygon]]
+    geometry: Optional[Polygon | MultiPolygon]
     properties: Optional[DisasterAreaPropertiesBase]
 
 
@@ -113,7 +113,7 @@ class DisasterAreaPropertiesCreate(DisasterAreaPropertiesBase):
 # Properties to receive via API on creation
 class DisasterAreaCreate(DisasterAreaBase):
     type: str = "Feature"
-    geometry: Union[Polygon, MultiPolygon]
+    geometry: Polygon | MultiPolygon
     properties: DisasterAreaPropertiesCreate
 
     @validator("geometry")
