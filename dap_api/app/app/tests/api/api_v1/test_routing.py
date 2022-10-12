@@ -1,13 +1,12 @@
 import json
 
 from fastapi.testclient import TestClient
-from geojson_pydantic.geometries import Polygon
 from sqlalchemy.orm import Session
 
 from app import crud
 from app.config import settings
 from app.schemas import DisasterAreaCreate
-from app.schemas.disaster_area import DisasterAreaPropertiesCreate
+from app.schemas.disaster_area import DisasterAreaPropertiesCreate, Polygon
 from app.tests.utils.custom_speeds import create_new_custom_speeds
 
 

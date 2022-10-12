@@ -4,14 +4,13 @@ from typing import Dict, Any, Optional, List
 
 from dateutil import parser as date_parser
 from geoalchemy2 import func, Geometry
-from geojson_pydantic.types import BBox
 from sqlalchemy.orm import Session
 
 from app.models import DisasterArea
 from app.schemas import DisasterArea as DisasterAreaSchema
 from app.schemas import DisasterAreaCreate, DisasterAreaUpdate
 from .base import CRUDBase
-from ..schemas.disaster_area import DisasterAreaCollection
+from ..schemas.disaster_area import DisasterAreaCollection, BBoxModel
 
 
 def multi_to_single(multi_polygon: dict) -> None:
@@ -56,7 +55,7 @@ class CRUDDisasterArea(CRUDBase[DisasterArea, DisasterAreaCreate, DisasterAreaUp
         return d_area
 
     def get_multi(
-            self, db: Session, bbox: BBox = None, skip: int = 0, limit: int = 100, d_type_id: int = None,
+            self, db: Session, bbox: BBoxModel = None, skip: int = 0, limit: int = 100, d_type_id: int = None,
             date_time: str = None
     ) -> List[DisasterArea]:
         if any([x is not None for x in [bbox, d_type_id, date_time]]):
@@ -83,7 +82,7 @@ class CRUDDisasterArea(CRUDBase[DisasterArea, DisasterAreaCreate, DisasterAreaUp
         return super().get_multi(db=db, skip=skip, limit=limit)
 
     def get_multi_as_feature_collection(
-            self, db: Session, bbox: BBox = None, skip: int = 0, limit: int = 100, d_type_id: int = None,
+            self, db: Session, bbox: BBoxModel = None, skip: int = 0, limit: int = 100, d_type_id: int = None,
             date_time: str = None
     ) -> DisasterAreaCollection:
         entries = self.get_multi(db, bbox, skip, limit, d_type_id, date_time)

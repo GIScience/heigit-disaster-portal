@@ -1,12 +1,11 @@
 from typing import List
 
-from geojson_pydantic.geometries import Polygon
 from sqlalchemy.orm import Session
 
 from app import crud
 from app.models import DisasterArea
 from app.schemas import DisasterAreaCreate
-from app.schemas.disaster_area import DisasterAreaPropertiesCreate, MultiPolygon
+from app.schemas.disaster_area import DisasterAreaPropertiesCreate, MultiPolygon, Polygon
 from app.tests.utils.utils import random_lower_string, random_coordinate
 
 

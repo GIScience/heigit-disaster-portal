@@ -2,7 +2,6 @@ from sqlite3.dbapi2 import Timestamp
 from typing import Optional, List, Dict, Any
 
 from geoalchemy2 import func
-from geojson_pydantic.geometries import _GeometryBase
 from pydantic import BaseModel, validator, root_validator
 
 
@@ -25,8 +24,8 @@ def check_polygon_rings(rings):
 # which can't be rendered in the interactive documentation.
 # Also defining a custom Coordinate class using a root validator (like BBoxModel) is not playing
 # well with returning the coordinates as a normal list object.
-# Therefore all validations for coordinates are done directly in the Polygon class below
-class Polygon(_GeometryBase):
+# Therefore, all validations for coordinates are done directly in the Polygon class below
+class Polygon(BaseModel):
     type: str = "Polygon"
     coordinates: List[List[List[float]]]
 
@@ -36,7 +35,7 @@ class Polygon(_GeometryBase):
         return rings
 
 
-class MultiPolygon(_GeometryBase):
+class MultiPolygon(BaseModel):
     type: str = "MultiPolygon"
     coordinates: List[List[List[List[float]]]]
 
