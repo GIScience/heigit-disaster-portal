@@ -139,7 +139,7 @@ DIR_EXAMPLES = {
     ),
     "Directions-filtered": eg(
         "Directions (filtered)",
-        "A route with 1 start- and 1 endpoint using avoid areas from the portal storage in this area",
+        "A route with 1 start- and 1 endpoint using avoid areas from the portal storage filtered by disaster type",
         {
             "portal_options": {"disaster_area_filter": {"d_type_id": 12}},
             "coordinates": [[8.681495, 49.41461], [8.687872, 49.420318]]
