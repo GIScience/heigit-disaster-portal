@@ -63,7 +63,7 @@ or alternative documentation on http://localhost:8080/api/v1/redoc
 Requirements:
 - docker
 - docker-compose (included in mac and windows docker installations)
-- python3.9+
+- python3.10+
 
 ```
 # Install poetry
@@ -88,7 +88,7 @@ poetry install --no-root
 ```
 
 When using [PyCharm](https://www.jetbrains.com/pycharm/) you can use the [Poetry plugin](https://plugins.jetbrains.com/plugin/14307-poetry) 
-to create an  interpreter with a python3.9 base or higher. It should use the virtual environment poetry has created. 
+to create an  interpreter with a python3.10 base or higher. It should use the virtual environment poetry has created. 
 After creating it, you might need to close and open PyCharm again, so the Project uses now the correct interpreter and 
 env. In case pycharm creates a separate virtual env, you could prevent poetry from creating further virtual envs by 
 running:
