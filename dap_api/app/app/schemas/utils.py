@@ -61,7 +61,8 @@ BASE_EXAMPLE = {
         },
             "coordinates": [[8.681495, 49.41461], [8.686507, 49.41943], [8.687872, 49.420318]],
             "locations": [[8.681495, 49.41461]],
-            "range": [300, 200]
+            "range": [300, 200],
+            "user_speed_limits": 1
         }
     )
 }
@@ -143,6 +144,28 @@ DIR_EXAMPLES = {
         {
             "portal_options": {"disaster_area_filter": {"d_type_id": 12}},
             "coordinates": [[8.681495, 49.41461], [8.687872, 49.420318]]
+        }
+    ),
+    "Directions-speed-limits": eg(
+        "Directions (speed limits)",
+        "A route using customized road speeds. May also be used together with `portal_mode=avoid_areas`.",
+        {
+            "coordinates": [[8.681495, 49.41461], [8.687872, 49.420318]],
+            "user_speed_limits": {
+                "roadSpeeds": {
+                    "road": 10
+                },
+                "unit": "kmh"
+            }
+        }
+    ),
+    "Directions-speed-limits-id": eg(
+        "Directions (speed limits by ID)",
+        "Using the `custom_speeds_id` from an object in the `custom_speeds` collection to resolve the"
+        " `user_speed_limits` object. May also be used together with `portal_mode=avoid_areas`.",
+        {
+            "coordinates": [[8.681495, 49.41461], [8.687872, 49.420318]],
+            "user_speed_limits": 1
         }
     ),
 }
