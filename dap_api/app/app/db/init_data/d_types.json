@@ -46,6 +46,12 @@
         "description": "Lava flow info",
         "parent_id": 2,
         "id": 6
+      },
+      {
+        "name": "tsunami",
+        "description": "Tsunami info",
+        "parent_id": 2,
+        "id": 48
       }
     ]
   },
