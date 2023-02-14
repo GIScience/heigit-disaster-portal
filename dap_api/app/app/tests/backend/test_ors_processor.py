@@ -57,6 +57,44 @@ class TestOrsProcessor:
         # mock_requests
         assert out == res
 
+    def test_handle_ors_request_with_ors_server(self, mocker: MockerFixture, db: Session):
+        mock_requests = mocker.patch('app.backend.base.requests')
+        mock_response = mocker.MagicMock()
+        mock_response.status_code = 200
+        mock_response.headers = {
+            "Content-Type": "application/geo+json;charset=UTF-8"
+        }
+        mock_response.json.return_value = {
+            'metadata': {
+                'query': {
+
+                }
+            }
+        }
+        mock_requests.post.return_value = mock_response
+        ors_p = ORSProcessor(settings.ORS_BACKEND_URL)
+        ors_p.handle_ors_request(db, request=ORSDirections.parse_obj({
+                "portal_options": {"ors_server": "disaster1"},
+                "coordinates": [
+                    [
+                        8.681495,
+                        49.41461
+                    ],
+                    [
+                        8.687872,
+                        49.420318
+                    ]
+                ]
+            }), options=PathOptions.parse_obj({
+                "portal_mode": "avoid_areas",
+                "ors_api": "directions",
+                "ors_profile": "driving-car",
+                "ors_response_type": "geojson"
+            }), header_authorization="mock_api_key")
+
+        assert mock_requests.method_calls[0][2]['url'].startswith('disaster1')
+
+
     @pytest.mark.parametrize(
         "options,request_dict,response,response_no_avoid,out", [
             calc_features_set_1(),
