@@ -94,6 +94,7 @@ class PortalOptions(BaseModel):
     generate_difference: Optional[bool] = Field(False, description='Generates difference between requests with and '
                                                                    'without avoid areas. Uses up 2 ORS requests.')
     disaster_area_filter: DisasterAreaFilter | None = DisasterAreaFilter()
+    ors_server: str | None = None
 
 
 class AvoidPolygons(BaseModel):
