@@ -13,3 +13,6 @@ __pycache__/
 
 # .env file
 .env
+
+# adapter storage files
+/dap_api/app/app/adapters/copernicus_ems/data

@@ -10,6 +10,7 @@ class Settings(BaseSettings):
     ADMIN_USER_SECRET: str
     API_V1_STR: str = "/api/v1"
     ORS_BACKEND_URL: str = "https://api.openrouteservice.org/v2"
+    DATA_SERVICE_STR: str = "/adapters"
 
     CREATE_EXAMPLE_DATA_ON_STARTUP: bool = False
     DEBUG: bool = False

@@ -9,6 +9,7 @@ from fastapi.openapi.docs import (
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.cors import CORSMiddleware
 
+from app.adapters.copernicus_ems.api import router as copernicus_router
 from app.api.api_v1.api import api_router
 from app.config import settings
 
@@ -116,7 +117,38 @@ if settings.CORS_ORIGINS or settings.CORS_ORIGINS_REGEX:
 
 app.include_router(api_router, prefix=settings.API_V1_STR)
 
+is_development = True
+
+if is_development:
+    app.include_router(copernicus_router, prefix="/copernicus_ems", tags=["adapters"])
+
 
 @app.get("/api/")
 def landing_page():
+    # TODO: static landing page
     return "TODO: static landing page"
+
+
+if not is_development:
+    data_service = FastAPI(
+        title="Data discovery and import service",
+        openapi_url=f"{settings.DATA_SERVICE_STR}/docs/openapi.json",
+        docs_url=f"{settings.DATA_SERVICE_STR}/docs",
+        redoc_url=f"{settings.DATA_SERVICE_STR}/redoc",
+    )
+
+    # Set all CORS enabled origins
+    if settings.CORS_ORIGINS:
+        data_service.add_middleware(
+            CORSMiddleware,
+            allow_origins=[str(origin) for origin in settings.CORS_ORIGINS],
+            allow_credentials=True,
+            allow_methods=["*"],
+            allow_headers=["*"],
+        )
+
+    data_service.include_router(
+        copernicus_router,
+        prefix=f"{settings.DATA_SERVICE_STR}/copernicus_ems",
+        tags=["Copernicus Emergency Management Service"]
+    )
