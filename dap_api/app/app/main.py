@@ -1,10 +1,11 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.openapi.docs import (
     get_redoc_html,
     get_swagger_ui_html,
     get_swagger_ui_oauth2_redirect_html,
 )
 from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
 from starlette.middleware.cors import CORSMiddleware
 
 from app.api.api_v1.api import api_router
@@ -65,6 +66,7 @@ app = FastAPI(
 )
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
+templates = Jinja2Templates(directory="app/templates")
 
 
 @app.get(f"{settings.API_V1_STR}/docs", include_in_schema=False)
@@ -115,6 +117,6 @@ if settings.CORS_ORIGINS or settings.CORS_ORIGINS_REGEX:
 app.include_router(api_router, prefix=settings.API_V1_STR)
 
 
-@app.get("/api/")
-def landing_page():
-    return "TODO: static landing page"
+@app.get("/api/", include_in_schema=False)
+async def index(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request})
