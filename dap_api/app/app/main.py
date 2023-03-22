@@ -1,6 +1,8 @@
 from os.path import realpath
 
 from fastapi import FastAPI
+from fastapi.exception_handlers import request_validation_exception_handler
+from fastapi.exceptions import RequestValidationError
 from fastapi.openapi.docs import (
     get_redoc_html,
     get_swagger_ui_html,
@@ -11,6 +13,7 @@ from starlette.middleware.cors import CORSMiddleware
 
 from app.api.api_v1.api import api_router
 from app.config import settings
+from app.logger import logger
 
 api_description = """
 The HeiGIT disaster portal API manages features that can be used by applications or users
@@ -67,6 +70,12 @@ app = FastAPI(
 )
 
 app.mount("/api/static", StaticFiles(directory=realpath(f'{realpath(__file__)}/../../static')), name="api/static")
+
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request, exc):
+    # logger.info(f"OMG! The client sent invalid data!: {exc}")
+    return await request_validation_exception_handler(request, exc)
 
 
 @app.get(f"{settings.API_V1_STR}/docs", include_in_schema=False)
