@@ -8,4 +8,6 @@ routes.
 
 ## Disaster region selection
 
-When starting the HeiGIT Disaster Portal, you'll be greeted by the following 
+When starting the HeiGIT Disaster Portal, you'll be greeted by the following screen:
+
+![Disaster Portal starting page showing disaster region selection](img/disaster_portal_overview_with_selection.png)
