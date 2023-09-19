@@ -33,15 +33,15 @@ Compared to the regular client, the following controls are new or have special f
 1. Activate [Administration Mode](#administration-mode) to add/edit areas
 2. Re-open the region selection.
 3. Control the loaded layers to toggle impassable areas
-4. Add areas (only in [Administration Mode](#administration-mode)
+4. Add areas (only in [Administration Mode](#administration-mode))
 
 
 ## Administration Mode
 
 To be able to add or edit any of the given areas, you have to have access to any given data provider.
-TODO: Contact XYZ if you need to edit areas, but don't have any access token.
+Contact support@smartmobility.heigit.orrg if you need to edit areas, but don't have any access token.
 
-Select your Data Provider and enter your access token here:
+Once you have an access token, click on `1` and select your Data Provider and enter your access token in the following dialog:
 
 ![Data Provider Authentication](img/data_provider_selection.png)
 
