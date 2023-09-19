@@ -66,12 +66,17 @@ Once you have an access token, click on `1` and select your Data Provider and en
 </kbd>
 </p>
 
-Once you are authenticated, you can add polygons using the buttons mentioned in `4`.
-Click to mark every corner of your polygon, and click on the first point to finish your polygon:
+Once you are authenticated, you can add areas using the buttons mentioned in `4`.
+
+### Area Creation
+
+Click to mark every corner of your area, and click on the first point to finish your area:
 
 https://github.com/koebi/heigit-disaster-portal/assets/4692974/30d1ca1e-ce0e-4c9d-9e00-5c78f442640e
 
-Once the polygon is finished, the following dialog will open up:
+### Area Metadata
+
+Once the area is finished, the following dialog will open up to enter metadata concerning the area:
 
 <p align=center>
 <kbd>
@@ -88,6 +93,8 @@ The following information can be set:
 | `Disaster type` | Specify the type of incindent that caused the impassable area. The following types are available: <br />  _earthquake_, _volcanic activity_, _storm_, _extreme temperature_, _flood_, _mass movement_, _drought_, _wildfire_, _epidemic_, _infestation_, _industrial accident_, _transport accident_, _humanitarian_ or _other_ |
 | `Disaster subtype` (optional) | More detailed type of incident, depending on `Disaster type` |
 | `Description` | Text field to input more information |
+
+### Area Editing
 
 Via a click on an existing area, the following options are available:
 
