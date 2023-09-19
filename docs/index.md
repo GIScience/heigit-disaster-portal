@@ -26,13 +26,17 @@ Selecting a disaster region will limit your routing capabilities to the selected
     <img src="img/disaster_region_selection.png" />
 </kbd>
 </p>
+
 As an example, selecting the *Slovenia* region will result in the following
-view.  Note, that everything *but* the selected region is not routable,
+view:
+
+ ![Disaster Portal, Slovenia selected](img/disaster_portal_overview.png)
+
+Note, that everything *but* the selected region is not routable,
 indicated by being greyed out.  OpenStreetMap data for the highlighted area
 will be updated every 10 minutes. If a road is changed in OSM, e.g. marked as
 impassable, this change will be respected after 15-20 minutes.
 
-![Disaster Portal, Slovenia selected](img/disaster_portal_overview.png)
 
 ## Disaster Portal Controls
 
@@ -56,7 +60,11 @@ Contact support@smartmobility.heigit.org if you need to edit areas, but don't ha
 
 Once you have an access token, click on `1` and select your Data Provider and enter your access token in the following dialog:
 
-![Data Provider Authentication](img/data_provider_selection.png)
+<p align=center>
+<kbd>
+    <img alt="Data Provider Authentication" src="img/data_provider_selection.png" />
+</kbd>
+</p>
 
 Once you are authenticated, you can add polygons using the buttons mentioned in `4`.
 Click to mark every corner of your polygon, and click on the first point to finish your polygon:
@@ -65,7 +73,11 @@ https://github.com/koebi/heigit-disaster-portal/assets/4692974/30d1ca1e-ce0e-4c9
 
 Once the polygon is finished, the following dialog will open up:
 
-![Editing description for new region](img/new_region_description.png)
+<p align=center>
+<kbd>
+    <img alt="Editing description for new region" src="img/new_region_description.png" />
+</kbd>
+</p>
 
 The following information can be set:
 
@@ -79,7 +91,11 @@ The following information can be set:
 
 Via a click on an existing area, the following options are available:
 
-![Options for existing area](img/area_left_click_overlay.png)
+<p align=center>
+<kbd>
+    <img alt="Options for existing area" src="img/area_left_click_overlay.png" />
+</kbd>
+</p>
 
 From left to right, they are:
 
