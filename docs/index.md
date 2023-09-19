@@ -62,4 +62,14 @@ The following information can be set:
 | `Disaster subtype` (optional) | More detailed type of incident, depending on `Disaster type` |
 | `Description` | Text field to input more information |
 
+Via a click on an existing area, the following options are available:
 
+![Options for existing area](img/area_left_click_overlay.png)
+
+From left to right, they are:
+
+1. Edit the area
+2. Delete the area
+3. Edit the area information
+
+When recalculating a route, it is immediately respected and available for other users of the portal.
