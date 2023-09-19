@@ -39,7 +39,7 @@ Compared to the regular client, the following controls are new or have special f
 ## Administration Mode
 
 To be able to add or edit any of the given areas, you have to have access to any given data provider.
-Contact support@smartmobility.heigit.orrg if you need to edit areas, but don't have any access token.
+Contact support@smartmobility.heigit.org if you need to edit areas, but don't have any access token.
 
 Once you have an access token, click on `1` and select your Data Provider and enter your access token in the following dialog:
 
@@ -59,8 +59,9 @@ The following information can be set:
 
 | Key         | Description |
 | ----------- | ----------- |
-| `Name` | Name of the drawn region |
-| `Disaster type` | Specify the type of incindent that caused the impassable area. One of _earthquake_, _volcanic activity_, _storm_, _extreme temperature_, _flood_, _mass movement_, _drought_, _wildfire_, _epidemic_, _infestation_, _industrial accident_, _transport accident_, _humanitarian_ or _other_ |
+| `Name` | Unique name of the drawn region |
+| `Disaster type` | Specify the type of incindent that caused the impassable area. The following types are available:
+One of _earthquake_, _volcanic activity_, _storm_, _extreme temperature_, _flood_, _mass movement_, _drought_, _wildfire_, _epidemic_, _infestation_, _industrial accident_, _transport accident_, _humanitarian_ or _other_ |
 | `Disaster subtype` (optional) | More detailed type of incident, depending on `Disaster type` |
 | `Description` | Text field to input more information |
 
