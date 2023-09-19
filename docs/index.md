@@ -21,8 +21,9 @@ When starting the HeiGIT Disaster Portal, you'll be greeted by the following scr
 
 Selecting a disaster region will limit your routing capabilities to the selected region.
 
-![Selectable Regions](img/disaster_region_selection.png)
-
+<p align=center>
+    <img src="img/disaster_region_selection.png" />
+</p>
 As an example, selecting the *Slovenia* region will result in the following
 view.  Note, that everything *but* the selected region is not routable,
 indicated by being greyed out.  OpenStreetMap data for the highlighted area
