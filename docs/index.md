@@ -6,6 +6,13 @@ This will give you a short introduction on what the selected disaster region
 means, how to use the client to add new disaster areas and how to calculate
 routes.
 
+The portal aims at helping during disaster relief efforts by providing up to
+date information regarding inaccessible parts of the road network.
+
+This is done by drawing areas that mark the underlying parts of the road
+network as impassable. These areas will be automatically taken into account
+when calculating routes or analyzing reachability.
+
 ## Disaster region selection
 
 When starting the HeiGIT Disaster Portal, you'll be greeted by the following screen:
@@ -35,6 +42,9 @@ Compared to the regular client, the following controls are new or have special f
 3. Control the loaded layers to toggle impassable areas
 4. Add areas (only in [Administration Mode](#administration-mode))
 
+Routes and isochrones can be calculated by anyone without access to a data
+provider. The shown areas are automatically taken into account.  Data provider
+access is only used for adding and editing areas.
 
 ## Administration Mode
 
@@ -74,4 +84,4 @@ From left to right, they are:
 2. Delete the area
 3. Edit the area information
 
-When recalculating a route, it is immediately respected and available for other users of the portal.
+When recalculating a route, the new or changed area is immediately respected and available for other users of the portal.
