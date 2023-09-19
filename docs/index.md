@@ -15,7 +15,7 @@ calculating routes or analyzing reachability.
 
 When starting the HeiGIT Disaster Portal, you'll be greeted by the following screen:
 
-![Disaster Portal starting page showing disaster region selection](img/disaster_portal_overview_with_selection.png)
+![Disaster Portal starting page showing disaster region selection](img/disaster_portal_overview_with_selection_lowres.png)
 
 Selecting a disaster region will limit your routing capabilities to the selected region.
 
@@ -28,7 +28,7 @@ Selecting a disaster region will limit your routing capabilities to the selected
 As an example, selecting the *Slovenia* region will result in the following
 view:
 
- ![Disaster Portal, Slovenia selected](img/disaster_portal_overview.png)
+ ![Disaster Portal, Slovenia selected](img/disaster_portal_overview_lowres.png)
 
 Note, that everything *but* the selected region is not routable,
 indicated by being greyed out.  OpenStreetMap data for the highlighted area
@@ -40,7 +40,7 @@ impassable, this change will be respected after 15-20 minutes.
 
 Compared to the regular client, the following controls are new or have special functionalities:
 
-![Disaster Portal overview with annotated controls](img/disaster_portal_annotated.png)
+![Disaster Portal overview with annotated controls](img/portal_controls_lowres.png)
 
 1. Activate [Administration Mode](#administration-mode) to add/edit areas
 2. Re-open the region selection.
