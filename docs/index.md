@@ -46,8 +46,9 @@ Select your Data Provider and enter your access token here:
 Once you are authenticated, you can add polygons using the buttons mentioned in `4`.
 Click to mark every corner of your polygon, and click on the first point to finish your polygon:
 
-![Polygon Drawing Video](img/polygon_drawing.webm)
-[polygon_drawing.webm](https://github.com/koebi/heigit-disaster-portal/assets/4692974/30d1ca1e-ce0e-4c9d-9e00-5c78f442640e)
+img/polygon_drawing.webm
+
+https://github.com/koebi/heigit-disaster-portal/assets/4692974/30d1ca1e-ce0e-4c9d-9e00-5c78f442640e
 
 Once the polygon is finished, the following dialog will open up:
 
