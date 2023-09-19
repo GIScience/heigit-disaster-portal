@@ -28,8 +28,7 @@ Selecting a disaster region will limit your routing capabilities to the selected
 As an example, selecting the *Slovenia* region will result in the following
 view:
 
-![Disaster Portal, Slovenia selected](img/disaster_portal_overview.png)
-*Disaster Portal Overview, Slovenia selected*
+ ![Disaster Portal, Slovenia selected](img/disaster_portal_overview.png)
 
 Note, that everything *but* the selected region is not routable,
 indicated by being greyed out.  OpenStreetMap data for the highlighted area
