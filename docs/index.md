@@ -56,7 +56,9 @@ access is only used for adding and editing areas.
 To be able to add or edit any of the given areas, you have to have access to any given data provider.
 Contact support@smartmobility.heigit.org if you need to edit areas, but don't have any access token.
 
-Once you have an access token, click on `1` and select your Data Provider and enter your access token in the following dialog:
+Once you have an access token, click on the button marked with `1` in [the
+controls section](#disaster-portal-controls) and select your Data Provider and
+enter your access token in the following dialog:
 
 <p align=center>
 <kbd>
@@ -64,7 +66,8 @@ Once you have an access token, click on `1` and select your Data Provider and en
 </kbd>
 </p>
 
-Once you are authenticated, you can add areas using the buttons mentioned in `4`.
+Once you are authenticated, you can add areas using button `4` mentioned in [the
+controls section](#disaster-portal-controls).
 
 ### Area Creation
 
