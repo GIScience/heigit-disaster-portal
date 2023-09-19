@@ -60,8 +60,8 @@ The following information can be set:
 | Key         | Description |
 | ----------- | ----------- |
 | `Name` | Unique name of the drawn region |
-| `Disaster type` | Specify the type of incindent that caused the impassable area. The following types are available:
-One of _earthquake_, _volcanic activity_, _storm_, _extreme temperature_, _flood_, _mass movement_, _drought_, _wildfire_, _epidemic_, _infestation_, _industrial accident_, _transport accident_, _humanitarian_ or _other_ |
+| `Disaster type` | Specify the type of incindent that caused the impassable area. The following types are available: |
+| |  _earthquake_, _volcanic activity_, _storm_, _extreme temperature_, _flood_, _mass movement_, _drought_, _wildfire_, _epidemic_, _infestation_, _industrial accident_, _transport accident_, _humanitarian_ or _other_ |
 | `Disaster subtype` (optional) | More detailed type of incident, depending on `Disaster type` |
 | `Description` | Text field to input more information |
 
