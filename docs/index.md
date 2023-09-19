@@ -3,15 +3,13 @@
 Welcome to the HeiGIT Disaster Portal Documentation.
 
 This will give you a short introduction on what the selected disaster region
-means, how to use the client to add new disaster areas and how to calculate
-routes.
+means and how to use the client to add new disaster areas
 
 The portal aims at helping during disaster relief efforts by providing up to
-date information regarding inaccessible parts of the road network.
-
-This is done by drawing areas that mark the underlying parts of the road
-network as impassable. These areas will be automatically taken into account
-when calculating routes or analyzing reachability.
+date information regarding inaccessible parts of the road network. This is done
+by drawing areas that mark the underlying parts of the road network as
+impassable. These areas will be automatically taken into account when
+calculating routes or analyzing reachability.
 
 ## Disaster region selection
 
