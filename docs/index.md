@@ -24,7 +24,9 @@ impassable, this change will be respected after 15-20 minutes.
 
 ![Disaster Portal, Slovenia selected](img/disaster_portal_overview.png)
 
-Compared to the classic client, the following controls are new or have special functionalities:
+## Disaster Portal Controls
+
+Compared to the regular client, the following controls are new or have special functionalities:
 
 ![Disaster Portal overview with annotated controls](img/disaster_portal_annotated.png)
 
