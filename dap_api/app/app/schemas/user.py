@@ -16,9 +16,14 @@ class UserCreate(UserBase):
     email: EmailStr
 
 
-# Properties to return via API on creation
-class UserCreateOut(UserCreate):
+# Properties to pass to DB on creation
+class UserCreateIn(UserCreate):
     secret: str
+
+
+# Properties to return via API on creation
+class UserCreateOut(UserCreateIn):
+    id: int
 
 
 # Properties to pass to create a user from a db entry

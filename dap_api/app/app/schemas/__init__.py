@@ -1,4 +1,4 @@
-from .user import User, UserBase, UserCreate, UserInDB, UserUpdate, UserInDBBase, UserCreateOut, UserCreateFromDb
+from .user import User, UserBase, UserCreate, UserInDB, UserUpdate, UserInDBBase, UserCreateOut, UserCreateFromDb, UserCreateIn
 from .provider import ProviderInDB, ProviderBase, ProviderCreate, ProviderInDBBase, ProviderUpdate, ProviderCreateOut, \
     Provider
 from .disaster_type import DisasterType, DisasterTypeBaseInDB, DisasterTypeCreate, DisasterTypeUpdate, \

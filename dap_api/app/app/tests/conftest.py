@@ -10,7 +10,7 @@ from app.db.base import BaseTable
 from app.db.init_db import init_db
 from app.logger import logger
 from app.main import app
-from app.schemas import UserCreateOut
+from app.schemas import UserCreateIn
 from app.security import generate_secret
 from app.tests.utils.overrides import override_get_db
 from app.tests.utils.test_db import engine, TestSession
@@ -51,7 +51,7 @@ def client() -> Generator:
 @pytest.fixture(scope="session")
 def provider_owner(db: TestSession):
     username = random_email()
-    user_obj = UserCreateOut(email=username, secret=PROVIDER_OWNER_SECRET)
+    user_obj = UserCreateIn(email=username, secret=PROVIDER_OWNER_SECRET)
     return crud.user.create(db, obj_in=user_obj)
 
 

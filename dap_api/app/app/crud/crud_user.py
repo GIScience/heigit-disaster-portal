@@ -3,7 +3,7 @@ from typing import Any, Dict, Optional
 from sqlalchemy.orm import Session
 
 from app.models.user import User
-from app.schemas.user import UserCreate, UserUpdate, UserCreateOut, UserCreateFromDb
+from app.schemas.user import UserCreate, UserUpdate, UserCreateIn, UserCreateFromDb
 from .base import CRUDBase
 from ..security import generate_hash
 
@@ -21,7 +21,7 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
     def is_active(self, user_obj: User) -> bool:
         return user_obj.is_active
 
-    def create(self, db: Session, *, obj_in: UserCreateOut) -> User:
+    def create(self, db: Session, *, obj_in: UserCreateIn) -> User:
         db_obj = User(
             email=obj_in.email,
             hashed_secret=generate_hash(obj_in.secret),
