@@ -22,7 +22,9 @@ When starting the HeiGIT Disaster Portal, you'll be greeted by the following scr
 Selecting a disaster region will limit your routing capabilities to the selected region.
 
 <p align=center>
-    <img src="img/disaster_region_selection.png" style="border: 2px solid  gray; border-radius:15px" />
+<kbd>
+    <img src="img/disaster_region_selection.png" />
+</kbd>
 </p>
 As an example, selecting the *Slovenia* region will result in the following
 view.  Note, that everything *but* the selected region is not routable,
