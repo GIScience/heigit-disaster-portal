@@ -43,3 +43,17 @@ Select your Data Provider and enter your access token here:
 
 ![Data Provider Authentication](img/data_provider_selection.png)
 
+Once you are authenticated, you can add polygons using the buttons mentioned in `4`.
+Click to mark every corner of your polygon, and click on the first point to finish your polygon:
+
+![Polygon Drawing Video](img/polygon_drawing.webm)
+
+Once the polygon is finished, the following dialog will open up:
+
+![Editing description for new region](img/new_region_description.png)
+
+The following options can be set:
+
+TODO: TABLE HERE
+
+
