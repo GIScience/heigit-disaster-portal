@@ -3,39 +3,44 @@
 Welcome to the HeiGIT Disaster Portal Documentation.
 
 This will give you a short introduction on what the selected disaster region
-means, how to use the client to add new disaster areas and how to calculate
-routes.
+means and how to use the client to add new disaster areas
 
 The portal aims at helping during disaster relief efforts by providing up to
-date information regarding inaccessible parts of the road network.
-
-This is done by drawing areas that mark the underlying parts of the road
-network as impassable. These areas will be automatically taken into account
-when calculating routes or analyzing reachability.
+date information regarding inaccessible parts of the road network. This is done
+by drawing areas that mark the underlying parts of the road network as
+impassable. These areas will be automatically taken into account when
+calculating routes or analyzing reachability.
 
 ## Disaster region selection
 
 When starting the HeiGIT Disaster Portal, you'll be greeted by the following screen:
 
-![Disaster Portal starting page showing disaster region selection](img/disaster_portal_overview_with_selection.png)
+![Disaster Portal starting page showing disaster region selection](img/disaster_portal_overview_with_selection_lowres.png)
 
 Selecting a disaster region will limit your routing capabilities to the selected region.
 
-![Selectable Regions](img/disaster_region_selection.png)
+<p align=center>
+<kbd>
+    <img src="img/disaster_region_selection.png" />
+</kbd>
+</p>
 
 As an example, selecting the *Slovenia* region will result in the following
-view.  Note, that everything *but* the selected region is not routable,
+view:
+
+ ![Disaster Portal, Slovenia selected](img/disaster_portal_overview_lowres.png)
+
+Note, that everything *but* the selected region is not routable,
 indicated by being greyed out.  OpenStreetMap data for the highlighted area
 will be updated every 10 minutes. If a road is changed in OSM, e.g. marked as
 impassable, this change will be respected after 15-20 minutes.
 
-![Disaster Portal, Slovenia selected](img/disaster_portal_overview.png)
 
 ## Disaster Portal Controls
 
 Compared to the regular client, the following controls are new or have special functionalities:
 
-![Disaster Portal overview with annotated controls](img/disaster_portal_annotated.png)
+![Disaster Portal overview with annotated controls](img/portal_controls_lowres.png)
 
 1. Activate [Administration Mode](#administration-mode) to add/edit areas
 2. Re-open the region selection.
@@ -51,18 +56,34 @@ access is only used for adding and editing areas.
 To be able to add or edit any of the given areas, you have to have access to any given data provider.
 Contact support@smartmobility.heigit.org if you need to edit areas, but don't have any access token.
 
-Once you have an access token, click on `1` and select your Data Provider and enter your access token in the following dialog:
+Once you have an access token, click on the button marked with `1` in [the
+controls section](#disaster-portal-controls) and select your Data Provider and
+enter your access token in the following dialog:
 
-![Data Provider Authentication](img/data_provider_selection.png)
+<p align=center>
+<kbd>
+    <img alt="Data Provider Authentication" src="img/data_provider_selection.png" />
+</kbd>
+</p>
 
-Once you are authenticated, you can add polygons using the buttons mentioned in `4`.
-Click to mark every corner of your polygon, and click on the first point to finish your polygon:
+Once you are authenticated, you can add areas using button `4` mentioned in [the
+controls section](#disaster-portal-controls).
+
+### Area Creation
+
+Click to mark every corner of your area, and click on the first point to finish your area:
 
 https://github.com/koebi/heigit-disaster-portal/assets/4692974/30d1ca1e-ce0e-4c9d-9e00-5c78f442640e
 
-Once the polygon is finished, the following dialog will open up:
+### Area Metadata
 
-![Editing description for new region](img/new_region_description.png)
+Once the area is finished, the following dialog will open up to enter metadata concerning the area:
+
+<p align=center>
+<kbd>
+    <img alt="Editing description for new region" src="img/new_region_description.png" />
+</kbd>
+</p>
 
 The following information can be set:
 
@@ -74,9 +95,15 @@ The following information can be set:
 | `Disaster subtype` (optional) | More detailed type of incident, depending on `Disaster type` |
 | `Description` | Text field to input more information |
 
+### Area Editing
+
 Via a click on an existing area, the following options are available:
 
-![Options for existing area](img/area_left_click_overlay.png)
+<p align=center>
+<kbd>
+    <img alt="Options for existing area" src="img/area_left_click_overlay.png" />
+</kbd>
+</p>
 
 From left to right, they are:
 
