@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 
 from app import crud
 from app.models import User
-from app.schemas import UserCreateOut
+from app.schemas import UserCreateIn
 from app.schemas.provider import ProviderCreate, ProviderUpdate
 from app.security import generate_secret
 from app.tests.api.api_v1.test_providers import create_new_provider
@@ -47,7 +47,7 @@ def test_get_provider_by_email(db: Session, provider_owner: User) -> None:
 
 
 def test_get_multi_provider_by_owner(db: Session) -> None:
-    user_obj = UserCreateOut(email=random_email(), secret=generate_secret())
+    user_obj = UserCreateIn(email=random_email(), secret=generate_secret())
     user = crud.user.create(db, obj_in=user_obj)
     create_new_provider(db, user)
     create_new_provider(db, user)

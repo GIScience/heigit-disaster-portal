@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 
 from app import crud
 from app.config import settings
-from app.schemas.user import UserCreateOut
+from app.schemas.user import UserCreateIn
 from app.security import generate_hash, generate_secret
 from app.tests.utils.utils import random_email
 
@@ -27,13 +27,14 @@ def test_create_user_new_email(
     assert user
     assert user.email == created_user["email"]
     assert user.hashed_secret == generate_hash(created_user["secret"])
+    assert user.id == created_user["id"]
 
 
 def test_create_user_existing_email(
         client: TestClient, db: Session,
         admin_auth_header: Dict[str, str]
 ) -> None:
-    user_obj = UserCreateOut(email=random_email(), secret=generate_secret())
+    user_obj = UserCreateIn(email=random_email(), secret=generate_secret())
     crud.user.create(db, obj_in=user_obj)
     data = {"email": user_obj.email}
     r = client.post(
@@ -67,7 +68,7 @@ def test_get_existing_user(
         client: TestClient, db: Session
 ) -> None:
     username = random_email()
-    user_obj = UserCreateOut(email=username, secret=generate_secret())
+    user_obj = UserCreateIn(email=username, secret=generate_secret())
     user = crud.user.create(db, obj_in=user_obj)
     user_id = user.id
     r = client.get(
@@ -95,7 +96,7 @@ def test_update_existing_user_email(
         client: TestClient, db: Session,
         admin_auth_header: Dict[str, str]
 ) -> None:
-    user_obj = UserCreateOut(email=random_email(), secret=generate_secret())
+    user_obj = UserCreateIn(email=random_email(), secret=generate_secret())
     user = crud.user.create(db, obj_in=user_obj)
     r = client.put(f"{settings.API_V1_STR}/collections/users/items/{user.id}",
                    json={"email": "new@mail.com"},
@@ -109,7 +110,7 @@ def test_update_existing_user_secret(
         admin_auth_header: Dict[str, str]
 ) -> None:
 
-    user_obj = UserCreateOut(email=random_email(), secret=generate_secret())
+    user_obj = UserCreateIn(email=random_email(), secret=generate_secret())
     user = crud.user.create(db, obj_in=user_obj)
     assert user.hashed_secret == generate_hash(user_obj.secret)
     r = client.put(f"{settings.API_V1_STR}/collections/users/items/{user.id}",
@@ -140,7 +141,7 @@ def test_delete_existing_user(
         admin_auth_header: Dict[str, str]
 ) -> None:
     username = random_email()
-    user_obj = UserCreateOut(email=username, secret=generate_secret())
+    user_obj = UserCreateIn(email=username, secret=generate_secret())
     user = crud.user.create(db, obj_in=user_obj)
     user_id = user.id
 
@@ -164,11 +165,11 @@ def test_retrieve_users(
         client: TestClient, db: Session
 ) -> None:
     username = random_email()
-    user_obj = UserCreateOut(email=username, secret=generate_secret())
+    user_obj = UserCreateIn(email=username, secret=generate_secret())
     crud.user.create(db, obj_in=user_obj)
 
     username2 = random_email()
-    user_obj2 = UserCreateOut(email=username2, secret=generate_secret())
+    user_obj2 = UserCreateIn(email=username2, secret=generate_secret())
     crud.user.create(db, obj_in=user_obj2)
 
     r = client.get(f"{settings.API_V1_STR}/collections/users/items")

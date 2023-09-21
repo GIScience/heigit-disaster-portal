@@ -63,13 +63,13 @@ def create_user(
             status_code=400,
             detail="A user with this email already exists in the system.",
         )
-    user_out = schemas.UserCreateOut(**user_in.dict(), secret=generate_secret())
-    crud.user.create(db, obj_in=user_out)
+    user_with_secret = schemas.UserCreateIn(**user_in.dict(), secret=generate_secret())
+    user_out_db = crud.user.create(db, obj_in=user_with_secret)
     # if settings.EMAILS_ENABLED and user_in.email:
     #     send_new_account_email(
     #         email_to=user_in.email, username=user_in.email, password=user_in.password
     #     )
-    return user_out
+    return schemas.UserCreateOut(**user_with_secret.dict(), id=user_out_db.id)
 
 
 @router.get(

@@ -105,7 +105,7 @@ def create_example_data(db: Session) -> None:
 def create_admin(db: Session) -> None:
     admin = crud.user.get_by_email(db, email=settings.ADMIN_USER)
     if not admin:
-        user_in = schemas.UserCreateOut(
+        user_in = schemas.UserCreateIn(
             email=settings.ADMIN_USER,
             secret=settings.ADMIN_USER_SECRET,
             is_admin=True,

@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 
 from app import models, crud
 from app.config import settings
-from app.schemas import UserCreateOut
+from app.schemas import UserCreateIn
 from app.tests.utils.disaster_areas import create_new_polygon, create_new_properties, create_new_disaster_area
 from app.tests.utils.utils import random_email, random_lower_string
 
@@ -73,7 +73,7 @@ def test_access_to_owner_endpoints(
     secret = provider_owner_secret
     if user == "no_owner":
         secret = "test_secret"
-        user_obj = UserCreateOut(email=random_email(), secret=secret)
+        user_obj = UserCreateIn(email=random_email(), secret=secret)
         crud.user.create(db, obj_in=user_obj)
 
     p = provider_owner.providers[0]
