@@ -5,7 +5,8 @@ services:
     container_name: dap-api-reload
     image: disaster-area-portal-dev
     depends_on:
-      - dap-db
+      dap-db:
+        condition: service_healthy
     build:
       context: .
       dockerfile: ./dap_api/Dockerfile
@@ -33,7 +34,7 @@ services:
     environment:
       - PGDATA=/var/lib/postgresql/data/pgdata
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready" ]
+      test: [ "CMD-SHELL", "pg_isready -d ${POSTGRES_DB} -U ${POSTGRES_USER}"]
       interval: 10s
       timeout: 5s
       retries: 5
