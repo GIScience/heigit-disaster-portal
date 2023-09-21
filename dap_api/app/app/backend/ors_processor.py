@@ -59,14 +59,14 @@ class ORSProcessor(BaseProcessor):
 
         # relay to backend
         endpoint = f"/{options.ors_api}/{options.ors_profile}/{options.ors_response_type}"
-        response = self.relay_request_post(endpoint, request_header, request_dict)
+        response = self.relay_request_post(endpoint, request_header, request_dict, base_path=request.portal_options.ors_server)
         response_json = {}
         if response.status_code == 200 and request.portal_options.generate_difference:
             response_json = response.json()
             new_features = []
             if "options" in request_dict and "avoid_polygons" in request_dict["options"]:
                 request_dict.get("options").pop("avoid_polygons")
-                response_no_avoid = self.relay_request_post(endpoint, request_header, request_dict)
+                response_no_avoid = self.relay_request_post(endpoint, request_header, request_dict, base_path=request.portal_options.ors_server)
 
                 new_features = self.calculate_new_features(db, options, request_dict,
                                                            response_json[result_key(options)],

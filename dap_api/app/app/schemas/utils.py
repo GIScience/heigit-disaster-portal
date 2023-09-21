@@ -57,7 +57,8 @@ BASE_EXAMPLE = {
                 "bbox": [-180., -90., 180., 90.],
                 "datetime": "2018-02-12T23:20:50Z/",
                 "d_type_id": 1
-            }
+            },
+            "ors_server": 'https://my-ors-instance.com/'
         },
             "coordinates": [[8.681495, 49.41461], [8.686507, 49.41943], [8.687872, 49.420318]],
             "locations": [[8.681495, 49.41461]],

@@ -144,8 +144,9 @@ To be able to add breakpoints you need to add a _python run configuration_ for t
 1. The working directory should be `<project root>/dap_api/app`
 1. Switch to the **EnvFile** tab (requires [EnvFile plugin](https://plugins.jetbrains.com/plugin/7861-envfile))
 1. Click **Enable EnvFile**
-1. Click the "+" to add both `.env` & `.env-dev` files located in the project root (in this order !)
+1. Click the "+" to add both `.env` & `.env-dev` files located in the project root (in this order !). If the `.env` & `.env-dev` files do not show up, enable showing hidden files. (Mac: Command+Shift+Dot)   
 1. Click OK
+
 
 Click the debug button on the previously created run configuration.
 
